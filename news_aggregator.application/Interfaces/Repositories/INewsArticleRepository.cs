@@ -11,7 +11,7 @@ namespace news_aggregator.application.Interfaces.Repositories
     public interface INewsArticleRepository
     {
         Task<IEnumerable<NewsArticle>> GetAllAsync();
-        Task<NewsArticle?> GetByIdAsync(int id);
+        Task<NewsArticle?> GetByIdAsync(int articleId);
         Task AddAsync(NewsArticle article);
         Task DeleteAsync(int newArticleId);
         Task DeleteOlderThanAsync(DateTime cutoffDate);

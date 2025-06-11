@@ -20,7 +20,7 @@ namespace news_application.Models
         public bool IsTokenActive { get; set; } = false;
         public DateTime? TokenExpirationTime { get; set; }
         public DateTime? LastLogin { get; set; }
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
     }
 }

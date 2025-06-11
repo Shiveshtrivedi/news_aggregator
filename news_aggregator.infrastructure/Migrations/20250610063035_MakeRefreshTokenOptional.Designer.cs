@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using news_application.Context;
 
@@ -11,9 +12,11 @@ using news_application.Context;
 namespace news_aggregator.infrastructure.Migrations
 {
     [DbContext(typeof(NewsDataContext))]
-    partial class NewsDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250610063035_MakeRefreshTokenOptional")]
+    partial class MakeRefreshTokenOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

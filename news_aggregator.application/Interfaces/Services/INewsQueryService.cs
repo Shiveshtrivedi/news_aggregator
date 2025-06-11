@@ -10,7 +10,7 @@ namespace news_aggregator.application.Interfaces.Services
     public interface INewsQueryService
     {
         Task<IEnumerable<NewsArticle>> GetAllNewsAsync();
-        Task<NewsArticle?> GetNewsByIdAsync(int id);
+        Task<NewsArticle?> GetNewsByIdAsync(int articleId);
         Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title);
         Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);

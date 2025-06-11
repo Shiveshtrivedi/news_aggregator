@@ -14,29 +14,29 @@ namespace news_aggregator.Controllers
             _userService = userService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("getAllUser")]
+        public async Task<IActionResult> GetAllUser()
         {
             var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("{id}/getUserById")]
+        public async Task<IActionResult> GetUserById(int id)
         {
             var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return Ok(user);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] User user)
+        [HttpPost("createUser")]
+        public async Task<IActionResult> CreateUser([FromBody] User user)
         {
             await _userService.AddUserAsync(user);
-            return CreatedAtAction(nameof(Get), new { id = user.UserId }, user);
+            return CreatedAtAction(nameof(GetUserById), new { id = user.UserId }, user);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/updateUser")]
         public async Task<IActionResult> Update(int id, User user)
         {
             if (id != user.UserId) return BadRequest();
@@ -44,7 +44,7 @@ namespace news_aggregator.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}/deleteUser")]
         public async Task<IActionResult> Delete(int id)
         {
             await _userService.DeleteUserAsync(id);

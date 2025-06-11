@@ -92,6 +92,22 @@ namespace news_aggregator
             builder.Services.Configure<NewsApiOptions>(
                 builder.Configuration.GetSection("ExternalApis:NewsApi"));
 
+            builder.Services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
+            builder.Services.AddScoped<ISavedArticleService, SavedArticleService>();
+
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
+            builder.Services.AddScoped<INotificationConfigRepository, NotificationConfigRepository>();
+            builder.Services.AddScoped<INotificationConfigService, NotificationConfigService>();
+
+            builder.Services.AddScoped<IUserKeywordRepository, UserKeywordRepository>();
+            builder.Services.AddScoped<IUserKeywordService, UserKeywordService>();  
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())

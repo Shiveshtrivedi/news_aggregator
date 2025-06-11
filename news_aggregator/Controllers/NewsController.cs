@@ -20,42 +20,42 @@ namespace news_aggregator.Controllers
 
         //[Authorize(Roles = "Admin")]
 
-        [HttpGet("externalApi")]
+        [HttpGet("getNewsByExternalApi")]
         public async Task<IActionResult> GetFromExternal()
         {
             var articles = await _newsService.FetchAndSaveExternalNewsAsync();
             return Ok(articles);
         }
 
-        [HttpGet]
+        [HttpGet("getAllNews")]
         public async Task<IActionResult> GetAllNews()
         {
             var news = await _newsQueryService.GetAllNewsAsync();
             return Ok(news);
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetNewsById(int id)
+        [HttpGet("{articleId}/getNewsByArticleId")]
+        public async Task<IActionResult> GetNewsById(int articleId)
         {
-            var article = await _newsQueryService.GetNewsByIdAsync(id);
+            var article = await _newsQueryService.GetNewsByIdAsync(articleId);
             return article != null ? Ok(article) : NotFound();
         }
 
-        [HttpGet("search")]
+        [HttpGet("searchNews")]
         public async Task<IActionResult> SearchByTitle([FromQuery] string title)
         {
             var articles = await _newsQueryService.SearchNewsByTitleAsync(title);
             return Ok(articles);
         }
 
-        [HttpGet("category/{category}")]
+        [HttpGet("{category}/getNewsByCategory")]
         public async Task<IActionResult> GetByCategory(string category)
         {
             var articles = await _newsQueryService.GetNewsByCategoryAsync(category);
             return Ok(articles);
         }
 
-        [HttpGet("date-range")]
+        [HttpGet("getNewsByDateRange")]
         public async Task<IActionResult> GetNewsByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
             if (startDate > endDate)

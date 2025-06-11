@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using news_aggregator.domain.Models;
 using news_application.Models;
 
 namespace news_application.Context
@@ -14,6 +15,7 @@ namespace news_application.Context
         public DbSet<ExternalSource> ExternalSources { get; set; }
         public DbSet<NotificationConfig> NotificationConfigs { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<UserKeyword> UserKeywords { get; set; }
     }
 }
 

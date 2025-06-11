@@ -39,12 +39,12 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task<IEnumerable<news_application.Models.NewsArticle>> GetAllAsync()
         {
-            return await _context.NewsArticles.ToListAsync(); ;
+            return await _context.NewsArticles.OrderByDescending(date => date.PublishedAt).ToListAsync(); 
         }
 
-        public async Task<news_application.Models.NewsArticle?> GetByIdAsync(int id)
+        public async Task<news_application.Models.NewsArticle?> GetByIdAsync(int articleId)
         {
-            return await _context.NewsArticles.FindAsync(id);
+            return await _context.NewsArticles.FindAsync(articleId);
         }
 
         public async Task DeleteOlderThanAsync(DateTime cutoffDate)

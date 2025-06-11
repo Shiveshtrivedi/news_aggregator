@@ -24,9 +24,9 @@ namespace news_aggregator.application
             return await _newsArticleRepository.GetAllAsync();
         }
 
-        public async Task<NewsArticle?> GetNewsByIdAsync(int id)
+        public async Task<NewsArticle?> GetNewsByIdAsync(int articleId)
         {
-            return await _newsArticleRepository.GetByIdAsync(id);
+            return await _newsArticleRepository.GetByIdAsync(articleId);
         }
 
         public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title)
