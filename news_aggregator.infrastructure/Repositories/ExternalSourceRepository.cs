@@ -11,45 +11,15 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.Repositories
 {
-    public class ExternalSourceRepository : IExternalSourceRepository
+    public class ExternalSourceRepository : GenericRepository<ExternalSource>, IExternalSourceRepository
     {
         private readonly NewsDataContext _context;
 
-        public ExternalSourceRepository(NewsDataContext context)
+        public ExternalSourceRepository(NewsDataContext context) : base(context)
         {
             _context = context;
         }
-        public async Task AddAsync(ExternalSource source)
-        {
-            _context.ExternalSources.Add(source);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(int externalServerId)
-        {
-            var externalSource = await _context.ExternalSources.FindAsync(externalServerId);
-
-            if (externalSource != null)
-            {
-                _context.ExternalSources.Remove(externalSource);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<IEnumerable<ExternalSource>> GetAllAsync()
-        {
-            var externalSources = await _context.ExternalSources.ToListAsync();
-
-            return externalSources;
-        }
-
-        public async Task<ExternalSource> GetByIdAsync(int externalServerId)
-        {
-            var externalSource = await _context.ExternalSources.FindAsync(externalServerId);
-
-            return externalSource;
-        }
-
+       
         public async Task<bool> UpdateAsync(int id, ExternalSource source)
         {
             var existing = await _context.ExternalSources.FindAsync(id);

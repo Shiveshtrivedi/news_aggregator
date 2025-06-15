@@ -8,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.application.Interfaces.Repositories
 {
-    public interface IExternalSourceRepository
+    public interface IExternalSourceRepository : IGenericRepository<ExternalSource>
     {
-        Task<IEnumerable<ExternalSource>> GetAllAsync();
-        Task<ExternalSource> GetByIdAsync(int externalServerId);
-        Task AddAsync(ExternalSource source);
         Task<bool> UpdateAsync(int id, ExternalSource source);
-        Task DeleteAsync(int externalServerId);
         Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto);
     }
 }

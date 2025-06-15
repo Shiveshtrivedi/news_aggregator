@@ -76,6 +76,9 @@ namespace news_aggregator
             builder.Services.AddDbContext<NewsDataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IExternalSourceRepository, ExternalSourceRepository>();
 

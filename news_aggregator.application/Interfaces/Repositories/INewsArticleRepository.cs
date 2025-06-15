@@ -8,16 +8,12 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.application.Interfaces.Repositories
 {
-    public interface INewsArticleRepository
+    public interface INewsArticleRepository : IGenericRepository<NewsArticle>
     {
-        Task<IEnumerable<NewsArticle>> GetAllAsync();
-        Task<NewsArticle?> GetByIdAsync(int articleId);
-        Task AddAsync(NewsArticle article);
-        Task DeleteAsync(int newArticleId);
-        Task DeleteOlderThanAsync(DateTime cutoffDate);
         Task<bool> ExistsAsync(string title, string url);
         Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title);
         Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);
+        Task DeleteOlderThanAsync(DateTime cutoffDate);
     }
 }

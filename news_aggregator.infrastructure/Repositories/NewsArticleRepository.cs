@@ -12,41 +12,16 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.Repositories
 {
-    public class NewsArticleRepository : INewsArticleRepository
+    public class NewsArticleRepository : GenericRepository<NewsArticle>, INewsArticleRepository
     {
         private readonly NewsDataContext _context;
 
-        public NewsArticleRepository(NewsDataContext context)
+        public NewsArticleRepository(NewsDataContext context) : base(context)
         {
             _context = context;
         }
-        public async Task AddAsync(NewsArticle article)
-        {
-            _context.NewsArticles.Add(article);
-            await _context.SaveChangesAsync();
-
-        }
-
-        public async Task DeleteAsync(int newsArticleId)
-        {
-            var article = await _context.NewsArticles.FindAsync(newsArticleId);
-            if (article != null)
-            {
-                _context.NewsArticles.Remove(article);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task<IEnumerable<news_application.Models.NewsArticle>> GetAllAsync()
-        {
-            return await _context.NewsArticles.OrderByDescending(date => date.PublishedAt).ToListAsync(); 
-        }
-
-        public async Task<news_application.Models.NewsArticle?> GetByIdAsync(int articleId)
-        {
-            return await _context.NewsArticles.FindAsync(articleId);
-        }
-
+        
+        
         public async Task DeleteOlderThanAsync(DateTime cutoffDate)
         {
             var oldArticles = _context.NewsArticles
