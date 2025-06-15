@@ -1,5 +1,6 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
@@ -40,9 +41,29 @@ namespace news_aggregator.application
             return source;
         }
 
-        public async Task UpdateSourceAsync(ExternalSource source)
+        public async Task<bool> UpdateSourceAsync(int id, ExternalSource source)
         {
-            await _repository.UpdateAsync(source);
+            return await _repository.UpdateAsync(id, source);
         }
+
+        public async Task AddExternalSourceApi(CreateExternalSourceDto dto)
+        {
+            var source = new ExternalSource
+            {
+                ExternalSourceName = dto.ExternalSourceName,
+                ApiKey = dto.ApiKey,
+                BaseUrl = dto.BaseUrl,
+                IsActive = dto.IsActive,
+                LastAccessed = DateTime.UtcNow
+            };
+
+            await _repository.AddAsync(source);
+        }
+
+        public async Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto)
+        {
+            return await _repository.UpdatePartialAsync(id, dto);
+        }
+
     }
 }

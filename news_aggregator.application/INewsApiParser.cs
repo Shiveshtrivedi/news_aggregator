@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.application
 {
-    public interface IExternalNewsClient
+    public interface INewsApiParser
     {
-        Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source,string category = "", string keyword = "");
+        bool CanHandle(ExternalSource source);
+        Task<IEnumerable<NewsArticle>> FetchArticlesAsync(ExternalSource source, string category, string keyword);
     }
 }

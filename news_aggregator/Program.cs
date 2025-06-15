@@ -11,6 +11,7 @@ using news_aggregator.domain.Models;
 using news_aggregator.infrastructure.Repositories;
 using news_application.Context;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using news_aggregator.infrastructure.Jobs;
 
 namespace news_aggregator
 {
@@ -106,6 +107,13 @@ namespace news_aggregator
 
             builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+            builder.Services.AddHttpClient<NewsApiProvider>();
+            builder.Services.AddHttpClient<AltApiProvider>();
+            builder.Services.AddScoped<INewsProviderFactory, NewsProviderFactory>();
+
+            builder.Services.AddHostedService<NewsFetcherJob>();
+
 
 
             var app = builder.Build();

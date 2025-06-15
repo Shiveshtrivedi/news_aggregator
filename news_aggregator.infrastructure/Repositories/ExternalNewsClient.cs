@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.Repositories
@@ -23,33 +24,74 @@ namespace news_aggregator.infrastructure.Repositories
         {
             _httpClient = httpClient;
         }
-        public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(string category = "", string keyword = "")
+        public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source, string category = "", string keyword = "")
         {
-            var apiKey = "aea1338e747c4c57bae18be784ebcd5f";
-            var baseUrl = "https://newsapi.org/v2/top-headlines?country=us";
+            var queryParams = new List<string>();
 
-            if (!string.IsNullOrEmpty(category))
-                baseUrl += $"&category={category}";
-            if (!string.IsNullOrEmpty(keyword))
-                baseUrl += $"&q={keyword}";
+            if (!string.IsNullOrWhiteSpace(category))
+                queryParams.Add($"category={Uri.EscapeDataString(category)}");
 
-            baseUrl += $"&apiKey={apiKey}";
+            if (!string.IsNullOrWhiteSpace(keyword))
+                queryParams.Add($"q={Uri.EscapeDataString(keyword)}");
 
-            var response = await _httpClient.GetFromJsonAsync<NewsApiResponse>(baseUrl);
+            var url = source.BaseUrl;
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
 
-            var result = response?.Articles?.Select(a => new NewsArticle
+            if (source.AuthLocation == "query" && !string.IsNullOrWhiteSpace(source.AuthParamName))
             {
-                Title = a.Title ?? "",
-                Content = a.Content ?? "",
-                PublishedAt = a.PublishedAt,
-                Source = a.Source?.Name ?? "Unknown",
-                Url = a.Url ?? "",
-                Category = ParseCategory(category),
-                Likes = 0,
-                Dislikes = 0,
-            }) ?? new List<NewsArticle>();
+                queryParams.Add($"{source.AuthParamName}={Uri.EscapeDataString(source.ApiKey)}");
+            }
 
-            return result;
+            if (queryParams.Any())
+            {
+                var separator = url.Contains('?') ? "&" : "?";
+                request.RequestUri = new Uri($"{url}{separator}{string.Join("&", queryParams)}");
+            }
+
+            if (source.AuthLocation == "header" && !string.IsNullOrWhiteSpace(source.AuthParamName))
+            {
+                request.Headers.Add(source.AuthParamName, source.ApiKey);
+            }
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("RAW RESPONSE:");
+            Console.WriteLine(rawJson);
+
+            if (source.ExternalSourceName == "conversation")
+            {
+                var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson);
+
+                return altResponse?.Data?.Select(a => new NewsArticle
+                {
+                    Title = a.Title ?? "",
+                    Content = a.Snippet ?? "No content available.",
+                    PublishedAt = a.Published_At,
+                    Source = a.Source ?? "Unknown",
+                    Url = a.Url ?? "",
+                    Category = ParseCategory(category),
+                    Likes = 0,
+                    Dislikes = 0,
+                }) ?? new List<NewsArticle>();
+            }
+            else
+            {
+                var result = await response.Content.ReadFromJsonAsync<NewsApiResponse>();
+
+                return result?.Articles?.Select(a => new NewsArticle
+                {
+                    Title = a.Title ?? "",
+                    Content = a.Content ?? "No content available.",
+                    PublishedAt = a.PublishedAt,
+                    Source = a.Source?.Name ?? "Unknown",
+                    Url = a.Url ?? "",
+                    Category = ParseCategory(category),
+                    Likes = 0,
+                    Dislikes = 0,
+                }) ?? new List<NewsArticle>();
+            }
         }
 
         private CategoryType ParseCategory(string category)

@@ -56,9 +56,9 @@ namespace news_aggregator.infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ExistsAsync(string title)
+        public async Task<bool> ExistsAsync(string title, string url)
         {
-            return await _context.NewsArticles.AnyAsync(a => a.Title == title);
+            return await _context.NewsArticles.AnyAsync(a => a.Title == title && a.Url == url);
         }
 
         public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title)

@@ -15,7 +15,7 @@ namespace news_aggregator.application.Interfaces.Repositories
         Task AddAsync(NewsArticle article);
         Task DeleteAsync(int newArticleId);
         Task DeleteOlderThanAsync(DateTime cutoffDate);
-        Task<bool> ExistsAsync(string title);
+        Task<bool> ExistsAsync(string title, string url);
         Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title);
         Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);

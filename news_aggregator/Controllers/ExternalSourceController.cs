@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
+
 //using news_aggregator.infrastructure.Jobs;
 using news_application.Models;
 
@@ -64,13 +67,16 @@ namespace news_aggregator.Controllers
         {
             try
             {
-                if (externalSourceId != source.ExternalSourceId)
-                {
-                    return BadRequest("Enter Correct Id");
-                }
+                //if (externalSourceId != source.ExternalSourceId)
+                //{
+                //    return BadRequest("Enter Correct Id");
+                //}
 
-                await _externalSourceService.UpdateSourceAsync(source);
-                return Ok("Source Update successfully");
+                var updated = await _externalSourceService.UpdateSourceAsync(externalSourceId,source);
+                if (!updated)
+                    return NotFound("External source not found.");
+
+                return Ok("Source updated successfully");
             }
             catch (Exception ex)
             {
@@ -78,12 +84,24 @@ namespace news_aggregator.Controllers
             }
         }
 
-        //[HttpPost("fetch-external")]
-        //public async Task<IActionResult> FetchFromExternalApi([FromServices] NewsFetcherJob job)
-        //{
-        //    await job.FetchAndStoreAsync();
-        //    return Ok("News fetched and stored.");
-        //}
+        [HttpPost]
+        [Route("addExternalSourceApi")]
+        public async Task<IActionResult> AddExternalSource([FromBody] CreateExternalSourceDto dto)
+        {
+            await _externalSourceService.AddExternalSourceApi(dto);
+            return Ok("External source added successfully.");
+        }
+
+        [HttpPatch("{externalSourceId}")]
+        public async Task<IActionResult> UpdatePartial(int externalSourceId, [FromBody] UpdateExternalSourceDto dto)
+        {
+            var result = await _externalSourceService.UpdatePartialAsync(externalSourceId, dto);
+            if (!result)
+                return NotFound("External Source not found.");
+
+            return Ok("Updated successfully.");
+        }
+
 
     }
 }
