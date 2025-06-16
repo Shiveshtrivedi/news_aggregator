@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35913.81 d17.13
+VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "news_aggregator", "news_aggregator\news_aggregator.csproj", "{09A2EAFB-6677-4A2C-BFEB-2ACED748949C}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "news_aggregator.infrastructure", "news_aggregator.infrastructure\news_aggregator.infrastructure.csproj", "{0780F4BE-B74F-4D75-9872-776C300D3BB0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "news_aggregator.shared", "news_aggregator.shared\news_aggregator.shared.csproj", "{A0FCEB33-E5A2-4668-8FD7-31307C6A7561}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "news_aggregator.console", "news_aggregator.console\news_aggregator.console.csproj", "{2ADB77A5-4F58-4539-8C45-4DF4D9D0E73B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{A0FCEB33-E5A2-4668-8FD7-31307C6A7561}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A0FCEB33-E5A2-4668-8FD7-31307C6A7561}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A0FCEB33-E5A2-4668-8FD7-31307C6A7561}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ADB77A5-4F58-4539-8C45-4DF4D9D0E73B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ADB77A5-4F58-4539-8C45-4DF4D9D0E73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ADB77A5-4F58-4539-8C45-4DF4D9D0E73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ADB77A5-4F58-4539-8C45-4DF4D9D0E73B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

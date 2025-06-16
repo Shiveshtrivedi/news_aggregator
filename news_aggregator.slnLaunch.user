@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "news_aggregator\\news_aggregator.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "news_aggregator.console\\news_aggregator.console.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
