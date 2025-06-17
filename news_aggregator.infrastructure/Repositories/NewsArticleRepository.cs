@@ -20,8 +20,8 @@ namespace news_aggregator.infrastructure.Repositories
         {
             _context = context;
         }
-        
-        
+
+
         public async Task DeleteOlderThanAsync(DateTime cutoffDate)
         {
             var oldArticles = _context.NewsArticles
@@ -53,6 +53,21 @@ namespace news_aggregator.infrastructure.Repositories
             return await _context.NewsArticles
                 .Where(article => article.PublishedAt >= startDate && article.PublishedAt <= endDate)
                 .ToListAsync();
+        }
+
+        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate)
+        {
+            if (!Enum.TryParse<CategoryType>(category, true, out var categoryEnum))
+                throw new ArgumentException("Invalid category.");
+            var articles = await _context.NewsArticles.ToListAsync();  
+            return articles.Select(n => new NewsArticleDto
+            {
+                NewsArticleId = n.NewsArticleId,
+                Title = n.Title,
+                Content = n.Content,
+                Category = n.Category.ToString(),     
+                PublishedAt = n.PublishedAt
+            }).ToList();
         }
 
     }

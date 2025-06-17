@@ -33,7 +33,9 @@ namespace news_aggregator.application
 
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
         {
-            var category = new Category { CategoryName = dto.Name };
+            var category = new Category { CategoryName = dto.CategoryName };
+            if (category.CategoryName == "")
+                throw new Exception("enter string");
             await _categoryRepository.AddAsync(category);
             return new CategoryDto { CategoryId = category.CategoryId, Name = category.CategoryName };
         }
@@ -43,7 +45,7 @@ namespace news_aggregator.application
             var existing = await _categoryRepository.GetByIdAsync(id);
             if (existing is null) throw new Exception("Category not found.");
 
-            existing.CategoryName = dto.Name;
+            existing.CategoryName = dto.CategoryName;
             await _categoryRepository.UpdateAsync(existing);
 
             return new CategoryDto { CategoryId = existing.CategoryId, Name = existing.CategoryName };

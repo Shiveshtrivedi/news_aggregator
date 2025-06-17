@@ -67,5 +67,18 @@ namespace news_aggregator.Controllers
             return Ok(articles);
         }
 
+        [HttpGet("getNewsByCategoryAndDateRange")]
+        public async Task<IActionResult> GetNewsByCategoryAndDateRange([FromQuery] string category, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+        {
+            if (startDate > endDate)
+                return BadRequest("Start date must be before end date.");
+
+            var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+            return Ok(articles);
+        }
+
+
+
+
     }
 }

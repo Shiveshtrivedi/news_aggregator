@@ -26,10 +26,27 @@ namespace news_aggregator.infrastructure.Repositories
         }
         public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source, string category = "", string keyword = "")
         {
+            if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
+            {
+                var allCategories = new[] { "business", "entertainment",  "sports", "technology" };
+                //"general", "health", "science",
+                var allResults = new List<NewsArticle>();
+
+                foreach (var cat in allCategories)
+                {
+                    var categoryResults = await GetLatestArticlesAsync(source, cat, keyword);
+                    allResults.AddRange(categoryResults);
+                }
+
+                return allResults;
+            }
+
             var queryParams = new List<string>();
 
-            if (!string.IsNullOrWhiteSpace(category))
+            if (source.ExternalSourceName == "NewsAPI" && !string.IsNullOrWhiteSpace(category))
+            {
                 queryParams.Add($"category={Uri.EscapeDataString(category)}");
+            }
 
             if (!string.IsNullOrWhiteSpace(keyword))
                 queryParams.Add($"q={Uri.EscapeDataString(keyword)}");
@@ -62,7 +79,17 @@ namespace news_aggregator.infrastructure.Repositories
 
             if (source.ExternalSourceName == "conversation")
             {
-                var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson);
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+                var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson, options);
+
+                string debugJson = JsonSerializer.Serialize(altResponse, new JsonSerializerOptions { WriteIndented = true });
+
+                Console.WriteLine("altResponse object: ");
+                Console.WriteLine(debugJson);
 
                 return altResponse?.Data?.Select(a => new NewsArticle
                 {
@@ -71,7 +98,7 @@ namespace news_aggregator.infrastructure.Repositories
                     PublishedAt = a.Published_At,
                     Source = a.Source ?? "Unknown",
                     Url = a.Url ?? "",
-                    Category = ParseCategory(category),
+                    Category = ParseCategory(a.Categories?.FirstOrDefault() ?? ""),
                     Likes = 0,
                     Dislikes = 0,
                 }) ?? new List<NewsArticle>();
@@ -79,6 +106,11 @@ namespace news_aggregator.infrastructure.Repositories
             else
             {
                 var result = await response.Content.ReadFromJsonAsync<NewsApiResponse>();
+
+                string debugJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
+
+                Console.WriteLine("altResponse object: ");
+                Console.WriteLine(debugJson);
 
                 return result?.Articles?.Select(a => new NewsArticle
                 {
@@ -100,7 +132,7 @@ namespace news_aggregator.infrastructure.Repositories
             {
                 return parsedCategory;
             }
-            return CategoryType.Uncategorized;
+            return CategoryType.uncategorized;
         }
 
     }

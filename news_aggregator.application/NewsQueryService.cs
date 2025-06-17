@@ -1,5 +1,6 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
 using news_application.Enum;
 using news_application.Models;
 using System;
@@ -42,6 +43,11 @@ namespace news_aggregator.application
         public async Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
             return await _newsArticleRepository.GetNewsByDateRangeAsync(startDate, endDate);
+        }
+
+        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate)
+        {
+            return await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
         }
     }
 }
