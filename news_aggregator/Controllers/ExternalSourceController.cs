@@ -8,6 +8,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize(Roles = "Admin")]
     public class ExternalSourceController : ControllerBase
     {
         private readonly IExternalSourceService _externalSourceService;

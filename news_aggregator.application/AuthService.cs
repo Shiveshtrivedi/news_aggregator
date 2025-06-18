@@ -51,7 +51,7 @@ namespace news_aggregator.application
         {
             var jwtSettings = _configuration.GetSection("Jwt");
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
-            string roleString = user.Role == 0 ? "Admin" : "User";
+            string roleString = user.Role == 0 ? "User" : "Admin";
 
             var claims = new[]
             {
