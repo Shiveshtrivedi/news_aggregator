@@ -16,8 +16,14 @@ namespace news_aggregator.infrastructure.Repositories
 
         public CategoryRepository(NewsDataContext context) : base(context) 
         {
-            
+            _context = context;
         }
-        
+
+        public async Task<bool> ExistsAsync(string categoryName)
+        {
+            return await _context.Categories
+                .AnyAsync(c => c.CategoryName.ToLower() == categoryName.ToLower());
+        }
+
     }
 }

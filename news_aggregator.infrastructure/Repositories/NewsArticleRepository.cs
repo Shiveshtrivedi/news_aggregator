@@ -36,9 +36,20 @@ namespace news_aggregator.infrastructure.Repositories
             return await _context.NewsArticles.AnyAsync(a => a.Title == title && a.Url == url);
         }
 
-        public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title)
+        public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate)
         {
-            return await _context.NewsArticles.Where(n => n.Title.Contains(title)).ToListAsync();
+            var query = _context.NewsArticles.AsQueryable();
+
+            if (!string.IsNullOrEmpty(title))
+                query = query.Where(n => n.Title.Contains(title));
+
+            if (startDate.HasValue)
+                query = query.Where(n => n.PublishedAt >= startDate.Value);
+
+            if (endDate.HasValue)
+                query = query.Where(n => n.PublishedAt <= endDate.Value);
+
+            return await query.ToListAsync();
         }
 
         public async Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category)

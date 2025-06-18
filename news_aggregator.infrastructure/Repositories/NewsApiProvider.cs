@@ -22,20 +22,6 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task<IEnumerable<NewsArticle>> FetchArticlesAsync(ExternalSource source)
         {
-            //var response = await _httpClient.GetStringAsync(source.BaseUrl);
-            //var result = JsonConvert.DeserializeObject<NewsApiResponse>(response);
-
-            //return result.Articles.Select(a => new NewsArticle
-            //{
-            //    Title = a.Title,
-            //    Description = a.Description,
-            //    Url = a.Url,
-            //    ImageUrl = a.UrlToImage,
-            //    PublishedAt = a.PublishedAt,
-            //    Content = a.Content,
-            //    Source = a.Source?.Name,
-            //    ExternalSourceId = source.ExternalSourceId
-            //});
             var response = await _httpClient.GetFromJsonAsync<NewsApiResponse>(source.BaseUrl);
 
             return response?.Articles.Select(a => new NewsArticle

@@ -12,7 +12,7 @@ namespace news_aggregator.application.Interfaces.Services
     {
         Task<IEnumerable<NewsArticle>> GetAllNewsAsync();
         Task<NewsArticle?> GetNewsByIdAsync(int articleId);
-        Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title);
+        Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate);
         Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate);

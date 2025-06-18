@@ -47,9 +47,11 @@ namespace news_aggregator.application
                 EnableSsl = true
             };
 
-            var mailMessage = new System.Net.Mail.MailMessage(_configuration["Smtp:Email"], toEmail, subject, body)
+            var mailMessage = new System.Net.Mail.MailMessage(_configuration["Smtp:Email"], toEmail)
             {
-                IsBodyHtml = false
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = true
             };
 
             await smtpClient.SendMailAsync(mailMessage);

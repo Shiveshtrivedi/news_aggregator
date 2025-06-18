@@ -12,10 +12,16 @@ namespace news_aggregator.application
     public class NotificationConfigService : INotificationConfigService
     {
         private readonly INotificationConfigRepository _notificationConfigRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly INotificationService _notificationService;
+        private readonly INewsQueryService _newsQueryService;
 
-        public NotificationConfigService(INotificationConfigRepository notificationConfigRepository)
+        public NotificationConfigService(INotificationConfigRepository notificationConfigRepository, ICategoryRepository categoryRepository, INotificationService notificationService,INewsQueryService newsQueryService)
         {
             _notificationConfigRepository = notificationConfigRepository;
+            _categoryRepository = categoryRepository;
+            _notificationService = notificationService;
+            _newsQueryService = newsQueryService;
         }
 
         public async Task<NotificationConfig> GetOrCreateForUserAsync(int userId)
@@ -26,6 +32,62 @@ namespace news_aggregator.application
         public async Task UpdateConfigAsync(NotificationConfig config)
         {
             await _notificationConfigRepository.AddOrUpdateAsync(config);
+        }
+
+        public async Task ToggleCategoryAsync(int userId, string category, bool enable)
+        {
+            var config = await _notificationConfigRepository.GetOrCreateAsync(userId);
+
+            if (category.Equals("keywords", StringComparison.OrdinalIgnoreCase))
+            {
+                config.KeywordsEnabled = enable;
+            }
+            else
+            {
+                var isValidCategory = await _categoryRepository
+                    .ExistsAsync(category);
+
+                if (!isValidCategory)
+                    throw new ArgumentException("Invalid category");
+
+                var setting = config.CategorySettings
+                    .FirstOrDefault(s => s.CategoryName.Equals(category, StringComparison.OrdinalIgnoreCase));
+
+                if (setting != null)
+                {
+                    setting.IsEnabled = enable;
+                }
+                else
+                {
+                    config.CategorySettings.Add(new NotificationCategorySetting
+                    {
+                        CategoryName = category,
+                        IsEnabled = enable,
+                        UserId = userId
+                    });
+                }
+            }
+
+            await _notificationConfigRepository.AddOrUpdateAsync(config);
+
+            if (enable && !category.Equals("keywords", StringComparison.OrdinalIgnoreCase))
+            {
+                var newsArticles = await _newsQueryService.GetNewsByCategoryAsync(category);
+                var sb = new StringBuilder();
+
+                sb.AppendLine($"<h3>Latest {category} News</h3>");
+
+                foreach (var article in newsArticles.Take(5))
+                {
+                    sb.AppendLine("<div style=\"margin-bottom: 15px;\">");
+                    sb.AppendLine($"<strong>Title:</strong> {article.Title}<br/>");
+                    sb.AppendLine($"<strong>URL:</strong> <a href=\"{article.Url}\" target=\"_blank\">{article.Url}</a><br/>");
+                    sb.AppendLine("</div>");
+                }
+
+                string htmlMessage = sb.ToString();
+                await _notificationService.NotifyUserAsync(userId, htmlMessage);
+            }
         }
     }
 

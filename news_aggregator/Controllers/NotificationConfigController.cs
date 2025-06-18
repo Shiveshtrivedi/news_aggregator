@@ -28,21 +28,17 @@ namespace news_aggregator.Controllers
         [HttpPost("toggle")]
         public async Task<IActionResult> ToggleCategory(int userId, string category, bool enable)
         {
-            var config = await _notificationConfigService.GetOrCreateForUserAsync(userId);
-
-            switch (category.ToLower())
+            try
             {
-                case "business": config.BusinessEnabled = enable; break;
-                case "entertainment": config.EntertainmentEnabled = enable; break;
-                case "sports": config.SportsEnabled = enable; break;
-                case "technology": config.TechnologyEnabled = enable; break;
-                case "keywords": config.KeywordsEnabled = enable; break;
-                default: return BadRequest("Invalid category");
+                await _notificationConfigService.ToggleCategoryAsync(userId, category, enable);
+                return Ok("Category setting updated successfully.");
             }
-
-            await _notificationConfigService.UpdateConfigAsync(config);
-            return Ok("Updated successfully.");
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
+
 
         [HttpPost("keywords")]
         public async Task<IActionResult> SetKeywords(int userId, [FromBody] List<string> keywords)

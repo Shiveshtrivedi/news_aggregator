@@ -9,8 +9,6 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.Repositories
 {
-   
-
     public class NewsProviderFactory : INewsProviderFactory
     {
         private readonly IServiceProvider _serviceProvider;

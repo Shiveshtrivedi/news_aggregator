@@ -30,9 +30,9 @@ namespace news_aggregator.application
             return await _newsArticleRepository.GetByIdAsync(articleId);
         }
 
-        public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title)
+        public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate)
         {
-            return await _newsArticleRepository.SearchNewsByTitleAsync(title);
+            return await _newsArticleRepository.SearchNewsByTitleAsync(title, startDate, endDate);
         }
 
         public async Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category)

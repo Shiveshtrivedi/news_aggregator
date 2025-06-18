@@ -11,7 +11,7 @@ namespace news_aggregator.application.Interfaces.Repositories
     public interface INewsArticleRepository : IGenericRepository<NewsArticle>
     {
         Task<bool> ExistsAsync(string title, string url);
-        Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title);
+        Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate);
         Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category);
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task DeleteOlderThanAsync(DateTime cutoffDate);

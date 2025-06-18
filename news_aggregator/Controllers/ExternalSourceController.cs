@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
-
-//using news_aggregator.infrastructure.Jobs;
 using news_application.Models;
 
 namespace news_aggregator.Controllers
@@ -67,12 +65,7 @@ namespace news_aggregator.Controllers
         {
             try
             {
-                //if (externalSourceId != source.ExternalSourceId)
-                //{
-                //    return BadRequest("Enter Correct Id");
-                //}
-
-                var updated = await _externalSourceService.UpdateSourceAsync(externalSourceId,source);
+                var updated = await _externalSourceService.UpdateSourceAsync(externalSourceId, source);
                 if (!updated)
                     return NotFound("External source not found.");
 

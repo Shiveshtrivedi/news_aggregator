@@ -11,5 +11,7 @@ namespace news_aggregator.application.Interfaces.Services
     {
         Task<NotificationConfig> GetOrCreateForUserAsync(int userId);
         Task UpdateConfigAsync(NotificationConfig config);
+        Task ToggleCategoryAsync(int userId, string category, bool enable);
+
     }
 }

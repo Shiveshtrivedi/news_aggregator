@@ -42,9 +42,9 @@ namespace news_aggregator.Controllers
         }
 
         [HttpGet("searchNews")]
-        public async Task<IActionResult> SearchByTitle([FromQuery] string title)
+        public async Task<IActionResult> SearchByTitle([FromQuery] string title, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var articles = await _newsQueryService.SearchNewsByTitleAsync(title);
+            var articles = await _newsQueryService.SearchNewsByTitleAsync(title, startDate, endDate);
             return Ok(articles);
         }
 
@@ -76,9 +76,6 @@ namespace news_aggregator.Controllers
             var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
             return Ok(articles);
         }
-
-
-
 
     }
 }
