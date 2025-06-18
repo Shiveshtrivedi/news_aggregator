@@ -11,6 +11,6 @@ namespace news_aggregator.application.Interfaces.Services
     {
         Task<UserDTO> SignupAsync(UserDTO userDTO);
         Task<UserDTO> LoginAsync(LoginDTO loginDto);
-        Task<(string AccessToken, string RefreshToken)> RefreshTokenAsync(string token, string refreshToken);
+        Task LogoutAsync(string token);
     }
 }

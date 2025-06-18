@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using news_aggregator.application;
+using news_aggregator.application.Interfaces.Services;
 using news_application.Models;
 using System;
 using System.Collections.Generic;

@@ -47,37 +47,6 @@ namespace news_aggregator.Controllers
             }
         }
 
-        [HttpPost("addExternalSource")]
-        public async Task<IActionResult> addExternalSource([FromBody] ExternalSource externalSource)
-        {
-            try
-            {
-                await _externalSourceService.AddSourceAsync(externalSource);
-                return Ok("External Sources added successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
-        [HttpPut("{externalSourceId}/updateExternalSource")]
-        public async Task<IActionResult> UpdateExternalSource(int externalSourceId, [FromBody] ExternalSource source)
-        {
-            try
-            {
-                var updated = await _externalSourceService.UpdateSourceAsync(externalSourceId, source);
-                if (!updated)
-                    return NotFound("External source not found.");
-
-                return Ok("Source updated successfully");
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpPost]
         [Route("addExternalSourceApi")]
         public async Task<IActionResult> AddExternalSource([FromBody] CreateExternalSourceDto dto)

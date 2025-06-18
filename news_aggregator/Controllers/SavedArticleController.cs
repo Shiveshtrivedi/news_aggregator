@@ -22,13 +22,6 @@ namespace news_aggregator.Controllers
             return Ok(new { Message = "Article saved successfully." });
         }
 
-        [HttpGet("getAllSavedArticle")]
-        public async Task<ActionResult<IEnumerable<NewsArticle>>> GetAllSavedArticles()
-        {
-            var articles = await _savedArticleService.GetAllSavedArticle();
-            return Ok(articles);
-        }
-
         [HttpGet("{userId}/getArticleFromUserId")]
         public async Task<ActionResult<IEnumerable<NewsArticle>>> GetSavedArticles(int userId)
         {

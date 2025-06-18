@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using news_aggregator.application;
+using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models;
 using news_aggregator.infrastructure.ExternalApi;
 using news_application.Context;
@@ -24,11 +24,12 @@ namespace news_aggregator.infrastructure.Repositories
         {
             _httpClient = httpClient;
         }
+
         public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source, string category = "", string keyword = "")
         {
             if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
             {
-                var allCategories = new[] { "business", "entertainment",  "sports", "technology" };
+                var allCategories = new[] { "business", "entertainment", "sports", "technology" };
                 //"general", "health", "science",
                 var allResults = new List<NewsArticle>();
 
@@ -41,12 +42,27 @@ namespace news_aggregator.infrastructure.Repositories
                 return allResults;
             }
 
+            var request = BuildHttpRequest(source, category, keyword);
+
+            var response = await _httpClient.SendAsync(request);
+            response.EnsureSuccessStatusCode();
+
+            var rawJson = await response.Content.ReadAsStringAsync();
+
+            Console.WriteLine("RAW RESPONSE:");
+            Console.WriteLine(rawJson);
+
+            return source.ExternalSourceName == "conversation"
+                ? ParseAltResponse(rawJson)
+                : ParseNewsApiResponse(rawJson, category);
+        }
+
+        private HttpRequestMessage BuildHttpRequest(ExternalSource source, string category, string keyword)
+        {
             var queryParams = new List<string>();
 
             if (source.ExternalSourceName == "NewsAPI" && !string.IsNullOrWhiteSpace(category))
-            {
                 queryParams.Add($"category={Uri.EscapeDataString(category)}");
-            }
 
             if (!string.IsNullOrWhiteSpace(keyword))
                 queryParams.Add($"q={Uri.EscapeDataString(keyword)}");
@@ -55,9 +71,7 @@ namespace news_aggregator.infrastructure.Repositories
             var request = new HttpRequestMessage(HttpMethod.Get, url);
 
             if (source.AuthLocation == "query" && !string.IsNullOrWhiteSpace(source.AuthParamName))
-            {
                 queryParams.Add($"{source.AuthParamName}={Uri.EscapeDataString(source.ApiKey)}");
-            }
 
             if (queryParams.Any())
             {
@@ -66,76 +80,62 @@ namespace news_aggregator.infrastructure.Repositories
             }
 
             if (source.AuthLocation == "header" && !string.IsNullOrWhiteSpace(source.AuthParamName))
-            {
                 request.Headers.Add(source.AuthParamName, source.ApiKey);
-            }
 
-            var response = await _httpClient.SendAsync(request);
-            response.EnsureSuccessStatusCode();
+            return request;
+        }
 
-            var rawJson = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("RAW RESPONSE:");
-            Console.WriteLine(rawJson);
+        private IEnumerable<NewsArticle> ParseAltResponse(string rawJson)
+        {
+            var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson, options);
 
-            if (source.ExternalSourceName == "conversation")
+            string debugJson = JsonSerializer.Serialize(altResponse, new JsonSerializerOptions { WriteIndented = true });
+
+            Console.WriteLine("altResponse object: ");
+            Console.WriteLine(debugJson);
+
+            return altResponse?.Data?.Select(a => new NewsArticle
             {
-                var options = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
+                Title = a.Title ?? "",
+                Content = a.Snippet ?? "No content available.",
+                PublishedAt = a.Published_At,
+                Source = a.Source ?? "Unknown",
+                Url = a.Url ?? "",
+                Category = ParseCategory(a.Categories?.FirstOrDefault() ?? ""),
+                Likes = 0,
+                Dislikes = 0,
+            }) ?? new List<NewsArticle>();
+        }
 
-                var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson, options);
+        private IEnumerable<NewsArticle> ParseNewsApiResponse(string rawJson, string category)
+        {
+            var result = JsonSerializer.Deserialize<NewsApiResponse>(rawJson);
 
-                string debugJson = JsonSerializer.Serialize(altResponse, new JsonSerializerOptions { WriteIndented = true });
+            string debugJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
 
-                Console.WriteLine("altResponse object: ");
-                Console.WriteLine(debugJson);
+            Console.WriteLine("altResponse object: ");
+            Console.WriteLine(debugJson);
 
-                return altResponse?.Data?.Select(a => new NewsArticle
-                {
-                    Title = a.Title ?? "",
-                    Content = a.Snippet ?? "No content available.",
-                    PublishedAt = a.Published_At,
-                    Source = a.Source ?? "Unknown",
-                    Url = a.Url ?? "",
-                    Category = ParseCategory(a.Categories?.FirstOrDefault() ?? ""),
-                    Likes = 0,
-                    Dislikes = 0,
-                }) ?? new List<NewsArticle>();
-            }
-            else
+            return result?.Articles?.Select(a => new NewsArticle
             {
-                var result = await response.Content.ReadFromJsonAsync<NewsApiResponse>();
-
-                string debugJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
-
-                Console.WriteLine("altResponse object: ");
-                Console.WriteLine(debugJson);
-
-                return result?.Articles?.Select(a => new NewsArticle
-                {
-                    Title = a.Title ?? "",
-                    Content = a.Content ?? "No content available.",
-                    PublishedAt = a.PublishedAt,
-                    Source = a.Source?.Name ?? "Unknown",
-                    Url = a.Url ?? "",
-                    Category = ParseCategory(category),
-                    Likes = 0,
-                    Dislikes = 0,
-                }) ?? new List<NewsArticle>();
-            }
+                Title = a.Title ?? "",
+                Content = a.Content ?? "No content available.",
+                PublishedAt = a.PublishedAt,
+                Source = a.Source?.Name ?? "Unknown",
+                Url = a.Url ?? "",
+                Category = ParseCategory(category),
+                Likes = 0,
+                Dislikes = 0,
+            }) ?? new List<NewsArticle>();
         }
 
         private CategoryType ParseCategory(string category)
         {
             if (Enum.TryParse<CategoryType>(category, true, out var parsedCategory))
-            {
                 return parsedCategory;
-            }
+
             return CategoryType.uncategorized;
         }
-
     }
-
-
 }

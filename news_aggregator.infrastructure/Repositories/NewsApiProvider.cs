@@ -1,4 +1,4 @@
-﻿using news_aggregator.application;
+﻿using news_aggregator.application.Interfaces.Services;
 using news_aggregator.infrastructure.ExternalApi;
 using news_application.Models;
 using Newtonsoft.Json;

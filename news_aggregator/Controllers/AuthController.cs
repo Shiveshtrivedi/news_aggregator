@@ -53,9 +53,9 @@ namespace news_aggregator.Controllers
             {
                 var errors = LoginDtoValidator.Validate(loginDto);
 
-                if(errors.Any())
+                if (errors.Any())
                 {
-                    return BadRequest(new { Errors = errors });
+                    //return BadRequest(new { Errors = errors });
                 }
 
                 var userDto = await _authService.LoginAsync(loginDto);
@@ -70,28 +70,6 @@ namespace news_aggregator.Controllers
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
-            {
-                return StatusCode(500, "Internal server error");
-            }
-        }
-
-        [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
-        {
-            try
-            {
-                var (newAccessToken, newRefreshToken) = await _authService.RefreshTokenAsync(request.AccessToken, request.RefreshToken);
-                return Ok(new
-                {
-                    Token = newAccessToken,
-                    RefreshToken = newRefreshToken
-                });
-            }
-            catch (CustomException ex)
-            {
-                return Unauthorized(new { message = ex.Message });
-            }
-            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }

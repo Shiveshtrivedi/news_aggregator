@@ -71,45 +71,55 @@ namespace news_aggregator.infrastructure.Repositories
 
             if (config == null)
             {
-                var categories = await _context.Categories.ToListAsync();
-
-                config = new NotificationConfig
-                {
-                    UserId = userId,
-                    KeywordsEnabled = true,
-                    CategorySettings = categories.Select(c => new NotificationCategorySetting
-                    {
-                        CategoryName = c.CategoryName,
-                        IsEnabled = true,
-                        UserId = userId
-                    }).ToList()
-                };
-
+                config = await CreateDefaultNotificationConfigAsync(userId);
                 await _context.NotificationConfigs.AddAsync(config);
-                await _context.SaveChangesAsync();
             }
             else
             {
-                var categories = await _context.Categories.ToListAsync();
-
-                foreach (var category in categories)
-                {
-                    if (!config.CategorySettings.Any(cs => cs.CategoryName.ToLower() == category.CategoryName.ToLower()))
-                    {
-                        config.CategorySettings.Add(new NotificationCategorySetting
-                        {
-                            CategoryName = category.CategoryName,
-                            IsEnabled = true,
-                            UserId = userId
-                        });
-                    }
-                }
-
-                await _context.SaveChangesAsync();
+                await EnsureAllCategorySettingsExistAsync(config, userId);
             }
 
+            await _context.SaveChangesAsync();
             return config;
         }
-        
+
+        private async Task<NotificationConfig> CreateDefaultNotificationConfigAsync(int userId)
+        {
+            var categories = await _context.Categories.ToListAsync();
+
+            return new NotificationConfig
+            {
+                UserId = userId,
+                KeywordsEnabled = true,
+                CategorySettings = categories.Select(c => new NotificationCategorySetting
+                {
+                    CategoryName = c.CategoryName,
+                    IsEnabled = true,
+                    UserId = userId
+                }).ToList()
+            };
+        }
+
+        private async Task EnsureAllCategorySettingsExistAsync(NotificationConfig config, int userId)
+        {
+            var categories = await _context.Categories.ToListAsync();
+
+            foreach (var category in categories)
+            {
+                bool exists = config.CategorySettings
+                    .Any(cs => cs.CategoryName.Equals(category.CategoryName, StringComparison.OrdinalIgnoreCase));
+
+                if (!exists)
+                {
+                    config.CategorySettings.Add(new NotificationCategorySetting
+                    {
+                        CategoryName = category.CategoryName,
+                        IsEnabled = true,
+                        UserId = userId
+                    });
+                }
+            }
+        }
+
     }
 }

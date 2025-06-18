@@ -14,6 +14,8 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using news_aggregator.infrastructure.Jobs;
 using news_aggregator.shared.Validation;
 using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using news_aggregator.shared.Authentication;
 
 
 namespace news_aggregator
@@ -97,8 +99,8 @@ namespace news_aggregator
 
             builder.Services.AddScoped<INewsQueryService, NewsQueryService>();
 
-            builder.Services.Configure<NewsApiOptions>(
-                builder.Configuration.GetSection("ExternalApis:NewsApi"));
+            //builder.Services.Configure<NewsApiOptions>(
+            //    builder.Configuration.GetSection("ExternalApis:NewsApi"));
 
             builder.Services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
             builder.Services.AddScoped<ISavedArticleService, SavedArticleService>();
@@ -118,8 +120,10 @@ namespace news_aggregator
             builder.Services.AddHttpClient<NewsApiProvider>();
             builder.Services.AddHttpClient<AltApiProvider>();
             builder.Services.AddScoped<INewsProviderFactory, NewsProviderFactory>();
-
             builder.Services.AddHostedService<NewsFetcherJob>();
+
+            builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 
 

@@ -1,5 +1,4 @@
-﻿using news_aggregator.application;
-using news_application.Models;
+﻿using news_application.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.infrastructure.ExternalApi;
+using news_aggregator.application.Interfaces.Services;
 
 namespace news_aggregator.infrastructure.Repositories
 {

@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\news_aggregator.domain\news_aggregator.domain.csproj" />
+    <ProjectReference Include="..\news_aggregator.shared\news_aggregator.shared.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

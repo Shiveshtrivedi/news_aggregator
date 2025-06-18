@@ -9,7 +9,6 @@ namespace news_aggregator.domain.Models
     public class NewsApiArticle
     {
         public SourceInfo Source { get; set; } = new();
-        public string Author { get; set; } = string.Empty;
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;

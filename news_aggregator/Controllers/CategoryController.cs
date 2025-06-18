@@ -21,32 +21,11 @@ namespace news_aggregator.Controllers
             return Ok(await _categoryService.GetAllAsync());
         }
 
-        [HttpGet("{categoryId}/getCategoryById")]
-        public async Task<IActionResult> GetCategoryById(int categoryId)
-        {
-            var category = await _categoryService.GetByIdAsync(categoryId);
-            return category is null ? NotFound() : Ok(category);
-        }
-
         [HttpPost("addCategory")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto)
         {
             return Ok(await _categoryService.CreateAsync(dto));
         }
 
-
-        [HttpPut("{categoryId}/updateCategory")]
-        public async Task<IActionResult> UpdateCategory(int categoryId, [FromBody] CreateCategoryDto dto)
-        {
-            return Ok(await _categoryService.UpdateAsync(categoryId, dto));
-        }
-
-
-        [HttpDelete("{categoryId}/deleteCategory")]
-        public async Task<IActionResult> Delete(int categoryId)
-        {
-            return Ok(await _categoryService.DeleteAsync(categoryId));
-        }
-            
     }
 }

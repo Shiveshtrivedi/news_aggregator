@@ -47,12 +47,5 @@ namespace news_aggregator.Controllers
             return Ok("Keywords updated.");
         }
 
-        [HttpGet("keywords/{userId}")]
-        public async Task<IActionResult> GetKeywords(int userId)
-        {
-            var keywords = await _userKeywordService.GetKeywordsAsync(userId);
-            return Ok(keywords);
-        }
-
     }
 }

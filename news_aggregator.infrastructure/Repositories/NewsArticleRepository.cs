@@ -21,7 +21,6 @@ namespace news_aggregator.infrastructure.Repositories
             _context = context;
         }
 
-
         public async Task DeleteOlderThanAsync(DateTime cutoffDate)
         {
             var oldArticles = _context.NewsArticles
