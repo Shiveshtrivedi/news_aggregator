@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.Validation;
 using static news_aggregator.application.AuthService;
 
 namespace news_aggregator.Controllers
@@ -23,6 +24,12 @@ namespace news_aggregator.Controllers
         {
             try
             {
+                var errors = SignUpDtoValidator.Validate(userDTO);
+
+                if (errors.Any())
+                {
+                    return BadRequest(new { Errors = errors });
+                }
                 var result = await _authService.SignupAsync(userDTO);
 
                 return Ok(result);
@@ -44,6 +51,13 @@ namespace news_aggregator.Controllers
         {
             try
             {
+                var errors = LoginDtoValidator.Validate(loginDto);
+
+                if(errors.Any())
+                {
+                    return BadRequest(new { Errors = errors });
+                }
+
                 var userDto = await _authService.LoginAsync(loginDto);
                 return Ok(userDto);
             }
@@ -82,8 +96,5 @@ namespace news_aggregator.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
-
-
     }
 }

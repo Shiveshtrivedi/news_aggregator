@@ -18,13 +18,19 @@ namespace news_aggregator.console.Menu
         private readonly IServerService _serverService;
         private readonly ICategoryService _categoryService;
         private readonly INewsService _newsService;
+        private readonly ISavedArticleService _savedArticleService;
+        private readonly ISearchArticleService _searchArticleService;
+        private readonly INotificationService _notificationService;
 
-        public MainMenu(IAuthService authService, IServerService serverService, ICategoryService categoryService, INewsService newsService)
+        public MainMenu(IAuthService authService, IServerService serverService, ICategoryService categoryService, INewsService newsService, ISavedArticleService savedArticleService, ISearchArticleService searchArticleService, INotificationService notificationService)
         {
             _authService = authService;
             _serverService = serverService;
             _categoryService = categoryService;
             _newsService = newsService;
+            _savedArticleService = savedArticleService;
+            _searchArticleService = searchArticleService;
+            _notificationService = notificationService;
         }
 
         private async Task HandleLoginAsync()
@@ -41,14 +47,14 @@ namespace news_aggregator.console.Menu
                 return;
             }
 
-            if (user.Role == 0)
+            if (user.Role == 1)
             {
                 var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService);
                 await adminMenu.Show();
             }
             else
             {
-                var userMenu = new UserMenu(user.UserName, _newsService,_categoryService);
+                var userMenu = new UserMenu(user.UserName, _newsService,_categoryService, _savedArticleService,_searchArticleService,_notificationService);
                 await userMenu.Show();
             }
         }
@@ -71,6 +77,14 @@ namespace news_aggregator.console.Menu
             };
             var success = await _authService.SignUpAsync(userDto);
             Console.WriteLine(success ? "Sign-up successful." : "Sign-up failed.");
+
+            if(success)
+            {
+                Console.WriteLine("Redirecting to login...\n");
+                Console.Clear();
+                await HandleLoginAsync();
+            }
+
         }
         public async Task Show()
         {

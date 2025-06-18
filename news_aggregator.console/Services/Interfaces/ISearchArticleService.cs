@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.console.Services.Interfaces
 {
-    public interface INewsArticleService
+    public interface ISearchArticleService
     {
-        Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime start, DateTime end);
+        Task<List<NewsArticleDto>> SearchArticlesAsync(string query, DateTime? startDate, DateTime? endDate);
     }
 }

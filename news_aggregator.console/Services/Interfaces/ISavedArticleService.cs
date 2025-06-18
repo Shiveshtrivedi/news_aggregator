@@ -9,7 +9,8 @@ namespace news_aggregator.console.Services.Interfaces
 {
     public interface ISavedArticleService
     {
-        Task<List<NewsArticleDto>> GetSavedArticlesAsync(string userName);
+        Task<List<NewsArticleDto>> GetSavedArticlesAsync(int userdId);
+        Task<bool> SaveArticleAsync(int userId, int articleId);
         Task DeleteArticleAsync(int articleId, int userId);
     }
 }

@@ -18,7 +18,7 @@ namespace news_aggregator.console.Services
         {
             _httpClient = clientFactoryWrapper.GetClient();
         }
-        public async Task<UserDto> LoginAsync(string email,string password)
+        public async Task<UserDto> LoginAsync(string email, string password)
         {
             var loginRequest = new { Email = email, Password = password };
 
@@ -26,8 +26,15 @@ namespace news_aggregator.console.Services
 
             if (!response.IsSuccessStatusCode)
                 return null;
-
             var user = await response.Content.ReadFromJsonAsync<UserDto>();
+
+            if (user != null)
+            {
+
+                Session.SetUser(user.UserId, user.UserName, user.Token);
+
+            }
+
             return user;
 
         }

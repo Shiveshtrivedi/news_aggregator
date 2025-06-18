@@ -182,6 +182,7 @@ namespace news_aggregator.application
 
             return new UserDTO
             {
+                UserId = user.UserId,
                 UserName = user.UserName,
                 Email = user.Email,
                 Role = user.Role,

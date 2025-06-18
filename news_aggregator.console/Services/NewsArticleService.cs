@@ -31,11 +31,5 @@ namespace news_aggregator.console.Services
             var articles = await response.Content.ReadFromJsonAsync<List<NewsArticleDto>>();
             return articles ?? new List<NewsArticleDto>();
         }
-
-
-        public Task SaveArticleAsync(string articleId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

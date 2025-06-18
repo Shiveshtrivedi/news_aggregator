@@ -12,6 +12,9 @@ using news_aggregator.infrastructure.Repositories;
 using news_application.Context;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using news_aggregator.infrastructure.Jobs;
+using news_aggregator.shared.Validation;
+using FluentValidation;
+
 
 namespace news_aggregator
 {
@@ -51,6 +54,7 @@ namespace news_aggregator
                     }
                 });
             });
+
 
             var jwtSettings = builder.Configuration.GetSection("Jwt");
             var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);

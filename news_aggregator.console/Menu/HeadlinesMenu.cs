@@ -1,10 +1,10 @@
 ﻿using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
+using news_aggregator.console.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using news_aggregator.console.Http;
 
 namespace news_aggregator.console.Menu
 {
@@ -13,13 +13,14 @@ namespace news_aggregator.console.Menu
         private readonly string _userName;
         private readonly INewsService _newsService;
         private readonly ICategoryService _categoryService;
+        private readonly ISavedArticleService _savedArticleService;
 
-
-        public HeadlinesMenu(string userName, INewsService newsService, ICategoryService categoryService)
+        public HeadlinesMenu(string userName, INewsService newsService, ICategoryService categoryService, ISavedArticleService savedArticleService)
         {
             _userName = userName;
             _newsService = newsService;
             _categoryService = categoryService;
+            _savedArticleService = savedArticleService;
         }
 
         public async Task Show()
@@ -27,13 +28,12 @@ namespace news_aggregator.console.Menu
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine($"Welcome to the News Application, {_userName}! Date: 22-Mar-2025");
+                Console.WriteLine($"Welcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy}");
                 Console.WriteLine($"Time: {DateTime.Now:hh:mmtt}");
                 Console.WriteLine("Please choose the options below:");
                 Console.WriteLine("1. Today");
                 Console.WriteLine("2. Date Range");
                 Console.WriteLine("3. Logout");
-
 
                 Console.Write("Enter your choice: ");
                 string choice = Console.ReadLine()!;
@@ -72,14 +72,15 @@ namespace news_aggregator.console.Menu
                 }
                 else if (choice == "3")
                 {
-                    return; 
+                    Console.WriteLine("Logging out...");
+                    Environment.Exit(0);
+                    return;
                 }
                 else
                 {
                     Console.WriteLine("Invalid choice. Press any key...");
                     Console.ReadKey();
                 }
-
             }
         }
 
@@ -116,26 +117,65 @@ namespace news_aggregator.console.Menu
             var articles = await _newsService.GetNewsByCategoryAndDateRangeAsync(selectedCategory, startDate, endDate);
 
             Console.Clear();
-            Console.WriteLine($"News for {selectedCategory} from {startDate:dd-MMM-yyyy} to {endDate:dd-MMM-yyyy}");
+            Console.WriteLine($"Welcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
+            Console.WriteLine("H E A D L I N E S");
+            Console.WriteLine("1. Back");
+            Console.WriteLine("2. Logout");
+            Console.WriteLine("3. Save Article");
 
             if (articles == null || articles.Count == 0)
             {
-                Console.WriteLine("No news articles found.");
+                Console.WriteLine("\nNo news articles found.");
             }
             else
             {
                 foreach (var article in articles)
                 {
-                    Console.WriteLine($"\nTitle: {article.Title}");
-                    Console.WriteLine($"Published: {article.PublishedAt}");
-                    Console.WriteLine($"Source: {article.Source}");
+                    Console.WriteLine($"\nArticle Id: {article.NewsArticleId}");
+                    Console.WriteLine($"{article.Title}");
+                    Console.WriteLine($"{article.Content?.Substring(0, Math.Min(200, article.Content.Length))}...");
+                    Console.WriteLine($"source: {article.Source}");
                     Console.WriteLine($"URL: {article.Url}");
-                    Console.WriteLine(new string('-', 40));
+                    Console.WriteLine($"{article.Category}: {article.Category}");
+                    Console.WriteLine(new string('-', 50));
                 }
             }
 
-            Console.WriteLine("Press any key to go back...");
-            Console.ReadKey();
+            while (true)
+            {
+                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article): ");
+                string option = Console.ReadLine()!;
+
+                if (option == "1")
+                {
+                    return;      
+                }
+                else if (option == "2")
+                {
+                    Console.WriteLine("Logging out...");
+                    Environment.Exit(0);
+                }
+                else if (option == "3")
+                {
+                    Console.Write("Enter Article Id to save: ");
+                    string articleIdInput = Console.ReadLine()!;
+                    if (int.TryParse(articleIdInput, out int articleId))
+                    {
+                        var result = await _savedArticleService.SaveArticleAsync(Session.UserId, articleId);
+                        Console.WriteLine(result
+                            ? $"Article {articleId} saved successfully."
+                            : $"Failed to save article {articleId}.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Article Id.");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid option. Please choose 1, 2, or 3.");
+                }
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Menu.Interfaces;
+﻿using news_aggregator.console.Http;
+using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -15,14 +16,16 @@ namespace news_aggregator.console.Menu
         private readonly DateTime _endDate;
         private readonly ICategoryService _categoryService;
         private readonly INewsArticleService _newsService;
+        private readonly ISavedArticleService _savedArticleService;
 
-        public HeadlinesCategoryMenu(string userName, DateTime startDate, DateTime endDate, ICategoryService categoryService, INewsArticleService newsService)
+        public HeadlinesCategoryMenu(string userName, DateTime startDate, DateTime endDate, ICategoryService categoryService, INewsArticleService newsService, ISavedArticleService savedArticleService)
         {
             _userName = userName;
             _startDate = startDate;
             _endDate = endDate;
             _categoryService = categoryService;
             _newsService = newsService;
+            _savedArticleService = savedArticleService;
         }
 
         public async Task Show()
@@ -80,8 +83,8 @@ namespace news_aggregator.console.Menu
                 if (action == "2")
                 {
                     Console.Write("Enter article ID to save: ");
-                    var articleId = Console.ReadLine();
-                    await _newsService.SaveArticleAsync(articleId);
+                    var articleId = int.Parse(Console.ReadLine());
+                    await _savedArticleService.SaveArticleAsync(Session.UserId, articleId);
                     Console.WriteLine("Article saved.");
                     Console.ReadKey();
                 }

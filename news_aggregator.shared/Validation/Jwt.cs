@@ -56,7 +56,6 @@ namespace news_aggregator.shared.NewFolder
             }
             catch (Exception ex)
             {
-                //ex.LogException();
                 Console.WriteLine(ex.ToString());
                 return null;
             }

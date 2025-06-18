@@ -1,10 +1,7 @@
-﻿using news_aggregator.console.Models;
+﻿using news_aggregator.console.Http;
+using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http.Json;
 
 namespace news_aggregator.console.Services
 {
@@ -12,9 +9,9 @@ namespace news_aggregator.console.Services
     {
         private readonly HttpClient _httpClient;
 
-        public SavedArticleService(HttpClient httpClient)
+        public SavedArticleService(IHttpClientFactoryWrapper httpClientFactoryWrapper)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactoryWrapper.GetClient();
         }
 
 
@@ -30,9 +27,31 @@ namespace news_aggregator.console.Services
             return;
         }
 
-        public Task<List<NewsArticleDto>> GetSavedArticlesAsync(string userName)
+        public async Task<List<NewsArticleDto>> GetSavedArticlesAsync(int userId)
         {
-            throw new NotImplementedException();
+            var response = await _httpClient.GetAsync($"api/SavedArticle/{userId}/getArticleFromUserId");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<NewsArticleDto>();
+            }
+
+            var articles = await response.Content.ReadFromJsonAsync<List<NewsArticleDto>>();
+            return articles ?? new List<NewsArticleDto>();
         }
+
+        public async Task<bool> SaveArticleAsync(int userId, int articleId)
+        {
+            var dto = new SaveArticleDto
+            {
+                UserId = userId,
+                ArticleId = articleId
+            };
+
+            var response = await _httpClient.PostAsJsonAsync($"api/SavedArticle/{userId}/{articleId}/saveArticle", dto);
+
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }

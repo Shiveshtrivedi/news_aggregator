@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace news_aggregator.console.Menu
 {
     public class UserMenu : IMenu
@@ -13,12 +14,18 @@ namespace news_aggregator.console.Menu
         private readonly string _userName;
         private readonly INewsService _newsService;
         private readonly ICategoryService _categoryService;
+        private readonly ISavedArticleService _savedArticleService;
+        private readonly ISearchArticleService _searchArticleService;
+        private readonly INotificationService _notificationService;
 
-        public UserMenu(string userName,INewsService newsService, ICategoryService categoryService)
+        public UserMenu(string userName,INewsService newsService, ICategoryService categoryService, ISavedArticleService savedArticleService, ISearchArticleService searchArticleService, INotificationService notificationService)
         {
             _userName = userName;
             _newsService = newsService;
             _categoryService = categoryService;
+            _savedArticleService = savedArticleService;
+            _searchArticleService = searchArticleService;
+            _notificationService = notificationService;
         }
         public async Task Show()
         {
@@ -39,18 +46,20 @@ namespace news_aggregator.console.Menu
                 switch (choice)
                 {
                     case "1":
-                        await new HeadlinesMenu(_userName,_newsService,_categoryService).Show();
+                        await new HeadlinesMenu(_userName,_newsService,_categoryService,_savedArticleService).Show();
                         break;
                     case "2":
-                        //await new SavedArticlesMenu(_userName).ShowAsync();
+                        await new SaveArticleMenu(_savedArticleService, _userName).Show();
                         break;
                     case "3":
-                        //await new SearchMenu(_userName).ShowAsync();
+                        await new SearchArticleMenu(_newsService, _savedArticleService,_searchArticleService,_userName).Show();
                         break;
                     case "4":
-                        //await new NotificationMenu(_userName).ShowAsync();
+                        await new NotificationMenu(_notificationService, _userName).Show();
                         break;
                     case "5":
+                        Console.WriteLine("Logging out...");
+                        Environment.Exit(0);
                         return;
                     default:
                         Console.WriteLine("Invalid choice.");

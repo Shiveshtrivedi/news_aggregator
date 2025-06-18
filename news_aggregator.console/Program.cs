@@ -27,9 +27,12 @@ namespace news_aggregator.console
             IServerService serverService = new ServerService(clientFactory);
             ICategoryService categoryService= new CategoryService(clientFactory);
             INewsService newsService = new NewsService(clientFactory);
+            ISavedArticleService savedArticleService = new SavedArticleService(clientFactory);
+            ISearchArticleService searchArticleService = new SearchArticleService(clientFactory);
+            INotificationService notificationService= new NotificationService(clientFactory);
 
             // Start main menu
-            IMenu menu = new MainMenu(authService,serverService,categoryService,newsService);
+            IMenu menu = new MainMenu(authService,serverService,categoryService,newsService,savedArticleService,searchArticleService,notificationService);
             await menu.Show();
 
 
