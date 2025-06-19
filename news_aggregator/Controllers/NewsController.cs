@@ -20,19 +20,19 @@ namespace news_aggregator.Controllers
 
         //[Authorize(Roles = "Admin")]
 
-        //[HttpGet("getNewsByExternalApi")]
-        //public async Task<IActionResult> GetFromExternal()
-        //{
-        //    var articles = await _newsService.FetchAndSaveExternalNewsAsync();
-        //    return Ok(articles);
-        //}
+        [HttpGet("getNewsByExternalApi")]
+        public async Task<IActionResult> GetFromExternal()
+        {
+            var articles = await _newsService.FetchAndSaveExternalNewsAsync();
+            return Ok(articles);
+        }
 
         [HttpGet("searchNews")]
         public async Task<IActionResult> SearchByTitle([FromQuery] string title, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
             var articles = await _newsQueryService.SearchNewsByTitleAsync(title, startDate, endDate);
             return Ok(articles);
-        } 
+        }
 
         [HttpGet("getNewsByDateRange")]
         public async Task<IActionResult> GetNewsByDateRange([FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
@@ -49,11 +49,18 @@ namespace news_aggregator.Controllers
         [HttpGet("getNewsByCategoryAndDateRange")]
         public async Task<IActionResult> GetNewsByCategoryAndDateRange([FromQuery] string category, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
         {
-            if (startDate > endDate)
-                return BadRequest("Start date must be before end date.");
+            try
+            {
+                if (startDate > endDate)
+                    return BadRequest("Start date must be before end date.");
 
-            var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
-            return Ok(articles);
+                var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+                return Ok(articles);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

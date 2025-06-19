@@ -29,13 +29,20 @@ namespace news_aggregator.infrastructure.Repositories
         {
             if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
             {
-                var allCategories = new[] { "business", "entertainment", "sports", "technology" };
-                //"general", "health", "science",
+                var allCategories = new[] { "technology" };
+                //"sports", "general", "health", "science", "technology""business", "entertainment"};
+
                 var allResults = new List<NewsArticle>();
 
                 foreach (var cat in allCategories)
                 {
                     var categoryResults = await GetLatestArticlesAsync(source, cat, keyword);
+
+                    foreach (var article in categoryResults)
+                    {
+                        article.Category = ParseCategory(cat); 
+                    }
+
                     allResults.AddRange(categoryResults);
                 }
 
@@ -52,9 +59,8 @@ namespace news_aggregator.infrastructure.Repositories
             Console.WriteLine("RAW RESPONSE:");
             Console.WriteLine(rawJson);
 
-            return source.ExternalSourceName == "conversation"
-                ? ParseAltResponse(rawJson)
-                : ParseNewsApiResponse(rawJson, category);
+            return ParseNewsApiResponse(rawJson, category);
+
         }
 
         private HttpRequestMessage BuildHttpRequest(ExternalSource source, string category, string keyword)
@@ -88,7 +94,7 @@ namespace news_aggregator.infrastructure.Repositories
         private IEnumerable<NewsArticle> ParseAltResponse(string rawJson)
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var altResponse = JsonSerializer.Deserialize<AltNewsApiResponse>(rawJson, options);
+            var altResponse = JsonSerializer.Deserialize<TheNewsApiResponse>(rawJson, options);
 
             string debugJson = JsonSerializer.Serialize(altResponse, new JsonSerializerOptions { WriteIndented = true });
 
@@ -110,7 +116,10 @@ namespace news_aggregator.infrastructure.Repositories
 
         private IEnumerable<NewsArticle> ParseNewsApiResponse(string rawJson, string category)
         {
-            var result = JsonSerializer.Deserialize<NewsApiResponse>(rawJson);
+            var result = JsonSerializer.Deserialize<NewsApiResponse>(rawJson, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
             string debugJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
 

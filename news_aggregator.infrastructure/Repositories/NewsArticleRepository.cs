@@ -65,19 +65,47 @@ namespace news_aggregator.infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate)
+        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(
+    string category, DateTime? startDate, DateTime? endDate)
         {
             if (!Enum.TryParse<CategoryType>(category, true, out var categoryEnum))
-                throw new ArgumentException("Invalid category.");
-            var articles = await _context.NewsArticles.ToListAsync();  
-            return articles.Select(n => new NewsArticleDto
+                throw new ArgumentException($"Invalid category: {category}");
+
+            bool isStartNull = !startDate.HasValue || startDate.Value == DateTime.MinValue;
+            bool isEndNull = !endDate.HasValue || endDate.Value == DateTime.MinValue;
+
+            var query = _context.NewsArticles
+                .Where(n => n.Category == categoryEnum);
+
+            if (!isStartNull && !isEndNull)
             {
-                NewsArticleId = n.NewsArticleId,
-                Title = n.Title,
-                Content = n.Content,
-                Category = n.Category.ToString(),     
-                PublishedAt = n.PublishedAt
-            }).ToList();
+                var start = startDate.Value.Date;
+                var end = endDate.Value.Date.AddDays(1);
+                query = query.Where(n => n.PublishedAt >= start && n.PublishedAt < end);
+            }
+            else if (!isStartNull)
+            {
+                var start = startDate.Value.Date;
+                var end = start.AddDays(1);
+                query = query.Where(n => n.PublishedAt >= start && n.PublishedAt < end);
+            }
+            else if (!isEndNull)
+            {
+                var end = endDate.Value.Date.AddDays(1);
+                query = query.Where(n => n.PublishedAt < end);
+            }
+            var articles = await query
+                .Select(n => new NewsArticleDto
+                {
+                    NewsArticleId = n.NewsArticleId,
+                    Title = n.Title,
+                    Content = n.Content,
+                    Category = n.Category.ToString(),
+                    PublishedAt = n.PublishedAt
+                })
+                .ToListAsync();
+
+            return articles;
         }
 
     }

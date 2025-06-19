@@ -18,22 +18,44 @@ namespace news_aggregator.Controllers
         [HttpPost("{userId}/{articleId}/saveArticle")]
         public async Task<IActionResult> SaveArticle(int userId, int articleId)
         {
-            await _savedArticleService.SaveArticleAsync(userId, articleId);
-            return Ok(new { Message = "Article saved successfully." });
+            try
+            {
+                await _savedArticleService.SaveArticleAsync(userId, articleId);
+                return Ok(new { Message = "Article saved successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
         }
 
         [HttpGet("{userId}/getArticleFromUserId")]
         public async Task<ActionResult<IEnumerable<NewsArticle>>> GetSavedArticles(int userId)
         {
-            var articles = await _savedArticleService.GetSavedArticlesByUserIdAsync(userId);
-            return Ok(articles);
+            try
+            {
+                var articles = await _savedArticleService.GetSavedArticlesByUserIdAsync(userId);
+                return Ok(articles);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{userId}/{articleId}/unsaveArticle")]
         public async Task<IActionResult> DeleteSavedArticle(int userId, int articleId)
         {
-            await _savedArticleService.DeleteSavedArticleAsync(userId, articleId);
-            return Ok(new { Message = "Saved article deleted successfully." });
+            try
+            {
+                await _savedArticleService.DeleteSavedArticleAsync(userId, articleId);
+                return Ok(new { Message = "Saved article deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

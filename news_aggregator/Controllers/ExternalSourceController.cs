@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.Validation;
 using news_application.Models;
 
 namespace news_aggregator.Controllers
@@ -51,18 +52,38 @@ namespace news_aggregator.Controllers
         [Route("addExternalSourceApi")]
         public async Task<IActionResult> AddExternalSource([FromBody] CreateExternalSourceDto dto)
         {
-            await _externalSourceService.AddExternalSourceApi(dto);
-            return Ok("External source added successfully.");
+            try
+            {
+                await _externalSourceService.AddExternalSourceApi(dto);
+                return Ok("External source added successfully.");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPatch("{externalSourceId}")]
         public async Task<IActionResult> UpdatePartial(int externalSourceId, [FromBody] UpdateExternalSourceDto dto)
         {
-            var result = await _externalSourceService.UpdatePartialAsync(externalSourceId, dto);
-            if (!result)
-                return NotFound("External Source not found.");
+            try
+            {
+                var result = await _externalSourceService.UpdatePartialAsync(externalSourceId, dto);
+                if (!result)
+                    return NotFound("External Source not found.");
 
-            return Ok("Updated successfully.");
+                return Ok("Updated successfully.");
+            }
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
 

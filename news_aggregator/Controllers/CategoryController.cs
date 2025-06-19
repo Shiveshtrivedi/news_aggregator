@@ -18,13 +18,28 @@ namespace news_aggregator.Controllers
         [HttpGet("getAllCategory")]
         public async Task<IActionResult> GetAllCategory()
         {
+            try
+            {
             return Ok(await _categoryService.GetAllAsync());
+
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("addCategory")]
         public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryDto dto)
         {
-            return Ok(await _categoryService.CreateAsync(dto));
+            try
+            {
+               return Ok(await _categoryService.CreateAsync(dto));
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

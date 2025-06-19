@@ -45,7 +45,7 @@ namespace news_aggregator.application
             return await _newsArticleRepository.GetNewsByDateRangeAsync(startDate, endDate);
         }
 
-        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate)
+        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate)
         {
             return await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
         }

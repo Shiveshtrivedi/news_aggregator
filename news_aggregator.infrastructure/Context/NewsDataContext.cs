@@ -30,8 +30,8 @@ namespace news_application.Context
                 new User
                 {
                     UserId = 1,
-                    UserName = "admin",
-                    Email = "admin@intimetec.com",
+                    UserName = "shivesh",
+                    Email = "shivesh.trivedi@intimetec.com",
                     Password = "Admin@123",
                     Role = UserRole.Admin,
                     IsTokenActive = false,
@@ -41,14 +41,41 @@ namespace news_application.Context
                 new User
                 {
                     UserId = 2,
-                    UserName = "public_user",
-                    Email = "user@example.com",
+                    UserName = "shivesh",
+                    Email = "shiveshtrivedi159@gmail.com",
                     Password = "User@123",
                     Role = UserRole.User,
                     IsTokenActive = false,
                     RefreshToken = null,
                     RefreshTokenExpiryTime = null
                 }
+            );
+            modelBuilder.Entity<Category>().HasData(
+                new Category
+                {
+                    CategoryId = 1,
+                    CategoryName = "business"
+                },
+                new Category
+                {
+                    CategoryId = 2,
+                    CategoryName = "entertainment"
+                },
+                 new Category
+                 {
+                     CategoryId = 3,
+                     CategoryName = "sports"
+                 },
+                  new Category
+                  {
+                      CategoryId = 4,
+                      CategoryName = "uncategorized"
+                  },
+                  new Category
+                  {
+                      CategoryId = 5,
+                      CategoryName = "technology"
+                  }
             );
 
         }

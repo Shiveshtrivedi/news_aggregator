@@ -2,10 +2,11 @@
 {
     public enum CategoryType
     {
-        business,
-        entertainment,
-        sports,
-        technology,
-        uncategorized
+        business=1,
+        entertainment=2,
+        sports=3,
+        uncategorized=4,
+        technology=5,
+        general=6
     }
 }

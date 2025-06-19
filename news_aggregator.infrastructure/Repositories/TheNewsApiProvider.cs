@@ -10,11 +10,11 @@ using news_aggregator.application.Interfaces.Services;
 
 namespace news_aggregator.infrastructure.Repositories
 {
-    public class AltApiProvider : INewsProvider
+    public class TheNewsApiProvider : INewsProvider
     {
         private readonly HttpClient _httpClient;
 
-        public AltApiProvider(HttpClient httpClient)
+        public TheNewsApiProvider(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
@@ -22,7 +22,7 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<IEnumerable<NewsArticle>> FetchArticlesAsync(ExternalSource source)
         {
             var response = await _httpClient.GetStringAsync(source.BaseUrl);
-            var result = JsonConvert.DeserializeObject<AltNewsApiResponse>(response);
+            var result = JsonConvert.DeserializeObject<TheNewsApiResponse>(response);
 
             return result.Data.Select(a => new NewsArticle
             {

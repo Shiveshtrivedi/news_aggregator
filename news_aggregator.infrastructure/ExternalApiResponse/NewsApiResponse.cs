@@ -11,7 +11,7 @@ namespace news_aggregator.infrastructure.ExternalApi
     {
         public string Status { get; set; } = string.Empty;
         public int TotalResults { get; set; }
-        public List<NewsApiArticle> Articles { get; set; } = new();
+        public List<NewsApiArticle> Articles { get; set; }
     }
 
 }

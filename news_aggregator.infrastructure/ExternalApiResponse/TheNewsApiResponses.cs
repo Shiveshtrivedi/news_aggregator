@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.ExternalApi
 {
-    public class AltNewsApiResponse
+    public class TheNewsApiResponse
     {
         [JsonPropertyName("meta")]
         public MetaData Meta { get; set; }
         [JsonPropertyName("data")]
-        public List<AltNewsArticle> Data { get; set; }
+        public List<TheNewsArticle> Data { get; set; }
     }
 
     public class MetaData
@@ -23,7 +23,7 @@ namespace news_aggregator.infrastructure.ExternalApi
         public int Page { get; set; }
     }
 
-    public class AltNewsArticle
+    public class TheNewsArticle
     {
         [JsonPropertyName("uuid")]
         public string Uuid { get; set; }

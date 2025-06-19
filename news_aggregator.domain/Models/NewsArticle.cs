@@ -1,4 +1,5 @@
 ﻿using news_application.Enum;
+using System.Text.Json.Serialization;
 
 namespace news_application.Models
 {
@@ -17,6 +18,7 @@ namespace news_application.Models
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public int? ExternalSourceId { get; set; }
+        [JsonIgnore]
         public ExternalSource? ExternalSource { get; set; }
     }
 }

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomExceptions;
 using news_aggregator.shared.Validation;
 using static news_aggregator.application.AuthService;
 
@@ -34,6 +36,10 @@ namespace news_aggregator.Controllers
 
                 return Ok(result);
             }
+            catch (UserAlreadyExistsException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
                 return BadRequest(new
@@ -43,30 +49,22 @@ namespace news_aggregator.Controllers
             }
         }
 
-
-
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDto)
         {
             try
             {
-                var errors = LoginDtoValidator.Validate(loginDto);
-
-                if (errors.Any())
-                {
-                }
-
                 var userDto = await _authService.LoginAsync(loginDto);
                 return Ok(userDto);
             }
-            catch (UnauthorizedAccessException ex)
+            catch (InvalidCredentialsException ex)
             {
-                return Unauthorized(ex.Message);
+                return Unauthorized(new { message = ex.Message });
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { message = ex.Message });
             }
             catch (Exception ex)
             {
@@ -89,9 +87,9 @@ namespace news_aggregator.Controllers
                 await _authService.LogoutAsync(token);
                 return Ok(new { message = "Logout successful" });
             }
-            catch (CustomException ex)
+            catch (UserNotFoundException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception)
             {

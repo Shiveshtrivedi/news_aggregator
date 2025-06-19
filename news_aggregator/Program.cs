@@ -16,6 +16,7 @@ using news_aggregator.shared.Validation;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using news_aggregator.shared.Authentication;
+using System.Text.Json.Serialization;
 
 
 namespace news_aggregator
@@ -82,6 +83,13 @@ namespace news_aggregator
             builder.Services.AddDbContext<NewsDataContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
+
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 
@@ -118,7 +126,7 @@ namespace news_aggregator
             builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             builder.Services.AddHttpClient<NewsApiProvider>();
-            builder.Services.AddHttpClient<AltApiProvider>();
+            builder.Services.AddHttpClient<TheNewsApiProvider>();
             builder.Services.AddScoped<INewsProviderFactory, NewsProviderFactory>();
             builder.Services.AddHostedService<NewsFetcherJob>();
 

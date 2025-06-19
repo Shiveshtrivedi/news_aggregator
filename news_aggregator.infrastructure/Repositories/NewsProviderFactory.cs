@@ -23,7 +23,7 @@ namespace news_aggregator.infrastructure.Repositories
             return sourceName.ToLower() switch
             {
                 "newsapi" => _serviceProvider.GetRequiredService<NewsApiProvider>(),
-                "conversation" => _serviceProvider.GetRequiredService<AltApiProvider>(),
+                "conversation" => _serviceProvider.GetRequiredService<TheNewsApiProvider>(),
                 _ => throw new NotSupportedException($"No provider configured for source: {sourceName}")
             };
         }

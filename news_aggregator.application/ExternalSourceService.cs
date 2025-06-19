@@ -1,10 +1,12 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.Validation;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,9 +28,12 @@ namespace news_aggregator.application
             return sources;
         }
 
-        public Task<ExternalSource> GetSourceByIdAsync(int externalSourceId)
+        public async Task<ExternalSource> GetSourceByIdAsync(int externalSourceId)
         {
-            var source = _repository.GetByIdAsync(externalSourceId);
+            var source = await _repository.GetByIdAsync(externalSourceId);
+            if (source == null)
+                throw new CustomException("External source not found.", (int)HttpStatusCode.NotFound);
+
             return source;
         }
 
@@ -48,7 +53,12 @@ namespace news_aggregator.application
 
         public async Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto)
         {
-            return await _repository.UpdatePartialAsync(id, dto);
+            var updated = await _repository.UpdatePartialAsync(id, dto);
+
+            if (!updated)
+                throw new CustomException("Update failed. Source not found or invalid update.", (int)HttpStatusCode.NotFound);
+
+            return true;
         }
 
     }

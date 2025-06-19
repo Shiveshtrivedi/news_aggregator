@@ -7,7 +7,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class NotificationConfigController : ControllerBase 
+    public class NotificationConfigController : ControllerBase
     {
         private readonly INotificationConfigService _notificationConfigService;
         private readonly IUserKeywordService _userKeywordService;
@@ -21,8 +21,15 @@ namespace news_aggregator.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetConfig(int userId)
         {
-            var config = await _notificationConfigService.GetOrCreateForUserAsync(userId);
-            return Ok(config);
+            try
+            {
+                var config = await _notificationConfigService.GetOrCreateForUserAsync(userId);
+                return Ok(config);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("toggle")]
@@ -43,8 +50,15 @@ namespace news_aggregator.Controllers
         [HttpPost("keywords")]
         public async Task<IActionResult> SetKeywords(int userId, [FromBody] List<string> keywords)
         {
-            await _userKeywordService.SetKeywordsAsync(userId, keywords);
-            return Ok("Keywords updated.");
+            try
+            {
+                await _userKeywordService.SetKeywordsAsync(userId, keywords);
+                return Ok("Keywords updated.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
     }

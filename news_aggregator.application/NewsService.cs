@@ -37,29 +37,8 @@ namespace news_aggregator.application
             {
                 try
                 {
-                    var provider = _newsProviderFactory.GetProvider(source.ExternalSourceName);
-                    var articles = await _externalNewsClient.GetLatestArticlesAsync(source);
-
-                    foreach (var article in articles)
-                    {
-                        if (string.IsNullOrWhiteSpace(article.Content))
-                        {
-                            article.Content = "No content available.";
-                        }
-
-                        article.ExternalSourceId = source.ExternalSourceId;
-
-                        bool exists = await _newsArticleRepository.ExistsAsync(article.Title, article.Url);
-
-                        if (!exists)
-                        {
-                            await _newsArticleRepository.AddAsync(article);
-                        }
-                    }
-
-                    source.LastAccessed = DateTime.UtcNow;
-                    await _externalSourceRepository.UpdateAsync(source.ExternalSourceId, source);
-
+                    var articles = await FetchArticlesAsync(source);
+                    await SaveArticlesAsync(source, articles);
                     allArticles.AddRange(articles);
                 }
                 catch (Exception ex)
@@ -69,6 +48,40 @@ namespace news_aggregator.application
             }
 
             return allArticles;
+        }
+
+        private async Task<List<NewsArticle>> FetchArticlesAsync(ExternalSource source)
+        {
+            var provider = _newsProviderFactory.GetProvider(source.ExternalSourceName);
+            var articles = (await _externalNewsClient.GetLatestArticlesAsync(source)).ToList();
+
+            foreach (var article in articles)
+            {
+                if (string.IsNullOrWhiteSpace(article.Content))
+                {
+                    article.Content = "No content available.";
+                }
+
+                article.ExternalSourceId = source.ExternalSourceId;
+            }
+
+            return articles;
+        }
+
+        private async Task SaveArticlesAsync(ExternalSource source, List<NewsArticle> articles)
+        {
+            foreach (var article in articles)
+            {
+                bool exists = await _newsArticleRepository.ExistsAsync(article.Title, article.Url);
+
+                if (!exists)
+                {
+                    await _newsArticleRepository.AddAsync(article);
+                }
+            }
+
+            source.LastAccessed = DateTime.UtcNow;
+            await _externalSourceRepository.UpdateAsync(source.ExternalSourceId, source);
         }
     }
 }

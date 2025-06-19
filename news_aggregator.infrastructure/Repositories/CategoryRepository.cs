@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using news_aggregator.application.Interfaces.Repositories;
+using news_aggregator.shared.Validation;
 using news_application.Context;
 using news_application.Models;
 using System;

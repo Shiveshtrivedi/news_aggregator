@@ -11,6 +11,8 @@ using System.Text;
 using BCr = BCrypt.Net;
 using news_aggregator.shared.Authentication;
 using news_aggregator.shared.Validation;
+using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomExceptions;
 
 
 namespace news_aggregator.application
@@ -33,7 +35,7 @@ namespace news_aggregator.application
         {
             var existingUser = await _userRepository.GetByEmailAsync(userDTO.Email);
             if (existingUser != null)
-                throw new Exception("User already exists.");
+                throw new UserAlreadyExistsException();
 
             if (userDTO.Role != UserRole.Admin && userDTO.Role != UserRole.User)
                 throw new ArgumentException("Invalid role value. Use 0 for Admin or 1 for User.");
@@ -67,7 +69,7 @@ namespace news_aggregator.application
             var user = await _userRepository.GetByEmailAsync(loginDto.Email);
 
             if (user == null || !_passwordHasher.VerifyPassword(loginDto.Password, user.Password))
-                throw new UnauthorizedAccessException("Invalid email or password.");
+                throw new InvalidCredentialsException();
 
             var token = _jwtService.GenerateJwtToken(user);
 
@@ -89,7 +91,7 @@ namespace news_aggregator.application
             var userId = principal?.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
             if (userId == null)
-                throw new CustomException("Invalid token", (int)HttpStatusCode.BadRequest);
+                throw new UserNotFoundException();
 
             var user = await _userRepository.GetByIdAsync(int.Parse(userId));
             user.IsTokenActive = false;
