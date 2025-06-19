@@ -1,11 +1,6 @@
 ﻿using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu
 {
@@ -42,15 +37,7 @@ namespace news_aggregator.console.Menu
             string endDateInput = Console.ReadLine();
             DateTime? endDate = DateTime.TryParse(endDateInput, out DateTime tempEnd) ? tempEnd : null;
 
-            //Console.Write("Sort by (1. Likes, 2. Dislikes, press Enter to skip): ");
-            //string sortOption = Console.ReadLine();
-
             var articles = await _searchArticleService.SearchArticlesAsync(query, startDate, endDate);
-
-            //if (sortOption == "1")
-            //    articles = articles.OrderByDescending(a => a.Likes).ToList();
-            //else if (sortOption == "2")
-            //    articles = articles.OrderByDescending(a => a.Dislikes).ToList();
 
             Console.Clear();
             Console.WriteLine($"Welcome to the News Application, {_userName}!");
@@ -67,7 +54,6 @@ namespace news_aggregator.console.Menu
                 Console.WriteLine($"source : {article.Source}");
                 Console.WriteLine($"URL: {article.Url}");
                 Console.WriteLine($"Category: {article.Category}");
-                //Console.WriteLine($"Likes: {article.Likes}, Dislikes: {article.Dislikes}");
             }
 
             while (true)
@@ -80,9 +66,8 @@ namespace news_aggregator.console.Menu
                     case "1":
                         return;
                     case "2":
-                        Console.WriteLine("Logging out...");
-                        Environment.Exit(0);
-                        break;
+                        Session.Logout();
+                        return;
                     case "3":
                         Console.Write("Enter Article Id to save: ");
                         if (int.TryParse(Console.ReadLine(), out int articleId))
