@@ -70,18 +70,5 @@ namespace news_aggregator.application
 
             return allArticles;
         }
-
-        public async Task<IEnumerable<NewsArticle>> FetchExternalNewsAsync()
-        {
-            var sources = await _externalSourceRepository.GetAllAsync();
-            var firstActiveSource = sources.FirstOrDefault(s => s.IsActive);
-
-            if (firstActiveSource == null)
-            {
-                return Enumerable.Empty<NewsArticle>();
-            }
-
-            return await _externalNewsClient.GetLatestArticlesAsync(firstActiveSource);
-        }
     }
 }

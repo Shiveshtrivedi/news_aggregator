@@ -19,15 +19,6 @@ namespace news_aggregator.application
             _repository = repository;
         }
 
-        public async Task AddSourceAsync(ExternalSource source)
-        {
-            await _repository.AddAsync(source);
-        }
-
-        public async Task DeleteSourceAsync(int externalSourceId)
-        {
-            await _repository.DeleteAsync(externalSourceId);
-        }
 
         public Task<IEnumerable<ExternalSource>> GetAllSourcesAsync()
         {
@@ -39,11 +30,6 @@ namespace news_aggregator.application
         {
             var source = _repository.GetByIdAsync(externalSourceId);
             return source;
-        }
-
-        public async Task<bool> UpdateSourceAsync(int id, ExternalSource source)
-        {
-            return await _repository.UpdateAsync(id, source);
         }
 
         public async Task AddExternalSourceApi(CreateExternalSourceDto dto)

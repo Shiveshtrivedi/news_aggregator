@@ -23,10 +23,6 @@ namespace news_aggregator.application
             await _savedArticleRepository.SaveArticleAsync(userId, newsArticleId);
         }
 
-        public async Task<IEnumerable<NewsArticle>> GetAllSavedArticle()
-        {
-            return await _savedArticleRepository.GetAllSavedArticlesAsync();
-        }
         public async Task<IEnumerable<NewsArticle>> GetSavedArticlesByUserIdAsync(int userId)
         {
             return await _savedArticleRepository.GetSavedArticlesByUserIdAsync(userId);

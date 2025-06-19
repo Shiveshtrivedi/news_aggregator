@@ -1,13 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using news_aggregator.console.Http;
+using news_aggregator.console.Menu.Handler;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services;
 using news_aggregator.console.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu
@@ -21,8 +19,16 @@ namespace news_aggregator.console.Menu
         private readonly ISavedArticleService _savedArticleService;
         private readonly ISearchArticleService _searchArticleService;
         private readonly INotificationService _notificationService;
+        private readonly AuthHandler _authHandler;
 
-        public MainMenu(IAuthService authService, IServerService serverService, ICategoryService categoryService, INewsService newsService, ISavedArticleService savedArticleService, ISearchArticleService searchArticleService, INotificationService notificationService)
+        public MainMenu(
+            IAuthService authService,
+            IServerService serverService,
+            ICategoryService categoryService,
+            INewsService newsService,
+            ISavedArticleService savedArticleService,
+            ISearchArticleService searchArticleService,
+            INotificationService notificationService)
         {
             _authService = authService;
             _serverService = serverService;
@@ -31,96 +37,77 @@ namespace news_aggregator.console.Menu
             _savedArticleService = savedArticleService;
             _searchArticleService = searchArticleService;
             _notificationService = notificationService;
+
+            _authHandler = new AuthHandler(
+                _authService,
+                _serverService,
+                _categoryService,
+                _newsService,
+                _savedArticleService,
+                _searchArticleService,
+                _notificationService
+            );
         }
 
-        private async Task HandleLoginAsync()
-        {
-            Console.Write("Email: ");
-            string email = Console.ReadLine()!;
-            Console.Write("Password: ");
-            string password = Console.ReadLine()!;
-
-            var user = await _authService.LoginAsync(email, password);
-            if (user == null)
-            {
-                Console.WriteLine("Login failed.");
-                return;
-            }
-
-            if (user.Role == 1)
-            {
-                var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService);
-                await adminMenu.Show();
-            }
-            else
-            {
-                var userMenu = new UserMenu(user.UserName, _newsService,_categoryService, _savedArticleService,_searchArticleService,_notificationService);
-                await userMenu.Show();
-            }
-        }
-
-        private async Task HandleSignUpAsync()
-        {
-            Console.Write("Name: ");
-            string name = Console.ReadLine()!;
-            Console.Write("Email: ");
-            string email = Console.ReadLine()!;
-            Console.Write("Password: ");
-            string password = Console.ReadLine()!;
-
-
-            var userDto = new UserDto
-            {
-                UserName = name,
-                Email = email,
-                Password = password
-            };
-            var success = await _authService.SignUpAsync(userDto);
-            Console.WriteLine(success ? "Sign-up successful." : "Sign-up failed.");
-
-            if(success)
-            {
-                Console.WriteLine("Redirecting to login...\n");
-                Console.Clear();
-                await HandleLoginAsync();
-            }
-
-        }
         public async Task Show()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                                                        .AddJsonFile("appsettings.json")
-                                                        .Build();
+                .AddJsonFile("appsettings.json")
+                .Build();
 
             IHttpClientFactoryWrapper clientFactoryWrapper = new HttpClientFactory(configuration);
 
-            Console.Clear();
-            Console.WriteLine("Welcome to the News Aggregator application. Please choose the options below.");
-            Console.WriteLine("1. Login");
-            Console.WriteLine("2. Sign up");
-            Console.WriteLine("3. Exit");
-            Console.Write("Enter your choice: ");
+            bool exit = false;
 
-            var choice = Console.ReadLine();
-            IAuthService authService = new AuthService(clientFactoryWrapper);
-
-            switch (choice)
+            while (!exit)
             {
-                case "1":
-                    await HandleLoginAsync();
-                    break;
-                case "2":
-                    await HandleSignUpAsync();
-                    break;
-                case "3":
-                    return;
-                default:
-                    Console.WriteLine("Invalid option. Press any key to continue...");
-                    Console.ReadKey();
-                    break;
+                Session.Reset();
+
+                Console.Clear();
+                Console.WriteLine("Welcome to the News Aggregator application. Please choose the options below.");
+                Console.WriteLine("1. Login");
+                Console.WriteLine("2. Sign up");
+                Console.WriteLine("3. Exit");
+                Console.Write("Enter your choice: ");
+
+                var choice = Console.ReadLine();
+
+                switch (choice)
+                {
+                    case "1":
+                        await _authHandler.HandleLoginAsync();
+                        break;
+
+                    case "2":
+                        await _authHandler.HandleSignUpAsync();
+                        break;
+
+                    case "3":
+                        exit = true;
+                        break;
+
+                    default:
+                        Console.WriteLine("Invalid option. Press any key to continue...");
+                        Console.ReadKey();
+                        break;
+                }
+
+                if (Session.IsLogoutRequested)
+                {
+                    Session.Clear();
+                    Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
+                    await Task.Delay(1000);
+                    continue;
+                }
+
+                if (!exit)
+                {
+                    Console.WriteLine("Press Enter to continue...");
+                    Console.ReadLine();
+                }
             }
-            Console.WriteLine("Press Enter to continue...");
-            Console.ReadLine();
+
+            Console.WriteLine("Thank you for using the News Aggregator. Goodbye!");
         }
     }
 }

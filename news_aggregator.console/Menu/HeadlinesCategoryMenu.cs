@@ -90,7 +90,8 @@ namespace news_aggregator.console.Menu
                 }
                 else if (action == "3")
                 {
-                    Environment.Exit(0);
+                    Session.Logout();
+                    return;
                 }
 
             }

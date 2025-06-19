@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using news_aggregator.console.Http;
+using news_aggregator.console.Menu.Handler;
 
 namespace news_aggregator.console.Menu
 {
@@ -25,6 +26,9 @@ namespace news_aggregator.console.Menu
 
         public async Task Show()
         {
+            var categorySelector = new CategorySelector(_categoryService);
+            var articleHandler = new ArticleHandler(_userName, _newsService, _savedArticleService);
+
             while (true)
             {
                 Console.Clear();
@@ -41,7 +45,7 @@ namespace news_aggregator.console.Menu
                 if (choice == "1")
                 {
                     DateTime today = DateTime.Today;
-                    await ShowCategoriesAndArticlesAsync(today, today);
+                    await ShowCategoriesAndArticlesAsync(today, today, categorySelector, articleHandler);
                 }
                 else if (choice == "2")
                 {
@@ -68,12 +72,11 @@ namespace news_aggregator.console.Menu
                         continue;
                     }
 
-                    await ShowCategoriesAndArticlesAsync(start, end);
+                    await ShowCategoriesAndArticlesAsync(start, end, categorySelector, articleHandler);
                 }
                 else if (choice == "3")
                 {
-                    Console.WriteLine("Logging out...");
-                    Environment.Exit(0);
+                    Session.Logout();
                     return;
                 }
                 else
@@ -84,98 +87,17 @@ namespace news_aggregator.console.Menu
             }
         }
 
-        private async Task ShowCategoriesAndArticlesAsync(DateTime startDate, DateTime endDate)
+        private async Task ShowCategoriesAndArticlesAsync(DateTime startDate, DateTime endDate, CategorySelector selector, ArticleHandler handler)
         {
             Console.Clear();
             Console.WriteLine($"Welcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy}");
             Console.WriteLine($"Time: {DateTime.Now:hh:mmtt}");
             Console.WriteLine("Please choose the category below for Headlines:");
 
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            var category = await selector.SelectCategoryAsync();
+            if (category == null) return;
 
-            if (categories == null || categories.Count == 0)
-            {
-                Console.WriteLine("No categories found.");
-                Console.ReadKey();
-                return;
-            }
-
-            for (int i = 0; i < categories.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {categories[i].Name}");
-            }
-
-            Console.Write("Enter category number: ");
-            if (!int.TryParse(Console.ReadLine(), out int selectedIndex) || selectedIndex < 1 || selectedIndex > categories.Count)
-            {
-                Console.WriteLine("Invalid category selection.");
-                Console.ReadKey();
-                return;
-            }
-
-            string selectedCategory = categories[selectedIndex - 1].Name;
-            var articles = await _newsService.GetNewsByCategoryAndDateRangeAsync(selectedCategory, startDate, endDate);
-
-            Console.Clear();
-            Console.WriteLine($"Welcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
-            Console.WriteLine("H E A D L I N E S");
-            Console.WriteLine("1. Back");
-            Console.WriteLine("2. Logout");
-            Console.WriteLine("3. Save Article");
-
-            if (articles == null || articles.Count == 0)
-            {
-                Console.WriteLine("\nNo news articles found.");
-            }
-            else
-            {
-                foreach (var article in articles)
-                {
-                    Console.WriteLine($"\nArticle Id: {article.NewsArticleId}");
-                    Console.WriteLine($"{article.Title}");
-                    Console.WriteLine($"{article.Content?.Substring(0, Math.Min(200, article.Content.Length))}...");
-                    Console.WriteLine($"source: {article.Source}");
-                    Console.WriteLine($"URL: {article.Url}");
-                    Console.WriteLine($"{article.Category}: {article.Category}");
-                    Console.WriteLine(new string('-', 50));
-                }
-            }
-
-            while (true)
-            {
-                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article): ");
-                string option = Console.ReadLine()!;
-
-                if (option == "1")
-                {
-                    return;      
-                }
-                else if (option == "2")
-                {
-                    Console.WriteLine("Logging out...");
-                    Environment.Exit(0);
-                }
-                else if (option == "3")
-                {
-                    Console.Write("Enter Article Id to save: ");
-                    string articleIdInput = Console.ReadLine()!;
-                    if (int.TryParse(articleIdInput, out int articleId))
-                    {
-                        var result = await _savedArticleService.SaveArticleAsync(Session.UserId, articleId);
-                        Console.WriteLine(result
-                            ? $"Article {articleId} saved successfully."
-                            : $"Failed to save article {articleId}.");
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid Article Id.");
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("Invalid option. Please choose 1, 2, or 3.");
-                }
-            }
+            await handler.ShowAndHandleArticlesAsync(category, startDate, endDate);
         }
     }
 }

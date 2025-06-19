@@ -25,12 +25,6 @@ namespace news_aggregator.application
             return categories.Select(c => new CategoryDto { CategoryId = c.CategoryId, Name = c.CategoryName });
         }
 
-        public async Task<CategoryDto?> GetByIdAsync(int id)
-        {
-            var category = await _categoryRepository.GetByIdAsync(id);
-            return category is null ? null : new CategoryDto { CategoryId = category.CategoryId, Name = category.CategoryName };
-        }
-
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
         {
             var category = new Category { CategoryName = dto.CategoryName };
@@ -40,20 +34,5 @@ namespace news_aggregator.application
             return new CategoryDto { CategoryId = category.CategoryId, Name = category.CategoryName };
         }
 
-        public async Task<CategoryDto> UpdateAsync(int id, CreateCategoryDto dto)
-        {
-            var existing = await _categoryRepository.GetByIdAsync(id);
-            if (existing is null) throw new Exception("Category not found.");
-
-            existing.CategoryName = dto.CategoryName;
-            await _categoryRepository.UpdateAsync(existing);
-
-            return new CategoryDto { CategoryId = existing.CategoryId, Name = existing.CategoryName };
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            return await _categoryRepository.DeleteAsync(id);
-        }
     }
 }

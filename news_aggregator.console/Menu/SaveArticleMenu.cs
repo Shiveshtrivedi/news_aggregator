@@ -36,8 +36,7 @@ namespace news_aggregator.console.Menu
                         return;
 
                     case "2":
-                        Console.WriteLine("Logging out...");
-                        Environment.Exit(0);
+                        Session.Logout();
                         return;
 
                     case "3":

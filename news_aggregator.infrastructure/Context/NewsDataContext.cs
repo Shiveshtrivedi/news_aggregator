@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using news_aggregator.domain.Models;
+using news_application.Enum;
 using news_application.Models;
 
 namespace news_application.Context
@@ -24,6 +25,32 @@ namespace news_application.Context
                 .WithMany(e => e.NewsArticles)
                 .HasForeignKey(a => a.ExternalSourceId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    UserId = 1,
+                    UserName = "admin",
+                    Email = "admin@intimetec.com",
+                    Password = "Admin@123",
+                    Role = UserRole.Admin,
+                    IsTokenActive = false,
+                    RefreshToken = null,
+                    RefreshTokenExpiryTime = null
+                },
+                new User
+                {
+                    UserId = 2,
+                    UserName = "public_user",
+                    Email = "user@example.com",
+                    Password = "User@123",
+                    Role = UserRole.User,
+                    IsTokenActive = false,
+                    RefreshToken = null,
+                    RefreshTokenExpiryTime = null
+                }
+            );
+
         }
     }
 }

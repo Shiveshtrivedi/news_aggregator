@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Menu.Interfaces;
+﻿using news_aggregator.console.Http;
+using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -58,8 +59,7 @@ namespace news_aggregator.console.Menu
                         await new NotificationMenu(_notificationService, _userName).Show();
                         break;
                     case "5":
-                        Console.WriteLine("Logging out...");
-                        Environment.Exit(0);
+                        Session.Logout();
                         return;
                     default:
                         Console.WriteLine("Invalid choice.");

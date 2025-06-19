@@ -55,7 +55,6 @@ namespace news_aggregator.Controllers
 
                 if (errors.Any())
                 {
-                    //return BadRequest(new { Errors = errors });
                 }
 
                 var userDto = await _authService.LoginAsync(loginDto);
@@ -74,5 +73,31 @@ namespace news_aggregator.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [AllowAnonymous]
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromHeader(Name = "Authorization")] string token)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token))
+                    return BadRequest(new { message = "Token is required" });
+
+                if (token.StartsWith("Bearer "))
+                    token = token.Substring("Bearer ".Length);
+
+                await _authService.LogoutAsync(token);
+                return Ok(new { message = "Logout successful" });
+            }
+            catch (CustomException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Models
@@ -12,6 +13,7 @@ namespace news_aggregator.console.Models
         public string Title { get; set; }
         public string Content { get; set; }
         public string Url { get; set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public CategoryType? Category { get; set; }
         public DateTime PublishedAt { get; set; }
         public string Source { get; set; } = string.Empty;

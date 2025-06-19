@@ -27,6 +27,18 @@ namespace news_aggregator.console.Http
         }
 
         public static bool IsLoggedIn => UserId > 0;
+
+        public static bool IsLogoutRequested { get; set; } = false;
+
+        public static void Logout()
+        {
+            IsLogoutRequested = true;
+        }
+
+        public static void Reset()
+        {
+            IsLogoutRequested = false;
+        }
     }
 
 }
