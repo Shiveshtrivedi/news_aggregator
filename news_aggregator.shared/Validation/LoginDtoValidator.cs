@@ -16,14 +16,9 @@ namespace news_aggregator.shared.Validation
 
             if (string.IsNullOrWhiteSpace(dto.Email))
                 errors.Add("Email is required.");
-            else if (!dto.Email.Contains('@'))
-                errors.Add("Email is invalid.");
-
             if (string.IsNullOrWhiteSpace(dto.Password))
                 errors.Add("Password is required.");
-            else if (dto.Password.Length < 6)
-                errors.Add("Password must be at least 6 characters long.");
-
+            
             return errors;
 
         }

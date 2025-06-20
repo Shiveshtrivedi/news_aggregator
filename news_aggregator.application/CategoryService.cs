@@ -1,6 +1,7 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,13 @@ namespace news_aggregator.application
 
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.CategoryName))
+                throw new InvalidCategoryException("Category name must not be empty.");
+
+            bool exists = await _categoryRepository.ExistsAsync(dto.CategoryName);
+            if (exists)
+                throw new InvalidCategoryException("Category already exists.");
+
             var category = new Category { CategoryName = dto.CategoryName };
             if (category.CategoryName == "")
                 throw new Exception("enter string");

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.shared.Validation
+namespace news_aggregator.shared.Validation.Interface
 {
     public interface IPasswordHasher
     {

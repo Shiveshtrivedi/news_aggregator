@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.Repositories
+namespace news_aggregator.infrastructure.ExternalNews
 {
     public class NewsProviderFactory : INewsProviderFactory
     {
@@ -23,7 +23,7 @@ namespace news_aggregator.infrastructure.Repositories
             return sourceName.ToLower() switch
             {
                 "newsapi" => _serviceProvider.GetRequiredService<NewsApiProvider>(),
-                "conversation" => _serviceProvider.GetRequiredService<TheNewsApiProvider>(),
+                "thenewsApi" => _serviceProvider.GetRequiredService<TheNewsApiProvider>(),
                 _ => throw new NotSupportedException($"No provider configured for source: {sourceName}")
             };
         }

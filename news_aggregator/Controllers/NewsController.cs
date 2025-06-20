@@ -18,14 +18,14 @@ namespace news_aggregator.Controllers
             _newsQueryService = newsQueryService;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
-        [HttpGet("getNewsByExternalApi")]
-        public async Task<IActionResult> GetFromExternal()
-        {
-            var articles = await _newsService.FetchAndSaveExternalNewsAsync();
-            return Ok(articles);
-        }
+        //[HttpGet("getNewsByExternalApi")]
+        //public async Task<IActionResult> GetFromExternal()
+        //{
+        //    var articles = await _newsService.FetchAndSaveExternalNewsAsync();
+        //    return Ok(articles);
+        //}
 
         [HttpGet("searchNews")]
         public async Task<IActionResult> SearchByTitle([FromQuery] string title, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)

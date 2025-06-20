@@ -10,9 +10,9 @@ using System.Security.Claims;
 using System.Text;
 using BCr = BCrypt.Net;
 using news_aggregator.shared.Authentication;
-using news_aggregator.shared.Validation;
 using news_aggregator.shared.CustomException;
 using news_aggregator.shared.CustomExceptions;
+using news_aggregator.shared.Validation.Interface;
 
 
 namespace news_aggregator.application

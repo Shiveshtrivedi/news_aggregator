@@ -1,6 +1,7 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException;
 using news_aggregator.shared.Validation;
 using news_application.Models;
 using System;
@@ -32,7 +33,7 @@ namespace news_aggregator.application
         {
             var source = await _repository.GetByIdAsync(externalSourceId);
             if (source == null)
-                throw new CustomException("External source not found.", (int)HttpStatusCode.NotFound);
+                throw new ExternalSourceNotFoundException($"External source with ID {externalSourceId} not found.");
 
             return source;
         }
@@ -56,7 +57,7 @@ namespace news_aggregator.application
             var updated = await _repository.UpdatePartialAsync(id, dto);
 
             if (!updated)
-                throw new CustomException("Update failed. Source not found or invalid update.", (int)HttpStatusCode.NotFound);
+                throw new ExternalSourceUpdateFailedException($"Update failed for External Source with ID {id}.");
 
             return true;
         }

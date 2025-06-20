@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using news_aggregator.shared.CustomException;
 
 namespace news_aggregator.application
 {
@@ -15,13 +16,15 @@ namespace news_aggregator.application
         private readonly ICategoryRepository _categoryRepository;
         private readonly INotificationService _notificationService;
         private readonly INewsQueryService _newsQueryService;
+        private readonly INotificationHtmlBuilder _notificationHtmlBuilder;
 
-        public NotificationConfigService(INotificationConfigRepository notificationConfigRepository, ICategoryRepository categoryRepository, INotificationService notificationService,INewsQueryService newsQueryService)
+        public NotificationConfigService(INotificationConfigRepository notificationConfigRepository, ICategoryRepository categoryRepository, INotificationService notificationService,INewsQueryService newsQueryService, INotificationHtmlBuilder notificationHtmlBuilder)
         {
             _notificationConfigRepository = notificationConfigRepository;
             _categoryRepository = categoryRepository;
             _notificationService = notificationService;
             _newsQueryService = newsQueryService;
+            _notificationHtmlBuilder = notificationHtmlBuilder;
         }
 
         public async Task<NotificationConfig> GetOrCreateForUserAsync(int userId)
@@ -38,57 +41,65 @@ namespace news_aggregator.application
         {
             var config = await _notificationConfigRepository.GetOrCreateAsync(userId);
 
-            if (category.Equals("keywords", StringComparison.OrdinalIgnoreCase))
+            if (IsKeywordCategory(category))
             {
-                config.KeywordsEnabled = enable;
+                ToggleKeywordNotification(config, enable);
             }
             else
             {
-                var isValidCategory = await _categoryRepository
-                    .ExistsAsync(category);
-
-                if (!isValidCategory)
-                    throw new ArgumentException("Invalid category");
-
-                var setting = config.CategorySettings
-                    .FirstOrDefault(s => s.CategoryName.Equals(category, StringComparison.OrdinalIgnoreCase));
-
-                if (setting != null)
-                {
-                    setting.IsEnabled = enable;
-                }
-                else
-                {
-                    config.CategorySettings.Add(new NotificationCategorySetting
-                    {
-                        CategoryName = category,
-                        IsEnabled = enable,
-                        UserId = userId
-                    });
-                }
+                await ToggleCategoryNotificationAsync(config, userId, category, enable);
             }
 
             await _notificationConfigRepository.AddOrUpdateAsync(config);
 
-            if (enable && !category.Equals("keywords", StringComparison.OrdinalIgnoreCase))
+            if (enable && !IsKeywordCategory(category))
             {
-                var newsArticles = await _newsQueryService.GetNewsByCategoryAsync(category);
-                var sb = new StringBuilder();
-
-                sb.AppendLine($"<h3>Latest {category} News</h3>");
-
-                foreach (var article in newsArticles.Take(5))
-                {
-                    sb.AppendLine("<div style=\"margin-bottom: 15px;\">");
-                    sb.AppendLine($"<strong>Title:</strong> {article.Title}<br/>");
-                    sb.AppendLine($"<strong>URL:</strong> <a href=\"{article.Url}\" target=\"_blank\">{article.Url}</a><br/>");
-                    sb.AppendLine("</div>");
-                }
-
-                string htmlMessage = sb.ToString();
-                await _notificationService.NotifyUserAsync(userId, htmlMessage);
+                await SendCategoryNewsNotificationAsync(userId, category);
             }
         }
+
+        private async Task ToggleCategoryNotificationAsync(NotificationConfig config, int userId, string category, bool enable)
+        {
+            var isValidCategory = await _categoryRepository.ExistsAsync(category);
+            if (!isValidCategory)
+                throw new CategoryNotFoundException("category not found");
+
+            var setting = config.CategorySettings
+                .FirstOrDefault(s => s.CategoryName.Equals(category, StringComparison.OrdinalIgnoreCase));
+
+            if (setting != null)
+            {
+                setting.IsEnabled = enable;
+            }
+            else
+            {
+                config.CategorySettings.Add(new NotificationCategorySetting
+                {
+                    CategoryName = category,
+                    IsEnabled = enable,
+                    UserId = userId
+                });
+            }
+        }
+
+
+        private bool IsKeywordCategory(string category)
+        {
+            return category.Equals("keywords", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private void ToggleKeywordNotification(NotificationConfig config, bool enable)
+        {
+            config.KeywordsEnabled = enable;
+        }
+
+        private async Task SendCategoryNewsNotificationAsync(int userId, string category)
+        {
+            var newsArticles = await _newsQueryService.GetNewsByCategoryAsync(category);
+            var message = _notificationHtmlBuilder.Build(category, newsArticles.Take(5));
+            await _notificationService.NotifyUserAsync(userId, message);
+        }
+
     }
 
 }

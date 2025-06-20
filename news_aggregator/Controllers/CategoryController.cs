@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException;
 
 namespace news_aggregator.Controllers
 {
@@ -36,9 +37,13 @@ namespace news_aggregator.Controllers
             {
                return Ok(await _categoryService.CreateAsync(dto));
             }
-            catch(Exception ex)
+            catch (InvalidCategoryException ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred." });
             }
         }
 

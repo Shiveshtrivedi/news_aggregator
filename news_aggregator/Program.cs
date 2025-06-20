@@ -17,6 +17,9 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using news_aggregator.shared.Authentication;
 using System.Text.Json.Serialization;
+using news_aggregator.infrastructure.ExternalNews.Interface;
+using news_aggregator.infrastructure.ExternalNews;
+using news_aggregator.shared.Validation.Interface;
 
 
 namespace news_aggregator
@@ -132,6 +135,11 @@ namespace news_aggregator
 
             builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
             builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+            builder.Services.AddHttpClient<IExternalNewsClient, ExternalNewsClient>();
+            builder.Services.AddScoped<INewsRequestBuilder, NewsRequestBuilder>();
+            builder.Services.AddScoped<INewsApiResponseParser, NewsApiResponseParser>();
+            builder.Services.AddScoped<INotificationHtmlBuilder,NotificationHtmlBuilder >();
 
 
 

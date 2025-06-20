@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.Repositories
+namespace news_aggregator.infrastructure.ExternalNews
 {
     public class NewsApiProvider : INewsProvider
     {

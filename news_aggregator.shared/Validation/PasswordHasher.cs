@@ -1,4 +1,5 @@
-﻿using System;
+﻿using news_aggregator.shared.Validation.Interface;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

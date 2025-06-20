@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using news_aggregator.shared.Validation;
+using news_aggregator.shared.Validation.Interface;
 using news_application.Models;
 using System;
 using System.Collections.Generic;

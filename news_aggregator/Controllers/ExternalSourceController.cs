@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
-using news_aggregator.shared.Validation;
+using news_aggregator.shared.CustomException;
 using news_application.Models;
 
 namespace news_aggregator.Controllers
@@ -57,7 +57,11 @@ namespace news_aggregator.Controllers
                 await _externalSourceService.AddExternalSourceApi(dto);
                 return Ok("External source added successfully.");
             }
-            catch(Exception ex)
+            catch (ExternalSourceUpdateFailedException ex)
+            {
+                return StatusCode(ex.StatusCode, new { message = ex.Message });
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -75,9 +79,9 @@ namespace news_aggregator.Controllers
 
                 return Ok("Updated successfully.");
             }
-            catch (CustomException ex)
+            catch (ExternalSourceNotFoundException ex)
             {
-                return StatusCode(ex.StatusCode, new { message = ex.Message });
+                return NotFound(new { message = ex.Message });
             }
             catch (Exception ex)
             {

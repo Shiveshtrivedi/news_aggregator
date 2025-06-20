@@ -55,6 +55,12 @@ namespace news_aggregator.Controllers
         {
             try
             {
+                var errors = LoginDtoValidator.Validate(loginDto);
+
+                if (errors.Any())
+                {
+                    return BadRequest(new { Errors = errors });
+                }
                 var userDto = await _authService.LoginAsync(loginDto);
                 return Ok(userDto);
             }

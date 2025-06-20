@@ -65,8 +65,7 @@ namespace news_aggregator.infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(
-    string category, DateTime? startDate, DateTime? endDate)
+       public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate)
         {
             if (!Enum.TryParse<CategoryType>(category, true, out var categoryEnum))
                 throw new ArgumentException($"Invalid category: {category}");
