@@ -14,10 +14,12 @@ namespace news_aggregator.application
     public class NewsQueryService : INewsQueryService
     {
         private readonly INewsArticleRepository _newsArticleRepository;
+        private readonly IUserArticleInteractionRepository _userArticleInteractionRepository;
 
-        public NewsQueryService(INewsArticleRepository newsArticleRepository)
+        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository)
         {
             _newsArticleRepository = newsArticleRepository;
+            _userArticleInteractionRepository = userArticleInteractionRepository;
         }
 
         public async Task<IEnumerable<NewsArticle>> GetAllNewsAsync()
@@ -45,9 +47,31 @@ namespace news_aggregator.application
             return await _newsArticleRepository.GetNewsByDateRangeAsync(startDate, endDate);
         }
 
-        public async Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate)
+        public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate,int userId)
         {
-            return await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+            var articleDtos = await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+
+            var result = new List<NewsArticleWithUserInteractionDto>();
+
+            foreach (var article in articleDtos)
+            {
+                var interaction = await _userArticleInteractionRepository.GetInteractionAsync(userId, article.NewsArticleId);
+
+                result.Add(new NewsArticleWithUserInteractionDto
+                {
+                    NewsArticleId = article.NewsArticleId,
+                    Title = article.Title,
+                    Content = article.Content,
+                    Category = article.Category,
+                    PublishedAt = article.PublishedAt,
+                    IsLikedByUser = interaction?.IsLiked ?? false,
+                    IsDislikedByUser = interaction?.IsDisliked ?? false,
+                    Likes = interaction?.NewsArticle?.Likes ?? 0,           
+                    Dislikes = interaction?.NewsArticle?.Dislikes ?? 0      
+                });
+            }
+
+            return result;
         }
     }
 }

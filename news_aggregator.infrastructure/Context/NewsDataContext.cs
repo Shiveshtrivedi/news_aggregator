@@ -17,6 +17,7 @@ namespace news_application.Context
         public DbSet<NotificationConfig> NotificationConfigs { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<UserKeyword> UserKeywords { get; set; }
+        public DbSet<UserArticleInteraction> UserArticleInteractions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

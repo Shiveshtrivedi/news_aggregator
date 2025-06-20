@@ -14,15 +14,12 @@ namespace news_aggregator.console
         {
             Console.Clear();
 
-            // Load config
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
 
-            // Create HttpClientFactory
             IHttpClientFactoryWrapper clientFactory = new HttpClientFactory(configuration);
 
-            // Inject AuthService
             IAuthService authService = new AuthService(clientFactory);
             IServerService serverService = new ServerService(clientFactory);
             ICategoryService categoryService= new CategoryService(clientFactory);
@@ -31,7 +28,6 @@ namespace news_aggregator.console
             ISearchArticleService searchArticleService = new SearchArticleService(clientFactory);
             INotificationService notificationService= new NotificationService(clientFactory);
 
-            // Start main menu
             IMenu menu = new MainMenu(authService,serverService,categoryService,newsService,savedArticleService,searchArticleService,notificationService);
             await menu.Show();
 

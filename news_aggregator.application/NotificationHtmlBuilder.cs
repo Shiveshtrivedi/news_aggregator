@@ -12,18 +12,18 @@ namespace news_aggregator.application
     {
         public string Build(string category, IEnumerable<NewsArticle> articles)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine($"<h3>Latest {category} News</h3>");
+            var stringbuilder = new StringBuilder();
+            stringbuilder.AppendLine($"<h3>Latest {category} News</h3>");
 
             foreach (var article in articles)
             {
-                sb.AppendLine("<div style=\"margin-bottom: 15px;\">");
-                sb.AppendLine($"<strong>Title:</strong> {article.Title}<br/>");
-                sb.AppendLine($"<strong>URL:</strong> <a href=\"{article.Url}\" target=\"_blank\">{article.Url}</a><br/>");
-                sb.AppendLine("</div>");
+                stringbuilder.AppendLine("<div style=\"margin-bottom: 15px;\">");
+                stringbuilder.AppendLine($"<strong>Title:</strong> {article.Title}<br/>");
+                stringbuilder   .AppendLine($"<strong>URL:</strong> <a href=\"{article.Url}\" target=\"_blank\">{article.Url}</a><br/>");
+                stringbuilder.AppendLine("</div>");
             }
 
-            return sb.ToString();
+            return stringbuilder.ToString();
         }
     }
 }

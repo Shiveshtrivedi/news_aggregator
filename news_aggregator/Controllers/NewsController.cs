@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
+using System.Security.Claims;
 
 namespace news_aggregator.Controllers
 {
@@ -11,14 +12,16 @@ namespace news_aggregator.Controllers
     {
         private readonly INewsService _newsService;
         private readonly INewsQueryService _newsQueryService;
+        private readonly INewsInteractionService _newsInteractionService;
 
-        public NewsController(INewsService newsService, INewsQueryService newsQueryService)
+        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService)
         {
             _newsService = newsService;
             _newsQueryService = newsQueryService;
+            _newsInteractionService = newsInteractionService;
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
 
         [HttpGet("getNewsByExternalApi")]
         public async Task<IActionResult> GetFromExternal()
@@ -54,7 +57,15 @@ namespace news_aggregator.Controllers
                 if (startDate > endDate)
                     return BadRequest("Start date must be before end date.");
 
-                var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+                var userIdClaim = User.FindFirst("UserId");
+
+                if (userIdClaim == null)
+                    return Unauthorized("User ID claim missing.");
+
+                if (!int.TryParse(userIdClaim.Value, out int userId))
+                    return Unauthorized("Invalid user ID.");
+
+                var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate, userId);
                 return Ok(articles);
             }
             catch (Exception ex)
@@ -62,6 +73,39 @@ namespace news_aggregator.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [Authorize]
+        [HttpPost("like/{articleId}")]
+        public async Task<IActionResult> ToggleLike(int articleId)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+
+            if (userIdClaim == null)
+                return Unauthorized("User ID claim missing.");
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Invalid user ID.");
+
+            await _newsInteractionService.ToggleLikeAsync(articleId, userId);
+            return Ok(new { message = "Like toggled successfully." });
+        }
+
+        [Authorize]
+        [HttpPost("dislike/{articleId}")]
+        public async Task<IActionResult> ToggleDislike(int articleId)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+
+            if (userIdClaim == null)
+                return Unauthorized("User ID claim missing.");
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Invalid user ID.");
+
+            await _newsInteractionService.ToggleDislikeAsync(articleId, userId);
+            return Ok(new { message = "Dislike toggled successfully." });
+        }
+
 
     }
 }

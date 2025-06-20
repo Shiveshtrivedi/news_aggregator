@@ -137,6 +137,8 @@ namespace news_aggregator
             builder.Services.AddScoped<INewsRequestBuilder, NewsRequestBuilder>();
             builder.Services.AddScoped<INewsApiResponseParser, NewsApiResponseParser>();
             builder.Services.AddScoped<INotificationHtmlBuilder,NotificationHtmlBuilder >();
+            builder.Services.AddScoped<INewsInteractionService, NewsInteractionService>();
+            builder.Services.AddScoped<IUserArticleInteractionRepository, UserArticleInteractionRepository>();
 
 
 

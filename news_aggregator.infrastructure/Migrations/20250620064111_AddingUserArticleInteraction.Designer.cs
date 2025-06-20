@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using news_application.Context;
 
@@ -11,9 +12,11 @@ using news_application.Context;
 namespace news_aggregator.infrastructure.Migrations
 {
     [DbContext(typeof(NewsDataContext))]
-    partial class NewsDataContextModelSnapshot : ModelSnapshot
+    [Migration("20250620064111_AddingUserArticleInteraction")]
+    partial class AddingUserArticleInteraction
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,38 +24,6 @@ namespace news_aggregator.infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("news_aggregator.domain.Models.UserArticleInteraction", b =>
-                {
-                    b.Property<int>("UserArticleInteractionId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserArticleInteractionId"));
-
-                    b.Property<bool>("IsDisliked")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsLiked")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("NewsArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("UserArticleInteractionId");
-
-                    b.HasIndex("NewsArticleId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserArticleInteractions");
-                });
 
             modelBuilder.Entity("news_aggregator.domain.Models.UserKeyword", b =>
                 {
@@ -369,25 +340,6 @@ namespace news_aggregator.infrastructure.Migrations
                             Role = 0,
                             UserName = "shivesh"
                         });
-                });
-
-            modelBuilder.Entity("news_aggregator.domain.Models.UserArticleInteraction", b =>
-                {
-                    b.HasOne("news_application.Models.NewsArticle", "NewsArticle")
-                        .WithMany()
-                        .HasForeignKey("NewsArticleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("news_application.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("NewsArticle");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("news_aggregator.domain.Models.UserKeyword", b =>

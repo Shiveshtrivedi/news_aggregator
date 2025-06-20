@@ -43,9 +43,9 @@ namespace news_aggregator.infrastructure.ExternalNews
 
                     var allArticles = new List<NewsArticle>();
 
-                    foreach (var cat in categories)
+                    foreach (var categoryValue in categories)
                     {
-                        var innerArticles = await GetLatestArticlesAsync(source, cat, keyword);
+                        var innerArticles = await GetLatestArticlesAsync(source, categoryValue, keyword);
                         allArticles.AddRange(innerArticles);
                     }
 
@@ -55,7 +55,7 @@ namespace news_aggregator.infrastructure.ExternalNews
                 var request = _requestBuilder.BuildRequest(source, category, keyword);
                 var response = await _httpClient.SendAsync(request);
 
-                response.EnsureSuccessStatusCode();
+                    response.EnsureSuccessStatusCode();
 
                 var rawJson = await response.Content.ReadAsStringAsync();
                 return _newsApiResponseParser.Parse(rawJson, source.ExternalSourceName, category);
@@ -64,41 +64,6 @@ namespace news_aggregator.infrastructure.ExternalNews
             {
                 return Enumerable.Empty<NewsArticle>();
             }
-        }
-
-
-
-        private IEnumerable<NewsArticle> ParseNewsApiResponse(string rawJson, string category)
-        {
-            var result = JsonSerializer.Deserialize<NewsApiResponse>(rawJson, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-
-            string debugJson = JsonSerializer.Serialize(result, new JsonSerializerOptions { WriteIndented = true });
-
-            Console.WriteLine("altResponse object: ");
-            Console.WriteLine(debugJson);
-
-            return result?.Articles?.Select(a => new NewsArticle
-            {
-                Title = a.Title ?? "",
-                Content = a.Content ?? "No content available.",
-                PublishedAt = a.PublishedAt,
-                Source = a.Source?.Name ?? "Unknown",
-                Url = a.Url ?? "",
-                Category = ParseCategory(category),
-                Likes = 0,
-                Dislikes = 0,
-            }) ?? new List<NewsArticle>();
-        }
-
-        private CategoryType ParseCategory(string category)
-        {
-            if (Enum.TryParse<CategoryType>(category, true, out var parsedCategory))
-                return parsedCategory;
-
-            return CategoryType.uncategorized;
         }
     }
 }
