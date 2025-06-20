@@ -33,62 +33,40 @@ namespace news_aggregator.infrastructure.ExternalNews
 
         public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source, string category = "", string keyword = "")
         {
-            try { 
-
-            if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
+            try
             {
-                var categories = new[] { "technology" };
-                //"sports", "general", "health", "science", "technology""business", "entertainment"};
 
-                var allArticles = new List<NewsArticle>();
-
-                foreach (var cat in categories)
+                if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
                 {
-                    var innerArticles = await GetLatestArticlesAsync(source, cat, keyword);
-                    allArticles.AddRange(innerArticles);
+                    var categories = new[] { "technology" };
+                    //"sports", "general", "health", "science", "technology""business", "entertainment"};
+
+                    var allArticles = new List<NewsArticle>();
+
+                    foreach (var cat in categories)
+                    {
+                        var innerArticles = await GetLatestArticlesAsync(source, cat, keyword);
+                        allArticles.AddRange(innerArticles);
+                    }
+
+                    return allArticles;
                 }
 
-                return allArticles;
+                var request = _requestBuilder.BuildRequest(source, category, keyword);
+                var response = await _httpClient.SendAsync(request);
+
+                response.EnsureSuccessStatusCode();
+
+                var rawJson = await response.Content.ReadAsStringAsync();
+                return _newsApiResponseParser.Parse(rawJson, source.ExternalSourceName, category);
             }
-
-            var request = _requestBuilder.BuildRequest(source, category, keyword);
-            var response = await _httpClient.SendAsync(request);
-
-            response.EnsureSuccessStatusCode();
-
-            var rawJson = await response.Content.ReadAsStringAsync();
-            return _newsApiResponseParser.Parse(rawJson, source.ExternalSourceName, category);
+            catch (Exception ex)
+            {
+                return Enumerable.Empty<NewsArticle>();
+            }
         }
-        catch (Exception ex)
-        {
-            return Enumerable.Empty<NewsArticle>();
-        }
-}
 
-        
 
-        //private IEnumerable<NewsArticle> ParseAltResponse(string rawJson)
-        //{
-        //    var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        //    var altResponse = JsonSerializer.Deserialize<TheNewsApiResponse>(rawJson, options);
-
-        //    string debugJson = JsonSerializer.Serialize(altResponse, new JsonSerializerOptions { WriteIndented = true });
-
-        //    Console.WriteLine("altResponse object: ");
-        //    Console.WriteLine(debugJson);
-
-        //    return altResponse?.Data?.Select(a => new NewsArticle
-        //    {
-        //        Title = a.Title ?? "",
-        //        Content = a.Snippet ?? "No content available.",
-        //        PublishedAt = a.Published_At,
-        //        Source = a.Source ?? "Unknown",
-        //        Url = a.Url ?? "",
-        //        Category = ParseCategory(a.Categories?.FirstOrDefault() ?? ""),
-        //        Likes = 0,
-        //        Dislikes = 0,
-        //    }) ?? new List<NewsArticle>();
-        //}
 
         private IEnumerable<NewsArticle> ParseNewsApiResponse(string rawJson, string category)
         {

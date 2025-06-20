@@ -110,9 +110,6 @@ namespace news_aggregator
 
             builder.Services.AddScoped<INewsQueryService, NewsQueryService>();
 
-            //builder.Services.Configure<NewsApiOptions>(
-            //    builder.Configuration.GetSection("ExternalApis:NewsApi"));
-
             builder.Services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
             builder.Services.AddScoped<ISavedArticleService, SavedArticleService>();
 

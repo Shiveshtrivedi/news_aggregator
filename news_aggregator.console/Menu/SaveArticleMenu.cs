@@ -18,7 +18,6 @@ namespace news_aggregator.console.Menu
 
         public async Task Show()
         {
-            //Console.Write();
             while (true)
             {
                 Console.Clear();
