@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
-using news_aggregator.shared.CustomException;
-using news_aggregator.shared.CustomExceptions;
+using news_aggregator.shared.CustomException.UserException;
 using news_aggregator.shared.Validation;
 using static news_aggregator.application.AuthService;
 
@@ -40,12 +39,13 @@ namespace news_aggregator.Controllers
             {
                 return Conflict(new { message = ex.Message });
             }
+            catch(InvalidUserRoleException ex)
+            {
+                return Conflict(new { message = ex.Message });
+            }
             catch (Exception ex)
             {
-                return BadRequest(new
-                {
-                    message = ex.Message
-                });
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -70,7 +70,7 @@ namespace news_aggregator.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, "Please provide email and passowrd");
             }
             catch (Exception ex)
             {

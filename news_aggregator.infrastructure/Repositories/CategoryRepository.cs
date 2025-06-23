@@ -19,7 +19,7 @@ namespace news_aggregator.infrastructure.Repositories
         {
             _context = context;
         }
-
+       
         public async Task<bool> ExistsAsync(string categoryName)
         {
             return await _context.Categories

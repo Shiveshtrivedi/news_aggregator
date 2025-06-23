@@ -1,4 +1,5 @@
-﻿using news_application.Models;
+﻿using news_aggregator.domain.Models.DTOs;
+using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace news_aggregator.application.Interfaces.Services
 {
     public interface INotificationHtmlBuilder
     {
-        string Build(string category, IEnumerable<NewsArticle> articles);
+        string Build(string category, IEnumerable<NewsArticleDto> articles);
     }
 }

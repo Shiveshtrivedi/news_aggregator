@@ -1,7 +1,9 @@
-﻿using news_aggregator.application.Interfaces.Repositories;
+﻿using AutoMapper;
+using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.CategoryException;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
@@ -14,16 +16,18 @@ namespace news_aggregator.application
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepository)
+        public CategoryService(ICategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
             var categories = await _categoryRepository.GetAllAsync();
-            return categories.Select(c => new CategoryDto { CategoryId = c.CategoryId, Name = c.CategoryName });
+            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }
 
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
@@ -36,10 +40,12 @@ namespace news_aggregator.application
                 throw new InvalidCategoryException("Category already exists.");
 
             var category = new Category { CategoryName = dto.CategoryName };
-            if (category.CategoryName == "")
-                throw new Exception("enter string");
+            if (string.IsNullOrEmpty(category.CategoryName))
+                throw new InvalidCategoryException("Category name cannot be blank.");
+
             await _categoryRepository.AddAsync(category);
-            return new CategoryDto { CategoryId = category.CategoryId, Name = category.CategoryName };
+
+            return _mapper.Map<CategoryDto>(category);
         }
 
     }

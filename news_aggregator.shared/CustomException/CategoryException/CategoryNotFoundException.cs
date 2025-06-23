@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.shared.CustomException
+namespace news_aggregator.shared.CustomException.CategoryException
 {
     public class CategoryNotFoundException : Exception
     {

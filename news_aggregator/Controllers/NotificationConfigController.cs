@@ -28,7 +28,7 @@ namespace news_aggregator.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -42,7 +42,7 @@ namespace news_aggregator.Controllers
             }
             catch (ArgumentException ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -57,7 +57,7 @@ namespace news_aggregator.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 

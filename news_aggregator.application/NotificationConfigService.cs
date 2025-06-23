@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.CategoryException;
 
 namespace news_aggregator.application
 {

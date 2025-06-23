@@ -49,7 +49,10 @@ namespace news_aggregator.console.Menu.Handler
                     Console.WriteLine($"source: {article.Source}");
                     Console.WriteLine($"URL: {article.Url}");
                     Console.WriteLine($"{article.Category}: {article.Category}");
-                    Console.WriteLine($"You Liked: {(article.IsLikedByUser ? "✔️" : "❌")} | You Disliked: {(article.IsDislikedByUser ? "✔️" : "❌")}");
+                    string likedByUser = article.IsLikedByUser ? "Yes" : "No";
+                    string dislikedByUser = article.IsDislikedByUser ? "Yes" : "No";
+                    Console.WriteLine($"Liked by You : {likedByUser}");
+                    Console.WriteLine($"Disliked by You : {dislikedByUser}");
                     Console.WriteLine($"Likes: {article.Likes} | Dislikes: {article.Dislikes}");
                     Console.WriteLine(new string('-', 50));
                 }

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.shared.CustomException.ExternalSource;
+using news_aggregator.shared.CustomException.NewsArticle;
 using System.Security.Claims;
 
 namespace news_aggregator.Controllers
@@ -26,15 +28,33 @@ namespace news_aggregator.Controllers
         [HttpGet("getNewsByExternalApi")]
         public async Task<IActionResult> GetFromExternal()
         {
-            var articles = await _newsService.FetchAndSaveExternalNewsAsync();
-            return Ok(articles);
+            try
+            {
+                var articles = await _newsService.FetchAndSaveExternalNewsAsync();
+                return Ok(articles);
+            }
+            catch (ExternalSourceNotFoundException ex)
+            {
+                return StatusCode(503, new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "Failed to fetch external news." });
+            }
         }
 
         [HttpGet("searchNews")]
         public async Task<IActionResult> SearchByTitle([FromQuery] string title, [FromQuery] DateTime? startDate, [FromQuery] DateTime? endDate)
         {
-            var articles = await _newsQueryService.SearchNewsByTitleAsync(title, startDate, endDate);
-            return Ok(articles);
+            try
+            {
+                var articles = await _newsQueryService.SearchNewsByTitleAsync(title, startDate, endDate);
+                return Ok(articles);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while searching news." });
+            }
         }
 
         [HttpGet("getNewsByDateRange")]
@@ -45,8 +65,15 @@ namespace news_aggregator.Controllers
                 return BadRequest("Start date must be before end date.");
             }
 
-            var articles = await _newsQueryService.GetNewsByDateRangeAsync(startDate, endDate);
-            return Ok(articles);
+            try
+            {
+                var articles = await _newsQueryService.GetNewsByDateRangeAsync(startDate, endDate);
+                return Ok(articles);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving news." });
+            }
         }
 
         [HttpGet("getNewsByCategoryAndDateRange")]
@@ -70,7 +97,7 @@ namespace news_aggregator.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "Internal server error");
             }
         }
 
@@ -85,9 +112,19 @@ namespace news_aggregator.Controllers
 
             if (!int.TryParse(userIdClaim.Value, out int userId))
                 return Unauthorized("Invalid user ID.");
-
-            await _newsInteractionService.ToggleLikeAsync(articleId, userId);
-            return Ok(new { message = "Like toggled successfully." });
+            try
+            {
+                await _newsInteractionService.ToggleLikeAsync(articleId, userId);
+                return Ok(new { message = "Like toggled successfully." });
+            }
+            catch (NewsArticleNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while toggling like." });
+            }
         }
 
         [Authorize]
@@ -102,8 +139,19 @@ namespace news_aggregator.Controllers
             if (!int.TryParse(userIdClaim.Value, out int userId))
                 return Unauthorized("Invalid user ID.");
 
-            await _newsInteractionService.ToggleDislikeAsync(articleId, userId);
-            return Ok(new { message = "Dislike toggled successfully." });
+            try
+            {
+                await _newsInteractionService.ToggleDislikeAsync(articleId, userId);
+                return Ok(new { message = "Dislike toggled successfully." });
+            }
+            catch (NewsArticleNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while toggling dislike." });
+            }
         }
 
 

@@ -1,6 +1,8 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models;
+using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.NewsArticle;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +27,7 @@ namespace news_aggregator.application
         public async Task ToggleLikeAsync(int articleId, int userId)
         {
             var article = await _articleRepository.GetByIdAsync(articleId);
-            if (article == null) throw new Exception("Article not found");
+            if (article == null) throw new NewsArticleNotFoundException("Article not found");
 
             var interaction = await _interactionRepository.GetInteractionAsync(userId, articleId);
 
@@ -62,7 +64,7 @@ namespace news_aggregator.application
         public async Task ToggleDislikeAsync(int articleId, int userId)
         {
             var article = await _articleRepository.GetByIdAsync(articleId);
-            if (article == null) throw new Exception("Article not found");
+            if (article == null) throw new NewsArticleNotFoundException("Article not found");
 
             var interaction = await _interactionRepository.GetInteractionAsync(userId, articleId);
 
@@ -92,7 +94,6 @@ namespace news_aggregator.application
                 }
                 await _articleRepository.IncrementDislikesAsync(articleId);
             }
-
             await _interactionRepository.AddOrUpdateInteractionAsync(interaction);
         }
     }

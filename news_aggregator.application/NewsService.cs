@@ -1,5 +1,6 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.shared.CustomException.ExternalSource;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
@@ -43,7 +44,7 @@ namespace news_aggregator.application
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Failed to fetch from source {source.ExternalSourceName}: {ex.Message}");
+                    throw new ExternalSourceNotFoundException(source.ExternalSourceName);
                 }
             }
 

@@ -5,13 +5,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.shared.CustomException
+namespace news_aggregator.shared.CustomException.NewsArticle
 {
-    public class ExternalSourceNotFoundException : Exception
+    public class NewsArticleNotFoundException : Exception
     {
         public int StatusCode { get; }
 
-        public ExternalSourceNotFoundException(string message) : base(message)
+        public NewsArticleNotFoundException(string message = "Article not found.") : base(message)
         {
             StatusCode = (int)HttpStatusCode.NotFound;
         }

@@ -20,6 +20,7 @@ using System.Text.Json.Serialization;
 using news_aggregator.infrastructure.ExternalNews.Interface;
 using news_aggregator.infrastructure.ExternalNews;
 using news_aggregator.shared.Validation.Interface;
+using news_aggregator.application.Mapping;
 
 
 namespace news_aggregator
@@ -139,6 +140,9 @@ namespace news_aggregator
             builder.Services.AddScoped<INotificationHtmlBuilder,NotificationHtmlBuilder >();
             builder.Services.AddScoped<INewsInteractionService, NewsInteractionService>();
             builder.Services.AddScoped<IUserArticleInteractionRepository, UserArticleInteractionRepository>();
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
 
 
 

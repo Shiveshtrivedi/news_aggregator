@@ -5,7 +5,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.shared.CustomExceptions
+namespace news_aggregator.shared.CustomException.UserException
 {
     public class UserNotFoundException : Exception
     {

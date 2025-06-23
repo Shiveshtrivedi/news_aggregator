@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
-using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.CategoryException;
 
 namespace news_aggregator.Controllers
 {
@@ -26,7 +26,7 @@ namespace news_aggregator.Controllers
             }
             catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, "An error occurred while retrieving categories.");
             }
         }
 

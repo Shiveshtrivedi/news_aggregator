@@ -1,5 +1,7 @@
-﻿using news_aggregator.application.Interfaces.Repositories;
+﻿using AutoMapper;
+using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
 using news_application.Models;
 using System;
 using System.Collections.Generic;
@@ -12,21 +14,27 @@ namespace news_aggregator.application
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        public UserService(IUserRepository userRepository)
+        private readonly IMapper _mapper;
+        public UserService(IUserRepository userRepository, IMapper mapper)
         {
             _userRepository = userRepository;
+            _mapper = mapper;
         }
 
-        public Task<User?> GetUserByIdAsync(int userId)
+        public async Task<UserDTO?> GetUserByIdAsync(int userId)
         {
-            var user = _userRepository.GetByIdAsync(userId);
-            return user;
+            var user = await _userRepository.GetByIdAsync(userId);
+            if (user == null)
+                return null;
+
+            return _mapper.Map<UserDTO>(user);
         }
 
-        public Task<IEnumerable<User>> GetAllUsersAsync()
+
+        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
         {
-            var users = _userRepository.GetAllAsync();
-            return users;
+            var users = await _userRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
         }
 
         public async Task AddUserAsync(User user)

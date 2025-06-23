@@ -1,6 +1,9 @@
-﻿using news_aggregator.application.Interfaces.Repositories;
+﻿using AutoMapper;
+using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.NewsArticle;
 using news_application.Enum;
 using news_application.Models;
 using System;
@@ -15,36 +18,46 @@ namespace news_aggregator.application
     {
         private readonly INewsArticleRepository _newsArticleRepository;
         private readonly IUserArticleInteractionRepository _userArticleInteractionRepository;
+        private readonly IMapper _mapper;
 
-        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository)
+        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper)
         {
             _newsArticleRepository = newsArticleRepository;
             _userArticleInteractionRepository = userArticleInteractionRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<NewsArticle>> GetAllNewsAsync()
+        public async Task<IEnumerable<NewsArticleDto>> GetAllNewsAsync()
         {
-            return await _newsArticleRepository.GetAllAsync();
+            var articles = await _newsArticleRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
 
-        public async Task<NewsArticle?> GetNewsByIdAsync(int articleId)
+        public async Task<NewsArticleDto?> GetNewsByIdAsync(int articleId)
         {
-            return await _newsArticleRepository.GetByIdAsync(articleId);
+            var article = await _newsArticleRepository.GetByIdAsync(articleId);
+            if (article == null)
+                throw new NewsArticleNotFoundException($"Article with ID {articleId} not found.");
+
+            return _mapper.Map<NewsArticleDto>(article);
         }
 
-        public async Task<IEnumerable<NewsArticle>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate)
+        public async Task<IEnumerable<NewsArticleDto>> SearchNewsByTitleAsync(string title, DateTime? startDate, DateTime? endDate)
         {
-            return await _newsArticleRepository.SearchNewsByTitleAsync(title, startDate, endDate);
+            var articles = await _newsArticleRepository.SearchNewsByTitleAsync(title, startDate, endDate);
+            return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
 
-        public async Task<IEnumerable<NewsArticle>> GetNewsByCategoryAsync(string category)
+        public async Task<IEnumerable<NewsArticleDto>> GetNewsByCategoryAsync(string category)
         {
 
-            return await _newsArticleRepository.GetNewsByCategoryAsync(category);
+            var articles = await _newsArticleRepository.GetNewsByCategoryAsync(category);
+            return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
-        public async Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate)
+        public async Task<IEnumerable<NewsArticleDto>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
-            return await _newsArticleRepository.GetNewsByDateRangeAsync(startDate, endDate);
+            var articles = await _newsArticleRepository.GetNewsByDateRangeAsync(startDate, endDate);
+            return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
 
         public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate,int userId)

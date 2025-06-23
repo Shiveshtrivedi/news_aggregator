@@ -75,5 +75,19 @@ namespace news_aggregator.shared.Authentication
                 return null;
             }
         }
+
+        public int? GetUserIdFromToken(string token)
+        {
+            var principal = ValidateJwtToken(token);
+            if (principal == null) return null;
+
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "UserId");
+            if (userIdClaim == null) return null;
+
+            if (int.TryParse(userIdClaim.Value, out int userId))
+                return userId;
+
+            return null;
+        }
     }
 }

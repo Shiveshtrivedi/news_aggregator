@@ -11,8 +11,9 @@ using System.Text;
 using BCr = BCrypt.Net;
 using news_aggregator.shared.Authentication;
 using news_aggregator.shared.CustomException;
-using news_aggregator.shared.CustomExceptions;
 using news_aggregator.shared.Validation.Interface;
+using news_aggregator.shared.CustomException.UserException;
+using AutoMapper;
 
 
 namespace news_aggregator.application
@@ -22,13 +23,15 @@ namespace news_aggregator.application
         private readonly IUserRepository _userRepository;
         private readonly IJwtTokenService _jwtService;
         private readonly IPasswordHasher _passwordHasher;
+        private readonly IMapper _mapper;
 
 
-        public AuthService(IUserRepository userRepository, IJwtTokenService jwtService, IPasswordHasher passwordHasher)
+        public AuthService(IUserRepository userRepository, IJwtTokenService jwtService, IPasswordHasher passwordHasher, IMapper mapper)
         {
             _userRepository = userRepository;
             _jwtService = jwtService;
             _passwordHasher = passwordHasher;
+            _mapper = mapper;
         }
 
         public async Task<UserDTO> SignupAsync(UserDTO userDTO)
@@ -38,7 +41,7 @@ namespace news_aggregator.application
                 throw new UserAlreadyExistsException();
 
             if (userDTO.Role != UserRole.Admin && userDTO.Role != UserRole.User)
-                throw new ArgumentException("Invalid role value. Use 0 for Admin or 1 for User.");
+                throw new InvalidUserRoleException();
 
 
             var passwordHash = _passwordHasher.HashPassword(userDTO.Password);
@@ -53,12 +56,7 @@ namespace news_aggregator.application
 
             await _userRepository.AddAsync(newUser);
 
-            return new UserDTO
-            {
-                UserName = newUser.UserName,
-                Email = newUser.Email,
-                Role = newUser.Role
-            };
+            return _mapper.Map<UserDTO>(newUser);
         }
 
         public async Task<UserDTO> LoginAsync(LoginDTO loginDto)
@@ -73,16 +71,10 @@ namespace news_aggregator.application
 
             var token = _jwtService.GenerateJwtToken(user);
 
-            await _userRepository.UpdateAsync(user);
+            var userDto = _mapper.Map<UserDTO>(user);
+            userDto.Token = token;
 
-            return new UserDTO
-            {
-                UserId = user.UserId,
-                UserName = user.UserName,
-                Email = user.Email,
-                Role = user.Role,
-                Token = token,
-            };
+            return userDto;
         }
 
         public async Task LogoutAsync(string token)
