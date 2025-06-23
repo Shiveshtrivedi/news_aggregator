@@ -27,7 +27,7 @@ namespace news_aggregator.application
             var article = await _articleRepository.GetByIdAsync(articleId);
             if (article == null) throw new Exception("Article not found");
 
-            var interaction = await _interactionRepo.GetInteractionAsync(userId, articleId);
+            var interaction = await _interactionRepository.GetInteractionAsync(userId, articleId);
 
             if (interaction == null)
             {
@@ -75,12 +75,12 @@ namespace news_aggregator.application
                     IsLiked = false,
                     IsDisliked = true
                 };
-                await _articleRepo.IncrementDislikesAsync(articleId);
+                await _articleRepository.IncrementDislikesAsync(articleId);
             }
             else if (interaction.IsDisliked)
             {
                 interaction.IsDisliked = false;
-                await _articleRepo.DecrementDislikesAsync(articleId);
+                await _articleRepository.DecrementDislikesAsync(articleId);
             }
             else
             {
@@ -88,12 +88,12 @@ namespace news_aggregator.application
                 if (interaction.IsLiked)
                 {
                     interaction.IsLiked = false;
-                    await _articleRepo.DecrementLikesAsync(articleId);
+                    await _articleRepository.DecrementLikesAsync(articleId);
                 }
-                await _articleRepo.IncrementDislikesAsync(articleId);
+                await _articleRepository.IncrementDislikesAsync(articleId);
             }
 
-            await _interactionRepo.AddOrUpdateInteractionAsync(interaction);
+            await _interactionRepository.AddOrUpdateInteractionAsync(interaction);
         }
     }
 }

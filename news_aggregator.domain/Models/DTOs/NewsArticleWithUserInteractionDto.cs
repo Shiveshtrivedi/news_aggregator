@@ -14,6 +14,8 @@ namespace news_aggregator.domain.Models.DTOs
         public int Likes { get; set; }
         public int Dislikes { get; set; }
         public string? Category { get; set; }
+        public string Source { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
         public DateTime PublishedAt { get; set; }
 
         public bool IsLikedByUser { get; set; }

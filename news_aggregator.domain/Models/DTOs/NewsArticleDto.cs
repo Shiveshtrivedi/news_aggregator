@@ -14,5 +14,9 @@ namespace news_aggregator.domain.Models.DTOs
         public DateTime PublishedAt { get; set; }
         public int? ExternalSourceId { get; set; }
         public string Category { get; set; }
+        public string Source { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+        public int Likes { get; set; }
+        public int DisLikes { get; set; }
     }
 }

@@ -17,6 +17,10 @@ namespace news_aggregator.console.Models
         public CategoryType? Category { get; set; }
         public DateTime PublishedAt { get; set; }
         public string Source { get; set; } = string.Empty;
+        public int Likes { get; set; }
+        public int Dislikes { get; set; }
+        public bool IsLikedByUser { get; set; }
+        public bool IsDislikedByUser { get; set; }
     }
 
     public enum CategoryType

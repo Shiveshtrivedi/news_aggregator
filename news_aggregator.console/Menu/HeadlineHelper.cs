@@ -10,11 +10,11 @@ namespace news_aggregator.console.Menu
     public static class HeadlinesHelper
     {
         public static async Task ShowCategoriesAndArticlesAsync(
-    string userName,
-    INewsService newsService,
-    ICategoryService categoryService,
-    DateTime startDate,
-    DateTime endDate)
+                                                        string userName,
+                                                        INewsService newsService,
+                                                        ICategoryService categoryService,
+                                                        DateTime startDate,
+                                                        DateTime endDate)
         {
             Console.Clear();
             Console.WriteLine($"Welcome to the News Application, {userName}! Date: {DateTime.Today:dd-MMM-yyyy}");

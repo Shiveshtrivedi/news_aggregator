@@ -26,11 +26,14 @@ namespace news_aggregator.console.Menu.Handler
             var articles = await _newsService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
 
             Console.Clear();
-            Console.WriteLine($"Welcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
+            Console.WriteLine($"W" +
+                $"elcome to the News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
             Console.WriteLine("H E A D L I N E S");
             Console.WriteLine("1. Back");
             Console.WriteLine("2. Logout");
             Console.WriteLine("3. Save Article");
+            Console.WriteLine("4. Like Article");
+            Console.WriteLine("5. Dislike Article");
 
             if (articles == null || articles.Count == 0)
             {
@@ -46,13 +49,15 @@ namespace news_aggregator.console.Menu.Handler
                     Console.WriteLine($"source: {article.Source}");
                     Console.WriteLine($"URL: {article.Url}");
                     Console.WriteLine($"{article.Category}: {article.Category}");
+                    Console.WriteLine($"You Liked: {(article.IsLikedByUser ? "✔️" : "❌")} | You Disliked: {(article.IsDislikedByUser ? "✔️" : "❌")}");
+                    Console.WriteLine($"Likes: {article.Likes} | Dislikes: {article.Dislikes}");
                     Console.WriteLine(new string('-', 50));
                 }
             }
 
             while (true)
             {
-                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article): ");
+                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article, 4: Like Article, 5: DisLike Article): ");
                 string option = Console.ReadLine()!;
 
                 if (option == "1")
@@ -80,9 +85,35 @@ namespace news_aggregator.console.Menu.Handler
                         Console.WriteLine("Invalid Article Id.");
                     }
                 }
+                else if (option == "4")
+                {
+                    Console.Write("Enter Article Id to like: ");
+                    if (int.TryParse(Console.ReadLine(), out int articleId))
+                    {
+                        var result = await _newsService.LikeArticleAsync(articleId);
+                        Console.WriteLine(result ? " You liked the article." : "❌ Failed to like article.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Article Id.");
+                    }
+                }
+                else if (option == "5")
+                {
+                    Console.Write("Enter Article Id to dislike: ");
+                    if (int.TryParse(Console.ReadLine(), out int articleId))
+                    {
+                        var result = await _newsService.DislikeArticleAsync(articleId);
+                        Console.WriteLine(result ? "You disliked the article." : " Failed to dislike article.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid Article Id.");
+                    }
+                }
                 else
                 {
-                    Console.WriteLine("Invalid option. Please choose 1, 2, or 3.");
+                    Console.WriteLine("Invalid option. Please choose 1, 2, 3, 4 or 5.");
                 }
             }
         }

@@ -22,6 +22,7 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<UserArticleInteraction?> GetInteractionAsync(int userId, int articleId)
         {
             return await _context.UserArticleInteractions
+                .Include(x => x.NewsArticle)
                 .FirstOrDefaultAsync(x => x.UserId == userId && x.NewsArticleId == articleId);
         }
 

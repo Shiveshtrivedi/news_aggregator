@@ -94,13 +94,17 @@ namespace news_aggregator.infrastructure.Repositories
                 query = query.Where(n => n.PublishedAt < end);
             }
             var articles = await query
-                .Select(n => new NewsArticleDto
+                .Select(news => new NewsArticleDto
                 {
-                    NewsArticleId = n.NewsArticleId,
-                    Title = n.Title,
-                    Content = n.Content,
-                    Category = n.Category.ToString(),
-                    PublishedAt = n.PublishedAt
+                    NewsArticleId = news.NewsArticleId,
+                    Title = news.Title,
+                    Content = news.Content,
+                    Category = news.Category.ToString(),
+                    PublishedAt = news.PublishedAt,
+                    Url = news.Url,
+                    Source = news.Source,
+                    Likes = news.Likes,
+                    DisLikes = news.Dislikes
                 })
                 .ToListAsync();
 
@@ -151,7 +155,5 @@ namespace news_aggregator.infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
-
-
     }
 }

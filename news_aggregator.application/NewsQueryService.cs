@@ -62,12 +62,14 @@ namespace news_aggregator.application
                     NewsArticleId = article.NewsArticleId,
                     Title = article.Title,
                     Content = article.Content,
+                    Url = article.Url,
+                    Source = article.Source,
                     Category = article.Category,
                     PublishedAt = article.PublishedAt,
                     IsLikedByUser = interaction?.IsLiked ?? false,
                     IsDislikedByUser = interaction?.IsDisliked ?? false,
-                    Likes = interaction?.NewsArticle?.Likes ?? 0,           
-                    Dislikes = interaction?.NewsArticle?.Dislikes ?? 0      
+                    Likes = article.Likes,           
+                    Dislikes = article.DisLikes
                 });
             }
 

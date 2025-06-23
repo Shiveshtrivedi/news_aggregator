@@ -46,7 +46,18 @@ namespace news_aggregator.console.Services
 
             var articles = await response.Content.ReadFromJsonAsync<List<NewsArticleDto>>();
             return articles ?? new List<NewsArticleDto>();
+        }
 
+        public async Task<bool> LikeArticleAsync(int articleId)
+        {
+            var response = await _httpClient.PostAsync($"api/News/like/{articleId}", null);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DislikeArticleAsync(int articleId)
+        {
+            var response = await _httpClient.PostAsync($"api/News/dislike/{articleId}", null);
+            return response.IsSuccessStatusCode;
         }
 
     }
