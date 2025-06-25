@@ -2,6 +2,7 @@
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.domain.Models;
 using news_application.Context;
+using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,8 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<UserArticleInteraction?> GetInteractionAsync(int userId, int articleId)
         {
             return await _context.UserArticleInteractions
-                .Include(x => x.NewsArticle)
-                .FirstOrDefaultAsync(x => x.UserId == userId && x.NewsArticleId == articleId);
+                .Include(newsArticle => newsArticle.NewsArticle)
+                .FirstOrDefaultAsync(newsArticle => newsArticle.UserId == userId && newsArticle.NewsArticleId == articleId);
         }
 
         public async Task AddOrUpdateInteractionAsync(UserArticleInteraction interaction)

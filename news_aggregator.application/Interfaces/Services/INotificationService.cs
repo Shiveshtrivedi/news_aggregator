@@ -13,5 +13,6 @@ namespace news_aggregator.application.Interfaces.Services
         Task CreateNotificationAsync(int userId, string message);
         Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
         Task NotifyUserAsync(int userId, string message);
+        Task NotifyAdminAsync(string messageHtml);
     }
 }

@@ -5,6 +5,7 @@ using news_aggregator.application.Interfaces.Services;
 using news_aggregator.shared.CustomException.ExternalSource;
 using news_aggregator.shared.CustomException.NewsArticle;
 using System.Security.Claims;
+using news_aggregator.domain.Models.DTOs;
 
 namespace news_aggregator.Controllers
 {
@@ -15,12 +16,14 @@ namespace news_aggregator.Controllers
         private readonly INewsService _newsService;
         private readonly INewsQueryService _newsQueryService;
         private readonly INewsInteractionService _newsInteractionService;
+        private readonly IReportArticleService _reportArticleService;
 
-        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService)
+        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService, IReportArticleService reportArticleService)
         {
             _newsService = newsService;
             _newsQueryService = newsQueryService;
             _newsInteractionService = newsInteractionService;
+            _reportArticleService = reportArticleService;
         }
 
         //[Authorize(Roles = "Admin")]
@@ -154,6 +157,23 @@ namespace news_aggregator.Controllers
             }
         }
 
+        [HttpPost("report/{articleId}")]
+        public async Task<IActionResult> ReportArticle(int articleId, [FromBody] ReportRequestDto dto)
+        {
+            var userIdClaim = User.FindFirst("UserId");
+
+            if (userIdClaim == null)
+                return Unauthorized("User ID claim missing.");
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+                return Unauthorized("Invalid user ID.");
+
+            var success = await _reportArticleService.ReportArticleAsync(articleId, userId, dto.Message);
+            if (!success)
+                return BadRequest("You have already reported this article.");
+
+            return Ok("Article reported successfully.");
+        }
 
     }
 }

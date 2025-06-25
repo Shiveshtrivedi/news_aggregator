@@ -32,11 +32,11 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<IEnumerable<NewsArticle>> GetSavedArticlesByUserIdAsync(int userId)
         {
             var savedArticles = await _context.SavedArticles
-                .Where(sa => sa.UserId == userId)
-                .Include(sa => sa.NewsArticle)
+                .Where(savedArticle => savedArticle.UserId == userId)
+                .Include(savedArticle => savedArticle.NewsArticle)
                 .ToListAsync();
 
-            return savedArticles.Select(sa => sa.NewsArticle);
+            return savedArticles.Select(savedArticle => savedArticle.NewsArticle);
         }
 
         public async Task SaveArticleAsync(int userId, int newsArticleId)

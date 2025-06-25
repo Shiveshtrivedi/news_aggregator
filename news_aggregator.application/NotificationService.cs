@@ -74,5 +74,23 @@ namespace news_aggregator.application
             await SendEmailAsync(user.Email, "New Notification", message);
         }
 
+        public async Task NotifyAdminAsync(string messageHtml)
+        {
+            var adminUserId = int.Parse(_configuration["Admin:UserId"]);
+
+            var adminEmail = _configuration["Admin:Email"];
+
+            var notification = new Notification
+            {
+                UserId = adminUserId,
+                Message = "A new article has been reported. Please review.",
+                SentAt = DateTime.UtcNow
+            };
+            await _notificationRepository.AddNotificationAsync(notification);
+
+            await SendEmailAsync(adminEmail, " Article Reported", messageHtml);
+        }
+
+
     }
 }

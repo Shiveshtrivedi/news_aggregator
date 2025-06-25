@@ -26,5 +26,21 @@ namespace news_aggregator.application
 
             return stringbuilder.ToString();
         }
+
+        public string BuildReportNotification(NewsArticleDto? article, string reportMessage, string? reportedBy)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("<h3> Article Reported</h3>");
+            sb.AppendLine($"<strong>Reported By:</strong> {reportedBy}<br/>");
+            sb.AppendLine($"<strong>Title:</strong> {article.Title}<br/>");
+            sb.AppendLine($"<strong>Category:</strong> {article.Category}<br/>");
+            sb.AppendLine($"<strong>Published At:</strong> {article.PublishedAt}<br/>");
+            sb.AppendLine($"<strong>Source:</strong> {article.Source}<br/>");
+            sb.AppendLine($"<strong>URL:</strong> <a href=\"{article.Url}\" target=\"_blank\">{article.Url}</a><br/>");
+            sb.AppendLine("<hr/>");
+            sb.AppendLine($"<strong>Report Message:</strong><br/>{reportMessage}");
+
+            return sb.ToString();
+        }
     }
 }

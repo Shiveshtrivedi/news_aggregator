@@ -7,6 +7,7 @@
         sports=3,
         uncategorized=4,
         technology=5,
-        general=6
+        general=6,
+        health=7
     }
 }

@@ -23,8 +23,8 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task AddOrUpdateAsync(NotificationConfig config)
         {
             var existingConfig = await _context.NotificationConfigs
-               .Include(n => n.CategorySettings)
-               .FirstOrDefaultAsync(n => n.UserId == config.UserId);
+               .Include(newsArticle => newsArticle.CategorySettings)
+               .FirstOrDefaultAsync(newsArticle => newsArticle.UserId == config.UserId);
 
             if (existingConfig == null)
             {
@@ -37,7 +37,7 @@ namespace news_aggregator.infrastructure.Repositories
                 foreach (var updatedSetting in config.CategorySettings)
                 {
                     var existingSetting = existingConfig.CategorySettings
-                        .FirstOrDefault(s => s.CategoryName.ToLower() == updatedSetting.CategoryName.ToLower());
+                        .FirstOrDefault(setting => setting.CategoryName.ToLower() == updatedSetting.CategoryName.ToLower());
 
                     if (existingSetting != null)
                     {
@@ -61,8 +61,8 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<NotificationConfig?> GetByUserAsync(int userId)
         {
             return await _context.NotificationConfigs
-                .Include(n => n.CategorySettings)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .Include(newsArticle => newsArticle.CategorySettings)
+                .FirstOrDefaultAsync(category => category.UserId == userId);
         }
 
         public async Task<NotificationConfig> GetOrCreateAsync(int userId)
@@ -91,9 +91,9 @@ namespace news_aggregator.infrastructure.Repositories
             {
                 UserId = userId,
                 KeywordsEnabled = true,
-                CategorySettings = categories.Select(c => new NotificationCategorySetting
+                CategorySettings = categories.Select(category => new NotificationCategorySetting
                 {
-                    CategoryName = c.CategoryName,
+                    CategoryName = category.CategoryName,
                     IsEnabled = true,
                     UserId = userId
                 }).ToList()
@@ -107,7 +107,7 @@ namespace news_aggregator.infrastructure.Repositories
             foreach (var category in categories)
             {
                 bool exists = config.CategorySettings
-                    .Any(cs => cs.CategoryName.Equals(category.CategoryName, StringComparison.OrdinalIgnoreCase));
+                    .Any(categorySetting => categorySetting.CategoryName.Equals(category.CategoryName, StringComparison.OrdinalIgnoreCase));
 
                 if (!exists)
                 {

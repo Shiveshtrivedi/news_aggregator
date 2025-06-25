@@ -21,7 +21,7 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task<IEnumerable<UserKeyword>> GetByUserAsync(int userId)
         {
-           return  await _context.UserKeywords.Where(u => u.UserId == userId).ToListAsync();
+           return  await _context.UserKeywords.Where(user => user.UserId == userId).ToListAsync();
         }
         public async Task AddKeywordsAsync(int userId, IEnumerable<string> keywords)
         {
@@ -31,7 +31,7 @@ namespace news_aggregator.infrastructure.Repositories
         }
         public async Task RemoveAllKeywordsAsync(int userId)
         {
-            var existing = _context.UserKeywords.Where(u => u.UserId == userId);
+            var existing = _context.UserKeywords.Where(user => user.UserId == userId);
             _context.UserKeywords.RemoveRange(existing);
             await _context.SaveChangesAsync();
         }

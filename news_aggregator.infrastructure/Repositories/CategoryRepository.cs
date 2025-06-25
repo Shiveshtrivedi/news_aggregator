@@ -23,7 +23,7 @@ namespace news_aggregator.infrastructure.Repositories
         public async Task<bool> ExistsAsync(string categoryName)
         {
             return await _context.Categories
-                .AnyAsync(c => c.CategoryName.ToLower() == categoryName.ToLower());
+                .AnyAsync(category => category.CategoryName.ToLower() == categoryName.ToLower());
         }
 
     }

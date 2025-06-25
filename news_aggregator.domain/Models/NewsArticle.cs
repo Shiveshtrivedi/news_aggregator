@@ -1,4 +1,5 @@
-﻿using news_application.Enum;
+﻿using news_aggregator.domain.Models;
+using news_application.Enum;
 using System.Text.Json.Serialization;
 
 namespace news_application.Models
@@ -20,5 +21,9 @@ namespace news_application.Models
         public int? ExternalSourceId { get; set; }
         [JsonIgnore]
         public ExternalSource? ExternalSource { get; set; }
+        public bool IsHidden { get; set; } = false;
+        public int ReportCount { get; set; } = 0;
+        public ICollection<ReportArticle> Reports { get; set; }
+
     }
 }

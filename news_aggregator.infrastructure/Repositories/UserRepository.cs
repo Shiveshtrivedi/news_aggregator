@@ -16,7 +16,7 @@ namespace news_aggregator.application.Repositories
         }
 
         public async Task<User?> GetByEmailAsync(string email) =>
-            await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            await _context.Users.FirstOrDefaultAsync(user => user.Email == email);
         
     }
 }

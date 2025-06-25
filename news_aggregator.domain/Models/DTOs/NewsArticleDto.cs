@@ -13,10 +13,12 @@ namespace news_aggregator.domain.Models.DTOs
         public string Content { get; set; } = string.Empty;
         public DateTime PublishedAt { get; set; }
         public int? ExternalSourceId { get; set; }
-        public string Category { get; set; }
+        public string Category { get; set; } = string.Empty ;
         public string Source { get; set; } = string.Empty;
         public string Url { get; set; } = string.Empty;
         public int Likes { get; set; }
         public int DisLikes { get; set; }
+        public bool IsHidden { get; set; } = false;
+        public int ReportCount { get; set; } = 0;
     }
 }

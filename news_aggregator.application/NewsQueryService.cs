@@ -18,13 +18,15 @@ namespace news_aggregator.application
     {
         private readonly INewsArticleRepository _newsArticleRepository;
         private readonly IUserArticleInteractionRepository _userArticleInteractionRepository;
+        private readonly IReportArticleRepository _reportArticleRepository;
         private readonly IMapper _mapper;
 
-        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper)
+        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper, IReportArticleRepository reportArticleRepository)
         {
             _newsArticleRepository = newsArticleRepository;
             _userArticleInteractionRepository = userArticleInteractionRepository;
             _mapper = mapper;
+            _reportArticleRepository = reportArticleRepository;
         }
 
         public async Task<IEnumerable<NewsArticleDto>> GetAllNewsAsync()
@@ -68,6 +70,10 @@ namespace news_aggregator.application
 
             foreach (var article in articleDtos)
             {
+                var reportCount = await _reportArticleRepository.GetReportCountAsync(article.NewsArticleId);
+                if (reportCount > 3 || article.IsHidden)
+                    continue;
+
                 var interaction = await _userArticleInteractionRepository.GetInteractionAsync(userId, article.NewsArticleId);
 
                 result.Add(new NewsArticleWithUserInteractionDto

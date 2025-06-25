@@ -140,6 +140,8 @@ namespace news_aggregator
             builder.Services.AddScoped<INotificationHtmlBuilder,NotificationHtmlBuilder >();
             builder.Services.AddScoped<INewsInteractionService, NewsInteractionService>();
             builder.Services.AddScoped<IUserArticleInteractionRepository, UserArticleInteractionRepository>();
+            builder.Services.AddScoped<IReportArticleRepository, ReportArticleRepository>();
+            builder.Services.AddScoped<IReportArticleService, ReportArticleService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 
