@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Handler;
+using news_aggregator.console.Exceptions;
 
 namespace news_aggregator.console.Menu
 {
@@ -77,7 +78,7 @@ namespace news_aggregator.console.Menu
                 else if (choice == "3")
                 {
                     Session.Logout();
-                    return;
+                    throw new LogoutException();
                 }
                 else
                 {
@@ -97,7 +98,17 @@ namespace news_aggregator.console.Menu
             var category = await selector.SelectCategoryAsync();
             if (category == null) return;
 
-            await handler.ShowAndHandleArticlesAsync(category, startDate, endDate);
+            try
+            {
+                await handler.ShowAndHandleArticlesAsync(category, startDate, endDate);
+            }
+            catch(LogoutException)
+            {
+                Session.ProcessLogout();
+                Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
+                await Task.Delay(1000);
+                return;
+            }
         }
     }
 }

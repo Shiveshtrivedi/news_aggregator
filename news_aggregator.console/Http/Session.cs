@@ -39,6 +39,13 @@ namespace news_aggregator.console.Http
         {
             IsLogoutRequested = false;
         }
+
+        public static void ProcessLogout()
+        {
+            Clear();
+            Reset();
+        }
+
     }
 
 }

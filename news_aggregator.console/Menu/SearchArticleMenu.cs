@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
 
@@ -67,7 +68,7 @@ namespace news_aggregator.console.Menu
                         return;
                     case "2":
                         Session.Logout();
-                        return;
+                        throw new LogoutException();
                     case "3":
                         Console.Write("Enter Article Id to save: ");
                         if (int.TryParse(Console.ReadLine(), out int articleId))

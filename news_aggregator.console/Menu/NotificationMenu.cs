@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Handler;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
@@ -49,7 +50,7 @@ namespace news_aggregator.console.Menu
                         return;
                     case "4":
                         Session.Logout();
-                        return;
+                        throw new LogoutException();
                     default:
                         Console.WriteLine("Invalid option. Press any key to try again.");
                         Console.ReadKey();

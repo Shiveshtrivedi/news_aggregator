@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
 using System;
@@ -44,26 +45,37 @@ namespace news_aggregator.console.Menu
 
                 var choice = Console.ReadLine();
 
-                switch (choice)
+                try
                 {
-                    case "1":
-                        await new HeadlinesMenu(_userName,_newsService,_categoryService,_savedArticleService).Show();
-                        break;
-                    case "2":
-                        await new SaveArticleMenu(_savedArticleService, _userName).Show();
-                        break;
-                    case "3":
-                        await new SearchArticleMenu(_newsService, _savedArticleService,_searchArticleService,_userName).Show();
-                        break;
-                    case "4":
-                        await new NotificationMenu(_notificationService, _userName).Show();
-                        break;
-                    case "5":
-                        Session.Logout();
-                        return;
-                    default:
-                        Console.WriteLine("Invalid choice.");
-                        break;
+
+                    switch (choice)
+                    {
+                        case "1":
+                            await new HeadlinesMenu(_userName, _newsService, _categoryService, _savedArticleService).Show();
+                            break;
+                        case "2":
+                            await new SaveArticleMenu(_savedArticleService, _userName).Show();
+                            break;
+                        case "3":
+                            await new SearchArticleMenu(_newsService, _savedArticleService, _searchArticleService, _userName).Show();
+                            break;
+                        case "4":
+                            await new NotificationMenu(_notificationService, _userName).Show();
+                            break;
+                        case "5":
+                            Session.Logout();
+                            return;
+                        default:
+                            Console.WriteLine("Invalid choice.");
+                            break;
+                    }
+                }
+                catch(LogoutException)
+                {
+                    Session.ProcessLogout();
+                    Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
+                    await Task.Delay(1000);
+                    return;
                 }
 
                 Console.WriteLine("Press Enter to continue...");

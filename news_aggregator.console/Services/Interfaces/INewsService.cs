@@ -13,5 +13,7 @@ namespace news_aggregator.console.Services.Interfaces
         Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime startDate, DateTime endDate);
         Task<bool> LikeArticleAsync(int articleId);
         Task<bool> DislikeArticleAsync(int articleId);
-    }
+        Task<bool> ReportArticleAsync(int articleId , string message);
+        
+        }
 }

@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
@@ -36,7 +37,7 @@ namespace news_aggregator.console.Menu
 
                     case "2":
                         Session.Logout();
-                        return;
+                        throw new LogoutException();
 
                     case "3":
                         Console.Write("Enter the Article Id to delete: ");

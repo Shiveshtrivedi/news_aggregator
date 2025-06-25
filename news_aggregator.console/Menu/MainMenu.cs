@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using news_aggregator.console.Exceptions;
 using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Handler;
 using news_aggregator.console.Menu.Interfaces;
@@ -61,49 +62,59 @@ namespace news_aggregator.console.Menu
 
             while (!exit)
             {
-                Session.Reset();
-
-                Console.Clear();
-                Console.WriteLine("Welcome to the News Aggregator application. Please choose the options below.");
-                Console.WriteLine("1. Login");
-                Console.WriteLine("2. Sign up");
-                Console.WriteLine("3. Exit");
-                Console.Write("Enter your choice: ");
-
-                var choice = Console.ReadLine();
-
-                switch (choice)
+                try
                 {
-                    case "1":
-                        await _authHandler.HandleLoginAsync();
-                        break;
+                    Session.Reset();
 
-                    case "2":
-                        await _authHandler.HandleSignUpAsync();
-                        break;
+                    Console.Clear();
+                    Console.WriteLine("Welcome to the News Aggregator application. Please choose the options below.");
+                    Console.WriteLine("1. Login");
+                    Console.WriteLine("2. Sign up");
+                    Console.WriteLine("3. Exit");
+                    Console.Write("Enter your choice: ");
 
-                    case "3":
-                        exit = true;
-                        break;
+                    var choice = Console.ReadLine();
 
-                    default:
-                        Console.WriteLine("Invalid option. Press any key to continue...");
-                        Console.ReadKey();
-                        break;
+                    switch (choice)
+                    {
+                        case "1":
+                            await _authHandler.HandleLoginAsync();
+                            break;
+
+                        case "2":
+                            await _authHandler.HandleSignUpAsync();
+                            break;
+
+                        case "3":
+                            exit = true;
+                            break;
+
+                        default:
+                            Console.WriteLine("Invalid option. Press any key to continue...");
+                            Console.ReadKey();
+                            break;
+                    }
+
+                    if (Session.IsLogoutRequested)
+                    {
+                        Session.Clear();
+                        Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
+                        await Task.Delay(1000);
+                        continue;
+                    }
+
+                    if (!exit)
+                    {
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+                    }
                 }
-
-                if (Session.IsLogoutRequested)
+                catch (LogoutException)
                 {
-                    Session.Clear();
+                    Session.ProcessLogout();
                     Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
                     await Task.Delay(1000);
                     continue;
-                }
-
-                if (!exit)
-                {
-                    Console.WriteLine("Press Enter to continue...");
-                    Console.ReadLine();
                 }
             }
 

@@ -60,5 +60,16 @@ namespace news_aggregator.console.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> ReportArticleAsync(int articleId, string message)
+        {
+            var requestBody = new
+            {
+                ArticleId = articleId,
+                Message = message
+            };
+            var response = await _httpClient.PostAsJsonAsync($"api/News/report/{articleId}", requestBody);
+            return response.IsSuccessStatusCode;
+        }
+
     }
 }

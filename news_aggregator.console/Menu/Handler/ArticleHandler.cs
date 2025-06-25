@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -34,6 +35,7 @@ namespace news_aggregator.console.Menu.Handler
             Console.WriteLine("3. Save Article");
             Console.WriteLine("4. Like Article");
             Console.WriteLine("5. Dislike Article");
+            Console.WriteLine("6. Report Article");
 
             if (articles == null || articles.Count == 0)
             {
@@ -60,7 +62,7 @@ namespace news_aggregator.console.Menu.Handler
 
             while (true)
             {
-                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article, 4: Like Article, 5: DisLike Article): ");
+                Console.Write("\nChoose an option (1: Back, 2: Logout, 3: Save Article, 4: Like Article, 5: DisLike Article, 6: Report Article): ");
                 string option = Console.ReadLine()!;
 
                 if (option == "1")
@@ -69,7 +71,8 @@ namespace news_aggregator.console.Menu.Handler
                 if (option == "2")
                 {
                     Console.WriteLine("Logging out...");
-                    Environment.Exit(0);
+                    Session.Logout();
+                    throw new LogoutException();
                 }
 
                 if (option == "3")
@@ -114,9 +117,28 @@ namespace news_aggregator.console.Menu.Handler
                         Console.WriteLine("Invalid Article Id.");
                     }
                 }
+                else if (option == "6")
+                {
+                    Console.Write("Enter Article Id to Report: ");
+                    if (int.TryParse(Console.ReadLine(), out int articleId))
+                    {
+                        Console.Write("Enter reason/message for reporting: ");
+                        string message = Console.ReadLine()!;
+
+                        var result = await _newsService.ReportArticleAsync(articleId,message);
+                        Console.WriteLine(result
+                            ? " Article reported successfully."
+                            : "You have already reported this article.");
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("Invalid Article Id.");
+                    }
+                }
                 else
                 {
-                    Console.WriteLine("Invalid option. Please choose 1, 2, 3, 4 or 5.");
+                    Console.WriteLine("Invalid option. Please choose 1, 2, 3, 4, 5 or 6.");
                 }
             }
         }
