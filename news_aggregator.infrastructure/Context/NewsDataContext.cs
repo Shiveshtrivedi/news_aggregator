@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using news_aggregator.domain.Models;
 using news_application.Enum;
 using news_application.Models;
@@ -7,7 +8,11 @@ namespace news_application.Context
 {
     public class NewsDataContext : DbContext
     {
-        public NewsDataContext(DbContextOptions<NewsDataContext> options) : base(options) { }
+        private readonly IConfiguration _configuration;
+        public NewsDataContext(DbContextOptions<NewsDataContext> options, IConfiguration configuration) : base(options) 
+        {
+            _configuration = configuration;
+        }
 
         public DbSet<User> Users { get; set; }
         public DbSet<NewsArticle> NewsArticles { get; set; }
@@ -31,22 +36,11 @@ namespace news_application.Context
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
-                    UserId = 1,
-                    UserName = "shivesh",
-                    Email = "shivesh.trivedi@intimetec.com",
-                    Password = "Admin@123",
+                    UserId = int.Parse(_configuration["Admin:UserId"]),
+                    UserName = _configuration["Admin:UserName"],
+                    Email = _configuration["Admin:Email"],
+                    Password = _configuration["Admin:Password"],
                     Role = UserRole.Admin,
-                    IsTokenActive = false,
-                    RefreshToken = null,
-                    RefreshTokenExpiryTime = null
-                },
-                new User
-                {
-                    UserId = 2,
-                    UserName = "shivesh",
-                    Email = "shiveshtrivedi159@gmail.com",
-                    Password = "User@123",
-                    Role = UserRole.User,
                     IsTokenActive = false,
                     RefreshToken = null,
                     RefreshTokenExpiryTime = null
