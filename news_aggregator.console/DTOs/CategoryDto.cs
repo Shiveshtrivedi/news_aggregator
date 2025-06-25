@@ -10,5 +10,6 @@ namespace news_aggregator.console.Models
     {
         public int CategoryId { get; set; }
         public string Name { get; set; }
+        public bool IsHidden { get; set; } = false;
     }
 }

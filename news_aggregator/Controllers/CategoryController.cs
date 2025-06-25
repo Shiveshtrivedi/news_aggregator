@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.CategoryException;
@@ -45,6 +46,16 @@ namespace news_aggregator.Controllers
             {
                 return StatusCode(500, new { Message = "An unexpected error occurred." });
             }
+        }
+        [Authorize(Roles = "Admin")]
+        [HttpPatch("{categoryId}/categoryVisibilityToggle")]
+        public async Task<IActionResult> ToggleVisibility(int categoryId)
+        {
+            var success = await _categoryService.ToggleCategoryVisibilityAsync(categoryId);
+            if (!success)
+                return NotFound("Category not found.");
+
+            return Ok(new { message = "Visibility toggled successfully." });
         }
 
     }

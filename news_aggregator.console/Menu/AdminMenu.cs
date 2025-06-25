@@ -41,7 +41,8 @@ namespace news_aggregator.console.Menu
                 Console.WriteLine("2. View the external server’s details");
                 Console.WriteLine("3. Update/Edit the external server’s details");
                 Console.WriteLine("4. Add new News Category");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. Hide/Unhide News Category");
+                Console.WriteLine("6. Logout");
 
                 Console.Write("Enter your choice: ");
                 var choice = Console.ReadLine();
@@ -61,6 +62,9 @@ namespace news_aggregator.console.Menu
                         await _categoryHandler.AddNewCategory();
                         break;
                     case "5":
+                        await _categoryHandler.ToggleCategoryvisibility();
+                        break;
+                    case "6":
                         Session.Logout();
                         return;
                     default:

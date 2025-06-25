@@ -48,5 +48,15 @@ namespace news_aggregator.application
             return _mapper.Map<CategoryDto>(category);
         }
 
+        public async Task<bool> ToggleCategoryVisibilityAsync(int categoryId)
+        {
+            var category = await _categoryRepository.GetByIdAsync(categoryId);
+            if (category == null) return false;
+
+            category.IsHidden = !category.IsHidden;
+            await _categoryRepository.UpdateAsync(category);
+            return true;
+        }
+
     }
 }

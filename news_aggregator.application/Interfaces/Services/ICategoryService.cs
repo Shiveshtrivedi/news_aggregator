@@ -12,7 +12,8 @@ namespace news_aggregator.application.Interfaces.Services
     {
         Task<IEnumerable<CategoryDto>> GetAllAsync();
         Task<CategoryDto> CreateAsync(CreateCategoryDto dto);
-        
+        Task<bool> ToggleCategoryVisibilityAsync(int categoryId);
+
     }
 
 }

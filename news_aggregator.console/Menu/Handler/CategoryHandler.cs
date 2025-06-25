@@ -24,5 +24,32 @@ namespace news_aggregator.console.Menu.NewFolder
             Console.WriteLine(success ? "Category added successfully." : "Failed to add category.");
             Console.ReadKey();
         }
+
+        public async Task ToggleCategoryvisibility()
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+
+            Console.WriteLine("Available Categories:");
+            foreach (var category in categories)
+            {
+                Console.WriteLine($"{category.CategoryId}. {category.Name} (Hidden: {category.IsHidden})");
+            }
+
+            Console.Write("Enter Category ID to toggle visibility: ");
+
+            if (int.TryParse(Console.ReadLine(), out int categoryId))
+            {
+                var result = await _categoryService.ToggleCategoryVisibilityAsync(categoryId);
+                Console.WriteLine(result
+                    ? "Category visibility toggled successfully."
+                    : " Failed to toggle category visibility.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid Category ID.");
+            }
+
+            Console.ReadKey();
+        }
     }
 }

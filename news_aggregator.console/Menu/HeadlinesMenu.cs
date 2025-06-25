@@ -104,10 +104,7 @@ namespace news_aggregator.console.Menu
             }
             catch(LogoutException)
             {
-                Session.ProcessLogout();
-                Console.WriteLine("\nYou have been logged out. Returning to Home Screen...");
-                await Task.Delay(1000);
-                return;
+                throw;
             }
         }
     }

@@ -118,6 +118,9 @@ namespace news_aggregator.infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("bit");
+
                     b.HasKey("CategoryId");
 
                     b.ToTable("Categories");
@@ -126,27 +129,32 @@ namespace news_aggregator.infrastructure.Migrations
                         new
                         {
                             CategoryId = 1,
-                            CategoryName = "business"
+                            CategoryName = "business",
+                            IsHidden = false
                         },
                         new
                         {
                             CategoryId = 2,
-                            CategoryName = "entertainment"
+                            CategoryName = "entertainment",
+                            IsHidden = false
                         },
                         new
                         {
                             CategoryId = 3,
-                            CategoryName = "sports"
+                            CategoryName = "sports",
+                            IsHidden = false
                         },
                         new
                         {
                             CategoryId = 4,
-                            CategoryName = "uncategorized"
+                            CategoryName = "uncategorized",
+                            IsHidden = false
                         },
                         new
                         {
                             CategoryId = 5,
-                            CategoryName = "technology"
+                            CategoryName = "technology",
+                            IsHidden = false
                         });
                 });
 
@@ -390,20 +398,11 @@ namespace news_aggregator.infrastructure.Migrations
                         new
                         {
                             UserId = 1,
-                            Email = "shivesh.trivedi@intimetec.com",
+                            Email = "shivesh@intimetec.com",
                             IsTokenActive = false,
-                            Password = "Admin@123",
+                            Password = "Test@123",
                             Role = 1,
-                            UserName = "shivesh"
-                        },
-                        new
-                        {
-                            UserId = 2,
-                            Email = "shiveshtrivedi159@gmail.com",
-                            IsTokenActive = false,
-                            Password = "User@123",
-                            Role = 0,
-                            UserName = "shivesh"
+                            UserName = "shiv"
                         });
                 });
 

@@ -39,5 +39,13 @@ namespace news_aggregator.console.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> ToggleCategoryVisibilityAsync(int categoryId)
+        {
+            var content = new StringContent("", Encoding.UTF8,"application/json");
+            var response = await _httpClient.PatchAsync($"api/Category/{categoryId}/categoryVisibilityToggle", content);
+            return response.IsSuccessStatusCode;
+        }
+
+
     }
 }

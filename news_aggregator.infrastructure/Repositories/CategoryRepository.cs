@@ -26,5 +26,12 @@ namespace news_aggregator.infrastructure.Repositories
                 .AnyAsync(category => category.CategoryName.ToLower() == categoryName.ToLower());
         }
 
+        public async Task<Category?> GetByNameAsync(string categoryName)
+        {
+            return await _context.Categories
+                .FirstOrDefaultAsync(c => c.CategoryName.ToLower() == categoryName.ToLower());
+        }
+
+
     }
 }

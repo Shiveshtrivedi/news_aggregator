@@ -6,11 +6,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace news_aggregator.infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class AddingReportFields : Migration
+    public partial class AddingToggleFieldInCategoryAndReportFields : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DeleteData(
+                table: "Users",
+                keyColumn: "UserId",
+                keyValue: 2);
+
             migrationBuilder.AddColumn<bool>(
                 name: "IsHidden",
                 table: "NewsArticles",
@@ -24,6 +29,13 @@ namespace news_aggregator.infrastructure.Migrations
                 type: "int",
                 nullable: false,
                 defaultValue: 0);
+
+            migrationBuilder.AddColumn<bool>(
+                name: "IsHidden",
+                table: "Categories",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
 
             migrationBuilder.CreateTable(
                 name: "ReportArticles",
@@ -53,6 +65,48 @@ namespace news_aggregator.infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.UpdateData(
+                table: "Categories",
+                keyColumn: "CategoryId",
+                keyValue: 1,
+                column: "IsHidden",
+                value: false);
+
+            migrationBuilder.UpdateData(
+                table: "Categories",
+                keyColumn: "CategoryId",
+                keyValue: 2,
+                column: "IsHidden",
+                value: false);
+
+            migrationBuilder.UpdateData(
+                table: "Categories",
+                keyColumn: "CategoryId",
+                keyValue: 3,
+                column: "IsHidden",
+                value: false);
+
+            migrationBuilder.UpdateData(
+                table: "Categories",
+                keyColumn: "CategoryId",
+                keyValue: 4,
+                column: "IsHidden",
+                value: false);
+
+            migrationBuilder.UpdateData(
+                table: "Categories",
+                keyColumn: "CategoryId",
+                keyValue: 5,
+                column: "IsHidden",
+                value: false);
+
+            migrationBuilder.UpdateData(
+                table: "Users",
+                keyColumn: "UserId",
+                keyValue: 1,
+                columns: new[] { "Email", "Password", "UserName" },
+                values: new object[] { "shivesh@intimetec.com", "Test@123", "shiv" });
+
             migrationBuilder.CreateIndex(
                 name: "IX_ReportArticles_NewsArticleId",
                 table: "ReportArticles",
@@ -77,6 +131,22 @@ namespace news_aggregator.infrastructure.Migrations
             migrationBuilder.DropColumn(
                 name: "ReportCount",
                 table: "NewsArticles");
+
+            migrationBuilder.DropColumn(
+                name: "IsHidden",
+                table: "Categories");
+
+            migrationBuilder.UpdateData(
+                table: "Users",
+                keyColumn: "UserId",
+                keyValue: 1,
+                columns: new[] { "Email", "Password", "UserName" },
+                values: new object[] { "shivesh.trivedi@intimetec.com", "Admin@123", "shivesh" });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "UserId", "Email", "IsTokenActive", "Password", "RefreshToken", "RefreshTokenExpiryTime", "Role", "UserName" },
+                values: new object[] { 2, "shiveshtrivedi159@gmail.com", false, "User@123", null, null, 0, "shivesh" });
         }
     }
 }

@@ -19,14 +19,16 @@ namespace news_aggregator.application
         private readonly INewsArticleRepository _newsArticleRepository;
         private readonly IUserArticleInteractionRepository _userArticleInteractionRepository;
         private readonly IReportArticleRepository _reportArticleRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly IMapper _mapper;
 
-        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper, IReportArticleRepository reportArticleRepository)
+        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper, IReportArticleRepository reportArticleRepository, ICategoryRepository categoryRepository)
         {
             _newsArticleRepository = newsArticleRepository;
             _userArticleInteractionRepository = userArticleInteractionRepository;
             _mapper = mapper;
             _reportArticleRepository = reportArticleRepository;
+            _categoryRepository = categoryRepository;
         }
 
         public async Task<IEnumerable<NewsArticleDto>> GetAllNewsAsync()
@@ -70,6 +72,11 @@ namespace news_aggregator.application
 
             foreach (var article in articleDtos)
             {
+                var articleCategory = await _categoryRepository.GetByNameAsync(article.Category);
+
+                if(articleCategory?.IsHidden == true)
+                    continue; 
+
                 var reportCount = await _reportArticleRepository.GetReportCountAsync(article.NewsArticleId);
                 if (reportCount > 3 || article.IsHidden)
                     continue;

@@ -11,6 +11,7 @@ namespace news_aggregator.console.Services.Interfaces
     {
         Task<List<CategoryDto>> GetAllCategoriesAsync();
         Task<bool> AddCategoryAsync(string categoryName);
+        Task<bool> ToggleCategoryVisibilityAsync(int categoryId);
 
     }
 }

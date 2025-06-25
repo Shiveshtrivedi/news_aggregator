@@ -26,7 +26,7 @@ namespace news_aggregator.Context
             var optionsBuilder = new DbContextOptionsBuilder<NewsDataContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
-            return new NewsDataContext(optionsBuilder.Options);
+            return new NewsDataContext(optionsBuilder.Options, config);
         }
     }
 }
