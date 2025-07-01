@@ -24,6 +24,7 @@ namespace news_application.Context
         public DbSet<UserKeyword> UserKeywords { get; set; }
         public DbSet<UserArticleInteraction> UserArticleInteractions { get; set; }
         public DbSet<ReportArticle> ReportArticles { get; set; }
+        public DbSet<BlockedKeyword> BlockedKeywords { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
