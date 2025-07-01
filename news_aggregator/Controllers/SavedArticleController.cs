@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_application.Models;
 
@@ -6,6 +7,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SavedArticleController : ControllerBase
     {
         private readonly ISavedArticleService _savedArticleService;
@@ -23,7 +25,7 @@ namespace news_aggregator.Controllers
                 await _savedArticleService.SaveArticleAsync(userId, articleId);
                 return Ok(new { Message = "Article saved successfully." });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -38,7 +40,7 @@ namespace news_aggregator.Controllers
                 var articles = await _savedArticleService.GetSavedArticlesByUserIdAsync(userId);
                 return Ok(articles);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -52,7 +54,7 @@ namespace news_aggregator.Controllers
                 await _savedArticleService.DeleteSavedArticleAsync(userId, articleId);
                 return Ok(new { Message = "Saved article deleted successfully." });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }

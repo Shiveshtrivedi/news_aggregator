@@ -142,6 +142,8 @@ namespace news_aggregator
             builder.Services.AddScoped<IUserArticleInteractionRepository, UserArticleInteractionRepository>();
             builder.Services.AddScoped<IReportArticleRepository, ReportArticleRepository>();
             builder.Services.AddScoped<IReportArticleService, ReportArticleService>();
+            builder.Services.AddScoped<IBlockedKeywordRepository, BlockedKeywordRepository>();
+            builder.Services.AddScoped<IBlockedKeywordService, BlockedKeywordService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

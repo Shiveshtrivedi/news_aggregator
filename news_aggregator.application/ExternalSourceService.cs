@@ -55,13 +55,49 @@ namespace news_aggregator.application
             await _repository.AddAsync(source);
         }
 
+        public async Task<bool> UpdateExternalSourceAsync(int id, ExternalSourceDto updatedSource)
+        {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new ExternalSourceNotFoundException($"External source with ID {id} not found.");
+
+            existing.ExternalSourceName = updatedSource.ExternalSourceName;
+            existing.ApiKey = updatedSource.ApiKey;
+            existing.BaseUrl = updatedSource.BaseUrl;
+            existing.IsActive = updatedSource.IsActive;
+            existing.LastAccessed = updatedSource.LastAccessed;
+
+            await _repository.UpdateAsync(existing);
+            return true;
+        }
         public async Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto)
         {
-            var updated = await _repository.UpdatePartialAsync(id, dto);
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new ExternalSourceNotFoundException($"External source with ID {id} not found.");
 
-            if (!updated)
-                throw new ExternalSourceUpdateFailedException($"Update failed for External Source with ID {id}.");
+            if (!string.IsNullOrWhiteSpace(dto.ExternalSourceName))
+                existing.ExternalSourceName = dto.ExternalSourceName;
 
+            if (!string.IsNullOrWhiteSpace(dto.ApiKey))
+                existing.ApiKey = dto.ApiKey;
+
+            if (!string.IsNullOrWhiteSpace(dto.BaseUrl))
+                existing.BaseUrl = dto.BaseUrl;
+
+            if (!string.IsNullOrWhiteSpace(dto.AuthParamName))
+                existing.AuthParamName = dto.AuthParamName;
+
+            if (!string.IsNullOrWhiteSpace(dto.AuthLocation))
+                existing.AuthLocation = dto.AuthLocation;
+
+            if (dto.IsActive.HasValue)
+                existing.IsActive = dto.IsActive.Value;
+
+            if (dto.LastAccessed.HasValue)
+                existing.LastAccessed = dto.LastAccessed.Value;
+
+            await _repository.UpdateAsync(existing);
             return true;
         }
 

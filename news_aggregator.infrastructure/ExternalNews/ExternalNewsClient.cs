@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models;
+using news_aggregator.domain.Models.DTOs;
 using news_aggregator.infrastructure.ExternalApi;
 using news_aggregator.infrastructure.ExternalNews.Interface;
 using news_application.Context;
@@ -31,7 +32,7 @@ namespace news_aggregator.infrastructure.ExternalNews
             _newsApiResponseParser = newsApiResponseParser;
         }
 
-        public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source, string category = "", string keyword = "")
+        public async Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSourceDto source, string category = "", string keyword = "")
         {
             try
             {
@@ -60,7 +61,7 @@ namespace news_aggregator.infrastructure.ExternalNews
                 var rawJson = await response.Content.ReadAsStringAsync();
                 return _newsApiResponseParser.Parse(rawJson, source.ExternalSourceName, category);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Enumerable.Empty<NewsArticle>();
             }

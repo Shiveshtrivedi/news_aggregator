@@ -1,4 +1,5 @@
-﻿using news_application.Models;
+﻿using news_aggregator.domain.Models.DTOs;
+using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,6 @@ namespace news_aggregator.application.Interfaces.Services
 {
     public interface IExternalNewsClient
     {
-        Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSource source,string category = "", string keyword = "");
+        Task<IEnumerable<NewsArticle>> GetLatestArticlesAsync(ExternalSourceDto source,string category = "", string keyword = "");
     }
 }

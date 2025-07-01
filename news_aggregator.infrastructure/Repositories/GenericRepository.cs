@@ -51,5 +51,9 @@ namespace news_aggregator.infrastructure.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

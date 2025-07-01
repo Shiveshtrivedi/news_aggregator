@@ -35,7 +35,7 @@ namespace news_aggregator.application
             if (string.IsNullOrWhiteSpace(dto.CategoryName))
                 throw new InvalidCategoryException("Category name must not be empty.");
 
-            bool exists = await _categoryRepository.ExistsAsync(dto.CategoryName);
+            bool exists = await _categoryRepository.CategoryExistsAsync(dto.CategoryName);
             if (exists)
                 throw new InvalidCategoryException("Category already exists.");
 

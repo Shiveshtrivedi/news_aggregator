@@ -59,7 +59,7 @@ namespace news_aggregator.application
             return _mapper.Map<UserDTO>(newUser);
         }
 
-        public async Task<UserDTO> LoginAsync(LoginDTO loginDto)
+        public async Task<LoginResponseDto> LoginAsync(LoginDTO loginDto)
         {
             if (string.IsNullOrEmpty(loginDto.Email) || string.IsNullOrEmpty(loginDto.Password))
                 throw new ArgumentException("Email and password must be provided.");
@@ -71,10 +71,10 @@ namespace news_aggregator.application
 
             var token = _jwtService.GenerateJwtToken(user);
 
-            var userDto = _mapper.Map<UserDTO>(user);
-            userDto.Token = token;
+            var loginResponseDto = _mapper.Map<LoginResponseDto>(user);
+            loginResponseDto.Token = token;
 
-            return userDto;
+            return loginResponseDto;
         }
 
         public async Task LogoutAsync(string token)

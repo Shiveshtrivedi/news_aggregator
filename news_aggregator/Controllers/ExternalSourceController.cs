@@ -28,7 +28,7 @@ namespace news_aggregator.Controllers
 
                 return Ok(externalSources);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -42,7 +42,7 @@ namespace news_aggregator.Controllers
                 var externalSource = await _externalSourceService.GetSourceByIdAsync(externalSourceId);
                 return Ok(externalSource);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -61,14 +61,14 @@ namespace news_aggregator.Controllers
             {
                 return StatusCode(ex.StatusCode, new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
             
         }
 
-        [HttpPatch("{externalSourceId}")]
+        [HttpPatch("{externalSourceId}/updateExternalSource")]
         public async Task<IActionResult> UpdatePartial(int externalSourceId, [FromBody] UpdateExternalSourceDto dto)
         {
             try
@@ -83,7 +83,7 @@ namespace news_aggregator.Controllers
             {
                 return NotFound(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }

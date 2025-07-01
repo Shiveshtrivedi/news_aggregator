@@ -61,7 +61,7 @@ namespace news_aggregator.application
 
         private async Task ToggleCategoryNotificationAsync(NotificationConfig config, int userId, string category, bool enable)
         {
-            var isValidCategory = await _categoryRepository.ExistsAsync(category);
+            var isValidCategory = await _categoryRepository.CategoryExistsAsync(category);
             if (!isValidCategory)
                 throw new CategoryNotFoundException("category not found");
 

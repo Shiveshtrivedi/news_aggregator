@@ -13,20 +13,16 @@ namespace news_aggregator.infrastructure.Repositories
 {
     public class CategoryRepository : GenericRepository<Category>, ICategoryRepository
     {
-        private readonly NewsDataContext _context;
 
-        public CategoryRepository(NewsDataContext context) : base(context) 
-        {
-            _context = context;
-        }
+        public CategoryRepository(NewsDataContext context) : base(context) { }
        
-        public async Task<bool> ExistsAsync(string categoryName)
+        public async Task<bool> CategoryExistsAsync(string categoryName)
         {
             return await _context.Categories
                 .AnyAsync(category => category.CategoryName.ToLower() == categoryName.ToLower());
         }
 
-        public async Task<Category?> GetByNameAsync(string categoryName)
+        public async Task<Category?> GetCategoryByNameAsync(string categoryName)
         {
             return await _context.Categories
                 .FirstOrDefaultAsync(c => c.CategoryName.ToLower() == categoryName.ToLower());

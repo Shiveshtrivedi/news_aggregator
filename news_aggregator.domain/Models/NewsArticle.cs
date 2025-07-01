@@ -23,7 +23,7 @@ namespace news_application.Models
         public ExternalSource? ExternalSource { get; set; }
         public bool IsHidden { get; set; } = false;
         public int ReportCount { get; set; } = 0;
-        public ICollection<ReportArticle> Reports { get; set; }
+        public ICollection<ReportArticle>? Reports { get; set; }
 
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_application.Models;
@@ -7,6 +8,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class NotificationConfigController : ControllerBase
     {
         private readonly INotificationConfigService _notificationConfigService;
@@ -26,7 +28,7 @@ namespace news_aggregator.Controllers
                 var config = await _notificationConfigService.GetOrCreateForUserAsync(userId);
                 return Ok(config);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -40,7 +42,7 @@ namespace news_aggregator.Controllers
                 await _notificationConfigService.ToggleCategoryAsync(userId, category, enable);
                 return Ok("Category setting updated successfully.");
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -55,7 +57,7 @@ namespace news_aggregator.Controllers
                 await _userKeywordService.SetKeywordsAsync(userId, keywords);
                 return Ok("Keywords updated.");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }

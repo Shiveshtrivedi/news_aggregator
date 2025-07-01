@@ -13,8 +13,8 @@ namespace news_aggregator.domain.Models
         public int UserId { get; set; }
         public int NewsArticleId { get; set; }
         public string Message { get; set; } = string.Empty;
-        public NewsArticle NewsArticle { get; set; }
-        public User User { get; set; }
+        public NewsArticle? NewsArticle { get; set; }
+        public User? User { get; set; }
         public DateTime ReportedAt { get; set; } = DateTime.UtcNow;
     }
 }

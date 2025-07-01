@@ -14,12 +14,8 @@ namespace news_aggregator.infrastructure.Repositories
 {
     public class NewsArticleRepository : GenericRepository<NewsArticle>, INewsArticleRepository
     {
-        private readonly NewsDataContext _context;
 
-        public NewsArticleRepository(NewsDataContext context) : base(context)
-        {
-            _context = context;
-        }
+        public NewsArticleRepository(NewsDataContext context) : base(context) {}
 
         public async Task DeleteOlderThanAsync(DateTime cutoffDate)
         {
@@ -109,51 +105,6 @@ namespace news_aggregator.infrastructure.Repositories
                 .ToListAsync();
 
             return articles;
-        }
-
-        public async Task<NewsArticle?> GetByIdAsync(int articleId)
-        {
-            return await _context.NewsArticles.FindAsync(articleId);
-        }
-
-        public async Task IncrementLikesAsync(int articleId)
-        {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null)
-            {
-                article.Likes++;
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task DecrementLikesAsync(int articleId)
-        {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null && article.Likes > 0)
-            {
-                article.Likes--;
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task IncrementDislikesAsync(int articleId)
-        {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null)
-            {
-                article.Dislikes++;
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public async Task DecrementDislikesAsync(int articleId)
-        {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null && article.Dislikes > 0)
-            {
-                article.Dislikes--;
-                await _context.SaveChangesAsync();
-            }
         }
     }
 }

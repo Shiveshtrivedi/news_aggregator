@@ -20,15 +20,22 @@ namespace news_aggregator.application
         private readonly IUserArticleInteractionRepository _userArticleInteractionRepository;
         private readonly IReportArticleRepository _reportArticleRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly IBlockedKeywordService _blockedKeywordService;
         private readonly IMapper _mapper;
 
-        public NewsQueryService(INewsArticleRepository newsArticleRepository, IUserArticleInteractionRepository userArticleInteractionRepository, IMapper mapper, IReportArticleRepository reportArticleRepository, ICategoryRepository categoryRepository)
+        public NewsQueryService(INewsArticleRepository newsArticleRepository,
+                                IUserArticleInteractionRepository userArticleInteractionRepository,
+                                IMapper mapper,
+                                IReportArticleRepository reportArticleRepository,
+                                ICategoryRepository categoryRepository,
+                                IBlockedKeywordService blockedKeywordService)
         {
             _newsArticleRepository = newsArticleRepository;
             _userArticleInteractionRepository = userArticleInteractionRepository;
             _mapper = mapper;
             _reportArticleRepository = reportArticleRepository;
             _categoryRepository = categoryRepository;
+            _blockedKeywordService = blockedKeywordService;
         }
 
         public async Task<IEnumerable<NewsArticleDto>> GetAllNewsAsync()
@@ -64,7 +71,7 @@ namespace news_aggregator.application
             return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
 
-        public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate,int userId)
+        public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate, int userId)
         {
             var articleDtos = await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
 
@@ -72,10 +79,15 @@ namespace news_aggregator.application
 
             foreach (var article in articleDtos)
             {
-                var articleCategory = await _categoryRepository.GetByNameAsync(article.Category);
+                var articleCategory = await _categoryRepository.GetCategoryByNameAsync(article.Category);
 
-                if(articleCategory?.IsHidden == true)
-                    continue; 
+                if (articleCategory?.IsHidden == true)
+                    continue;
+
+                if (await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Title) || await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Content))
+                {
+                    continue;
+                }
 
                 var reportCount = await _reportArticleRepository.GetReportCountAsync(article.NewsArticleId);
                 if (reportCount > 3 || article.IsHidden)
@@ -94,7 +106,7 @@ namespace news_aggregator.application
                     PublishedAt = article.PublishedAt,
                     IsLikedByUser = interaction?.IsLiked ?? false,
                     IsDislikedByUser = interaction?.IsDisliked ?? false,
-                    Likes = article.Likes,           
+                    Likes = article.Likes,
                     Dislikes = article.DisLikes
                 });
             }

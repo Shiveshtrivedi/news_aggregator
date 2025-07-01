@@ -10,7 +10,6 @@ namespace news_aggregator.application.Interfaces.Repositories
 {
     public interface IExternalSourceRepository : IGenericRepository<ExternalSource>
     {
-        Task<bool> UpdateAsync(int id, ExternalSource source);
-        Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto);
+        
     }
 }

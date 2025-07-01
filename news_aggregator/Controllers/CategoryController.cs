@@ -8,6 +8,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -25,7 +26,7 @@ namespace news_aggregator.Controllers
             return Ok(await _categoryService.GetAllAsync());
 
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 return StatusCode(500, "An error occurred while retrieving categories.");
             }
@@ -42,7 +43,7 @@ namespace news_aggregator.Controllers
             {
                 return BadRequest(new { Message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, new { Message = "An unexpected error occurred." });
             }

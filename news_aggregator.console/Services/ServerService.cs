@@ -41,7 +41,7 @@ namespace news_aggregator.console.Services
 
         public async Task<bool> UpdateServerAsync(int serverId,ServerUpdateDto server)
         {
-            var response = await _httpClient.PatchAsJsonAsync($"api/ExternalSource/{serverId}", server);
+            var response = await _httpClient.PatchAsJsonAsync($"api/ExternalSource/{serverId}/updateExternalSource", server);
             return response.IsSuccessStatusCode;
         }
     }

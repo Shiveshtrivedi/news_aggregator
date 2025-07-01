@@ -14,6 +14,7 @@ namespace news_aggregator.application.Interfaces.Services
         Task<ExternalSourceDto> GetSourceByIdAsync(int id);
         Task AddExternalSourceApi(CreateExternalSourceDto dto);
         Task<bool> UpdatePartialAsync(int id, UpdateExternalSourceDto dto);
+        Task<bool> UpdateExternalSourceAsync(int id, ExternalSourceDto updatedSource);
 
     }
 }

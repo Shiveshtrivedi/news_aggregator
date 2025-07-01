@@ -5,12 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.infrastructure.ExternalNews.Interface;
+using news_aggregator.domain.Models.DTOs;
 
 namespace news_aggregator.infrastructure.ExternalNews
 {
     public class NewsRequestBuilder : INewsRequestBuilder
     {
-        public HttpRequestMessage BuildRequest(ExternalSource source, string category, string keyword)
+        public HttpRequestMessage BuildRequest(ExternalSourceDto source, string category, string keyword)
         {
             var queryParams = new List<string>();
 

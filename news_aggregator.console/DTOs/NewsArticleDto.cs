@@ -10,9 +10,9 @@ namespace news_aggregator.console.Models
     public class NewsArticleDto
     {
         public int? NewsArticleId { get; set; }
-        public string Title { get; set; }
-        public string Content { get; set; }
-        public string Url { get; set; }
+        public string Title { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public CategoryType? Category { get; set; }
         public DateTime PublishedAt { get; set; }
@@ -29,7 +29,10 @@ namespace news_aggregator.console.Models
         Entertainment = 1,
         Sports = 2,
         Technology = 3,
-        Uncategorized = 4
+        Uncategorized = 4,
+        technology = 5,
+        general = 6,
+        health = 7
     }
 
 }

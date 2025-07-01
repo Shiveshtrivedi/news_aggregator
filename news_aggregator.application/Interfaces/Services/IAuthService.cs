@@ -10,7 +10,7 @@ namespace news_aggregator.application.Interfaces.Services
     public interface IAuthService
     {
         Task<UserDTO> SignupAsync(UserDTO userDTO);
-        Task<UserDTO> LoginAsync(LoginDTO loginDto);
+        Task<LoginResponseDto> LoginAsync(LoginDTO loginDto);
         Task LogoutAsync(string token);
     }
 }

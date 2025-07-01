@@ -16,10 +16,5 @@ namespace news_aggregator.application.Interfaces.Repositories
         Task<IEnumerable<NewsArticle>> GetNewsByDateRangeAsync(DateTime startDate, DateTime endDate);
         Task DeleteOlderThanAsync(DateTime cutoffDate);
         Task<List<NewsArticleDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate);
-        Task<NewsArticle?> GetByIdAsync(int articleId);
-        Task IncrementLikesAsync(int articleId);
-        Task DecrementLikesAsync(int articleId);
-        Task IncrementDislikesAsync(int articleId);
-        Task DecrementDislikesAsync(int articleId);
     }
 }

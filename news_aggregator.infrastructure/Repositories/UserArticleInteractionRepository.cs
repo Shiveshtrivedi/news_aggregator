@@ -44,6 +44,46 @@ namespace news_aggregator.infrastructure.Repositories
 
             await _context.SaveChangesAsync();
         }
+
+        public async Task IncrementLikesAsync(int articleId)
+        {
+            var article = await _context.NewsArticles.FindAsync(articleId);
+            if (article != null)
+            {
+                article.Likes++;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DecrementLikesAsync(int articleId)
+        {
+            var article = await _context.NewsArticles.FindAsync(articleId);
+            if (article != null && article.Likes > 0)
+            {
+                article.Likes--;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task IncrementDislikesAsync(int articleId)
+        {
+            var article = await _context.NewsArticles.FindAsync(articleId);
+            if (article != null)
+            {
+                article.Dislikes++;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task DecrementDislikesAsync(int articleId)
+        {
+            var article = await _context.NewsArticles.FindAsync(articleId);
+            if (article != null && article.Dislikes > 0)
+            {
+                article.Dislikes--;
+                await _context.SaveChangesAsync();
+            }
+        }
     }
 
 }

@@ -50,13 +50,13 @@ namespace news_aggregator.console.Services
 
         public async Task<bool> LikeArticleAsync(int articleId)
         {
-            var response = await _httpClient.PostAsync($"api/News/like/{articleId}", null);
+            var response = await _httpClient.PostAsync($"api/News/{articleId}/like", null);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> DislikeArticleAsync(int articleId)
         {
-            var response = await _httpClient.PostAsync($"api/News/dislike/{articleId}", null);
+            var response = await _httpClient.PostAsync($"api/News/{articleId}/dislike", null);
             return response.IsSuccessStatusCode;
         }
 
@@ -67,7 +67,7 @@ namespace news_aggregator.console.Services
                 ArticleId = articleId,
                 Message = message
             };
-            var response = await _httpClient.PostAsJsonAsync($"api/News/report/{articleId}", requestBody);
+            var response = await _httpClient.PostAsJsonAsync($"api/News/{articleId}/report", requestBody);
             return response.IsSuccessStatusCode;
         }
 

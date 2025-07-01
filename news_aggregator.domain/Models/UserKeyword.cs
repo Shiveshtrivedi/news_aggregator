@@ -12,6 +12,6 @@ namespace news_aggregator.domain.Models
         public int UserKeywordId { get; set; }
         public int UserId { get; set; }
         public string Keyword { get; set; } = string.Empty;
-        public User User { get; set; } = null!;
+        public User? User { get; set; }
     }
 }

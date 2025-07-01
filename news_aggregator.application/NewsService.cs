@@ -1,5 +1,6 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.ExternalSource;
 using news_application.Models;
 using System;
@@ -13,25 +14,25 @@ namespace news_aggregator.application
     {
         private readonly IExternalNewsClient _externalNewsClient;
         private readonly INewsArticleRepository _newsArticleRepository;
-        private readonly IExternalSourceRepository _externalSourceRepository;
+        private readonly IExternalSourceService _externalSourceService;
         private readonly INewsProviderFactory _newsProviderFactory;
 
         public NewsService(
             IExternalNewsClient externalNewsClient,
             INewsArticleRepository newsArticleRepository,
-            IExternalSourceRepository externalSourceRepository,
+            IExternalSourceService externalSourceService,
             INewsProviderFactory newsProviderFactory)
         {
             _externalNewsClient = externalNewsClient;
             _newsArticleRepository = newsArticleRepository;
-            _externalSourceRepository = externalSourceRepository;
             _newsProviderFactory = newsProviderFactory;
+            _externalSourceService = externalSourceService;
         }
 
         public async Task<IEnumerable<NewsArticle>> FetchAndSaveExternalNewsAsync()
         {
             var allArticles = new List<NewsArticle>();
-            var sources = await _externalSourceRepository.GetAllAsync();
+            var sources = await _externalSourceService.GetAllSourcesAsync();
             var activeSources = sources.Where(s => s.IsActive).ToList();
 
             foreach (var source in activeSources)
@@ -42,7 +43,7 @@ namespace news_aggregator.application
                     await SaveArticlesAsync(source, articles);
                     allArticles.AddRange(articles);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw new ExternalSourceNotFoundException(source.ExternalSourceName);
                 }
@@ -51,7 +52,7 @@ namespace news_aggregator.application
             return allArticles;
         }
 
-        private async Task<List<NewsArticle>> FetchArticlesAsync(ExternalSource source)
+        private async Task<List<NewsArticle>> FetchArticlesAsync(ExternalSourceDto source)
         {
             var provider = _newsProviderFactory.GetProvider(source.ExternalSourceName);
             var articles = (await _externalNewsClient.GetLatestArticlesAsync(source)).ToList();
@@ -69,7 +70,7 @@ namespace news_aggregator.application
             return articles;
         }
 
-        private async Task SaveArticlesAsync(ExternalSource source, List<NewsArticle> articles)
+        private async Task SaveArticlesAsync(ExternalSourceDto source, List<NewsArticle> articles)
         {
             foreach (var article in articles)
             {
@@ -82,7 +83,7 @@ namespace news_aggregator.application
             }
 
             source.LastAccessed = DateTime.UtcNow;
-            await _externalSourceRepository.UpdateAsync(source.ExternalSourceId, source);
+            await _externalSourceService.UpdateExternalSourceAsync(source.ExternalSourceId, source);
         }
     }
 }

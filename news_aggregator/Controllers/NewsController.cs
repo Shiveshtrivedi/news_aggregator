@@ -11,6 +11,7 @@ namespace news_aggregator.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class NewsController : ControllerBase
     {
         private readonly INewsService _newsService;
@@ -98,14 +99,14 @@ namespace news_aggregator.Controllers
                 var articles = await _newsQueryService.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate, userId);
                 return Ok(articles);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
         }
 
         [Authorize]
-        [HttpPost("like/{articleId}")]
+        [HttpPost("{articleId}/like")]
         public async Task<IActionResult> ToggleLike(int articleId)
         {
             var userIdClaim = User.FindFirst("UserId");
@@ -131,7 +132,7 @@ namespace news_aggregator.Controllers
         }
 
         [Authorize]
-        [HttpPost("dislike/{articleId}")]
+        [HttpPost("{articleId}/dislike")]
         public async Task<IActionResult> ToggleDislike(int articleId)
         {
             var userIdClaim = User.FindFirst("UserId");
@@ -157,7 +158,7 @@ namespace news_aggregator.Controllers
             }
         }
 
-        [HttpPost("report/{articleId}")]
+        [HttpPost("{articleId}/report")]
         public async Task<IActionResult> ReportArticle(int articleId, [FromBody] ReportRequestDto dto)
         {
             var userIdClaim = User.FindFirst("UserId");

@@ -43,7 +43,7 @@ namespace news_aggregator.Controllers
             {
                 return Conflict(new { message = ex.Message });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }
@@ -68,11 +68,11 @@ namespace news_aggregator.Controllers
             {
                 return Unauthorized(new { message = ex.Message });
             }
-            catch (ArgumentException ex)
+            catch (ArgumentException)
             {
                 return StatusCode(500, "Please provide email and passowrd");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
             }

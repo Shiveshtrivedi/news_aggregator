@@ -17,6 +17,7 @@ namespace news_aggregator.application.Mapping
                 .ForMember(destination => destination.Name, option => option.MapFrom(source => source.CategoryName));
 
             CreateMap<User, UserDTO>();
+            CreateMap<User, LoginResponseDto>();
 
             CreateMap<ExternalSource, ExternalSourceDto>();
 

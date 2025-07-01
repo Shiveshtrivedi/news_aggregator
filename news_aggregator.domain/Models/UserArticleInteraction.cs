@@ -18,8 +18,8 @@ namespace news_aggregator.domain.Models
 
         public DateTime Timestamp { get; set; } = DateTime.UtcNow;
 
-        public NewsArticle NewsArticle { get; set; }
-        public User User { get; set; } 
+        public NewsArticle? NewsArticle { get; set; }
+        public User? User { get; set; } 
     }
 
 }

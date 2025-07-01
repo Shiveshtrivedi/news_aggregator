@@ -40,12 +40,12 @@ namespace news_aggregator.application
                     IsLiked = true,
                     IsDisliked = false
                 };
-                await _articleRepository.IncrementLikesAsync(articleId);
+                await _interactionRepository.IncrementLikesAsync(articleId);
             }
             else if (interaction.IsLiked)
             {
                 interaction.IsLiked = false;
-                await _articleRepository.DecrementLikesAsync(articleId);
+                await _interactionRepository.DecrementLikesAsync(articleId);
             }
             else
             {
@@ -53,9 +53,9 @@ namespace news_aggregator.application
                 if (interaction.IsDisliked)
                 {
                     interaction.IsDisliked = false;
-                    await _articleRepository.DecrementDislikesAsync(articleId);
+                    await _interactionRepository.DecrementDislikesAsync(articleId);
                 }
-                await _articleRepository.IncrementLikesAsync(articleId);
+                await _interactionRepository.IncrementLikesAsync(articleId);
             }
 
             await _interactionRepository.AddOrUpdateInteractionAsync(interaction);
@@ -77,12 +77,12 @@ namespace news_aggregator.application
                     IsLiked = false,
                     IsDisliked = true
                 };
-                await _articleRepository.IncrementDislikesAsync(articleId);
+                await _interactionRepository.IncrementDislikesAsync(articleId);
             }
             else if (interaction.IsDisliked)
             {
                 interaction.IsDisliked = false;
-                await _articleRepository.DecrementDislikesAsync(articleId);
+                await _interactionRepository.DecrementDislikesAsync(articleId);
             }
             else
             {
@@ -90,9 +90,9 @@ namespace news_aggregator.application
                 if (interaction.IsLiked)
                 {
                     interaction.IsLiked = false;
-                    await _articleRepository.DecrementLikesAsync(articleId);
+                    await _interactionRepository.DecrementLikesAsync(articleId);
                 }
-                await _articleRepository.IncrementDislikesAsync(articleId);
+                await _interactionRepository.IncrementDislikesAsync(articleId);
             }
             await _interactionRepository.AddOrUpdateInteractionAsync(interaction);
         }

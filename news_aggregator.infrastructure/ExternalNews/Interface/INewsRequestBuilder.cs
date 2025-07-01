@@ -1,4 +1,5 @@
-﻿using news_application.Models;
+﻿using news_aggregator.domain.Models.DTOs;
+using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace news_aggregator.infrastructure.ExternalNews.Interface
 {
     public interface INewsRequestBuilder
     {
-        HttpRequestMessage BuildRequest(ExternalSource source, string category, string keyword);
+        HttpRequestMessage BuildRequest(ExternalSourceDto source, string category, string keyword);
     }
 
 }
