@@ -21,7 +21,7 @@ namespace news_aggregator.infrastructure.Repositories
         {
             var existingKeyword = await _context.BlockedKeywords.FirstOrDefaultAsync(keywords=>keywords.Keyword.ToLower()==keyword.ToLower());
 
-            if (existingKeyword != null)
+            if (existingKeyword == null)
             {
                 await _context.BlockedKeywords.AddAsync(new BlockedKeyword {Keyword = keyword });
                 await _context.SaveChangesAsync();

@@ -17,6 +17,7 @@ namespace news_aggregator.console.Menu.Handler
         private readonly ISavedArticleService _savedArticleService;
         private readonly ISearchArticleService _searchArticleService;
         private readonly INotificationService _notificationService;
+        private readonly IBlockedKeywordService _blockedKeywordService;
 
         public AuthHandler(
             IAuthService authService,
@@ -25,7 +26,8 @@ namespace news_aggregator.console.Menu.Handler
             INewsService newsService,
             ISavedArticleService savedArticleService,
             ISearchArticleService searchArticleService,
-            INotificationService notificationService)
+            INotificationService notificationService,
+            IBlockedKeywordService blockedKeywordService)
         {
             _authService = authService;
             _serverService = serverService;
@@ -34,6 +36,7 @@ namespace news_aggregator.console.Menu.Handler
             _savedArticleService = savedArticleService;
             _searchArticleService = searchArticleService;
             _notificationService = notificationService;
+            _blockedKeywordService = blockedKeywordService;
         }
 
         public async Task HandleLoginAsync()
@@ -52,7 +55,7 @@ namespace news_aggregator.console.Menu.Handler
 
             if (user.Role == 1)
             {
-                var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService);
+                var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService,_blockedKeywordService);
                 await adminMenu.Show();
             }
             else

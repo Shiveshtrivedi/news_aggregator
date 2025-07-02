@@ -1,4 +1,5 @@
 ﻿using news_aggregator.console.Http;
+using news_aggregator.console.Menu.Handler;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Menu.NewFolder;
 using news_aggregator.console.Models;
@@ -19,14 +20,16 @@ namespace news_aggregator.console.Menu
         private readonly DateTime _endDate;
         private readonly ExternalServerHandler _serverHandler;
         private readonly CategoryHandler _categoryHandler;
+        private readonly BlockedKeywordHandler _blockedKeywordHandler;
 
-        public AdminMenu(string userName, IServerService serverService, ICategoryService categoryService)
+        public AdminMenu(string userName, IServerService serverService, ICategoryService categoryService,IBlockedKeywordService blockedKeywordService)
         {
             _userName = userName;
             _startDate = DateTime.Now;
             _endDate = DateTime.Now;
             _serverHandler = new ExternalServerHandler(serverService);
             _categoryHandler = new CategoryHandler(categoryService);
+            _blockedKeywordHandler = new BlockedKeywordHandler(blockedKeywordService);
         }
 
         public async Task Show()
@@ -43,6 +46,7 @@ namespace news_aggregator.console.Menu
                 Console.WriteLine("4. Add new News Category");
                 Console.WriteLine("5. Hide/Unhide News Category");
                 Console.WriteLine("6. Logout");
+                Console.WriteLine("7. Manage Blocked Keywords");
 
                 Console.Write("Enter your choice: ");
                 var choice = Console.ReadLine();
@@ -67,6 +71,9 @@ namespace news_aggregator.console.Menu
                     case "6":
                         Session.Logout();
                         return;
+                    case "7":
+                        await _blockedKeywordHandler.ManageBlockedKeywordsAsync();
+                        break;
                     default:
                         Console.WriteLine("Invalid choice. Press any key...");
                         Console.ReadKey();
