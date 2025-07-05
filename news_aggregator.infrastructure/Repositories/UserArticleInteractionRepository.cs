@@ -84,6 +84,15 @@ namespace news_aggregator.infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<List<int>> GetLikedArticleIdsAsync(int userId)
+        {
+            return await _context.UserArticleInteractions
+                .Where(i => i.UserId == userId && i.IsLiked)
+                .Select(i => i.NewsArticleId)
+                .ToListAsync();
+        }
+
     }
 
 }

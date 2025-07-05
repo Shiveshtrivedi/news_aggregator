@@ -15,6 +15,7 @@ namespace news_aggregator.application.Interfaces.Repositories
         Task DecrementLikesAsync(int articleId);
         Task IncrementDislikesAsync(int articleId);
         Task DecrementDislikesAsync(int articleId);
+        Task<List<int>> GetLikedArticleIdsAsync(int userId);
     }
 
 }

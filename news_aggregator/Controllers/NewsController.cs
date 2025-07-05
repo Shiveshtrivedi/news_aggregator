@@ -18,13 +18,15 @@ namespace news_aggregator.Controllers
         private readonly INewsQueryService _newsQueryService;
         private readonly INewsInteractionService _newsInteractionService;
         private readonly IReportArticleService _reportArticleService;
+        private readonly IRecommendationService _recommendationService;
 
-        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService, IReportArticleService reportArticleService)
+        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService, IReportArticleService reportArticleService, IRecommendationService recommendationService)
         {
             _newsService = newsService;
             _newsQueryService = newsQueryService;
             _newsInteractionService = newsInteractionService;
             _reportArticleService = reportArticleService;
+            _recommendationService = recommendationService;
         }
 
         //[Authorize(Roles = "Admin")]
@@ -174,6 +176,14 @@ namespace news_aggregator.Controllers
                 return BadRequest("You have already reported this article.");
 
             return Ok("Article reported successfully.");
+        }
+
+        [HttpGet("personalized")]
+        public async Task<IActionResult> GetPersonalizedArticles()
+        {
+            int userId = int.Parse(User.FindFirst("userId")?.Value!);
+            var result = await _recommendationService.GetPersonalizedArticlesAsync(userId);
+            return Ok(result);
         }
 
     }
