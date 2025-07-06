@@ -18,6 +18,7 @@ namespace news_aggregator.console.Menu.Handler
         private readonly ISearchArticleService _searchArticleService;
         private readonly INotificationService _notificationService;
         private readonly IBlockedKeywordService _blockedKeywordService;
+        private readonly IUserKeywordService _userKeywordService;
 
         public AuthHandler(
             IAuthService authService,
@@ -27,7 +28,8 @@ namespace news_aggregator.console.Menu.Handler
             ISavedArticleService savedArticleService,
             ISearchArticleService searchArticleService,
             INotificationService notificationService,
-            IBlockedKeywordService blockedKeywordService)
+            IBlockedKeywordService blockedKeywordService,
+            IUserKeywordService userKeywordService)
         {
             _authService = authService;
             _serverService = serverService;
@@ -37,6 +39,7 @@ namespace news_aggregator.console.Menu.Handler
             _searchArticleService = searchArticleService;
             _notificationService = notificationService;
             _blockedKeywordService = blockedKeywordService;
+            _userKeywordService = userKeywordService;
         }
 
         public async Task HandleLoginAsync()
@@ -44,7 +47,7 @@ namespace news_aggregator.console.Menu.Handler
             Console.Write("Email: ");
             string email = Console.ReadLine()!;
             Console.Write("Password: ");
-            string password = Console.ReadLine()!;
+            string password = ReadPassword()!;
 
             var user = await _authService.LoginAsync(email, password);
             if (user == null)
@@ -60,7 +63,7 @@ namespace news_aggregator.console.Menu.Handler
             }
             else
             {
-                var userMenu = new UserMenu(user.UserName, _newsService, _categoryService, _savedArticleService, _searchArticleService, _notificationService);
+                var userMenu = new UserMenu(user.UserName, _newsService, _categoryService, _savedArticleService, _searchArticleService, _notificationService,_userKeywordService);
                 await userMenu.Show();
             }
         }
@@ -90,5 +93,32 @@ namespace news_aggregator.console.Menu.Handler
                 await HandleLoginAsync();
             }
         }
+
+        private static string ReadPassword()
+        {
+            StringBuilder passwordBuilder = new StringBuilder();
+            ConsoleKeyInfo keyInfo;
+
+            do
+            {
+                keyInfo = Console.ReadKey(intercept: true);
+
+                if (keyInfo.Key == ConsoleKey.Backspace && passwordBuilder.Length > 0)
+                {
+                    Console.Write("\b \b");     
+                    passwordBuilder.Remove(passwordBuilder.Length - 1, 1);
+                }
+                else if (!char.IsControl(keyInfo.KeyChar))
+                {
+                    passwordBuilder.Append(keyInfo.KeyChar);
+                    Console.Write("*");       
+                }
+            }
+            while (keyInfo.Key != ConsoleKey.Enter);
+
+            Console.WriteLine();       
+            return passwordBuilder.ToString();
+        }
+
     }
 }
