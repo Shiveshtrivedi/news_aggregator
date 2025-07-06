@@ -19,8 +19,9 @@ namespace news_aggregator.console.Menu
         private readonly ISavedArticleService _savedArticleService;
         private readonly ISearchArticleService _searchArticleService;
         private readonly INotificationService _notificationService;
+        private readonly IUserKeywordService _userKeywordService;
 
-        public UserMenu(string userName,INewsService newsService, ICategoryService categoryService, ISavedArticleService savedArticleService, ISearchArticleService searchArticleService, INotificationService notificationService)
+        public UserMenu(string userName,INewsService newsService, ICategoryService categoryService, ISavedArticleService savedArticleService, ISearchArticleService searchArticleService, INotificationService notificationService, IUserKeywordService userKeywordService)
         {
             _userName = userName;
             _newsService = newsService;
@@ -28,6 +29,7 @@ namespace news_aggregator.console.Menu
             _savedArticleService = savedArticleService;
             _searchArticleService = searchArticleService;
             _notificationService = notificationService;
+            _userKeywordService = userKeywordService;
         }
         public async Task Show()
         {
@@ -41,7 +43,8 @@ namespace news_aggregator.console.Menu
                 Console.WriteLine("2. Saved Articles");
                 Console.WriteLine("3. Search");
                 Console.WriteLine("4. Notifications");
-                Console.WriteLine("5. Logout");
+                Console.WriteLine("5. Manage My Keywords");
+                Console.WriteLine("6. Logout");
 
                 var choice = Console.ReadLine();
 
@@ -63,6 +66,11 @@ namespace news_aggregator.console.Menu
                             await new NotificationMenu(_notificationService, _userName).Show();
                             break;
                         case "5":
+                            //await new ManageKeywordAsync();
+                            await new KeywordMenu(_userKeywordService, _userName,Session.UserId).Show();
+
+                            break;
+                        case "6":
                             Session.Logout();
                             return;
                         default:

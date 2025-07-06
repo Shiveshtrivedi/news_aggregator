@@ -28,8 +28,9 @@ namespace news_aggregator.console
             ISearchArticleService searchArticleService = new SearchArticleService(clientFactory);
             INotificationService notificationService= new NotificationService(clientFactory);
             IBlockedKeywordService blockedKeywordService = new BlockedKeywordService(clientFactory);
+            IUserKeywordService userKeywordService = new UserKeywordService(clientFactory);
 
-            IMenu menu = new MainMenu(authService,serverService,categoryService,newsService,savedArticleService,searchArticleService,notificationService,blockedKeywordService);
+            IMenu menu = new MainMenu(authService,serverService,categoryService,newsService,savedArticleService,searchArticleService,notificationService,blockedKeywordService,userKeywordService);
             await menu.Show();
 
 

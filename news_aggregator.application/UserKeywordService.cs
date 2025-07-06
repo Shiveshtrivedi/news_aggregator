@@ -3,7 +3,6 @@ using news_aggregator.application.Interfaces.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.application
@@ -19,16 +18,36 @@ namespace news_aggregator.application
 
         public async Task<IEnumerable<string>> GetKeywordsAsync(int userId)
         {
-            var keyword = await _userKeywordRepository.GetByUserAsync(userId);
-
-            return keyword.Select(keyword => keyword.Keyword);
+            try
+            {
+                var keyword = await _userKeywordRepository.GetByUserAsync(userId);
+                return keyword.Select(keyword => keyword.Keyword);
+            }
+            catch
+            {
+                throw;
+            }
         }
+
         public async Task SetKeywordsAsync(int userId, IEnumerable<string> keywords)
         {
-            await _userKeywordRepository.RemoveAllKeywordsAsync(userId);
-            if (keywords.Any())
-                await _userKeywordRepository.AddKeywordsAsync(userId, keywords);
+            try
+            {
+                var existingKeywords = await _userKeywordRepository.GetExistingKeywordsAsync(userId);
+
+                var newKeywords = keywords
+                    .Where(k => !existingKeywords.Contains(k, StringComparer.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (newKeywords.Any())
+                {
+                    await _userKeywordRepository.AddKeywordsAsync(userId, newKeywords);
+                }
+            }
+            catch
+            {
+                throw;
+            }
         }
     }
 }
-

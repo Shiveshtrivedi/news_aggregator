@@ -22,6 +22,7 @@ namespace news_aggregator.console.Menu
         private readonly INotificationService _notificationService;
         private readonly IBlockedKeywordService _blockedKeywordService;
         private readonly AuthHandler _authHandler;
+        private readonly IUserKeywordService _userKeywordService;
 
         public MainMenu(
             IAuthService authService,
@@ -31,7 +32,8 @@ namespace news_aggregator.console.Menu
             ISavedArticleService savedArticleService,
             ISearchArticleService searchArticleService,
             INotificationService notificationService,
-            IBlockedKeywordService blockedKeywordService)
+            IBlockedKeywordService blockedKeywordService,
+            IUserKeywordService userKeywordService)
         {
             _authService = authService;
             _serverService = serverService;
@@ -41,6 +43,7 @@ namespace news_aggregator.console.Menu
             _searchArticleService = searchArticleService;
             _notificationService = notificationService;
             _blockedKeywordService = blockedKeywordService;
+            _userKeywordService = userKeywordService;
 
             _authHandler = new AuthHandler(
                 _authService,
@@ -50,8 +53,10 @@ namespace news_aggregator.console.Menu
                 _savedArticleService,
                 _searchArticleService,
                 _notificationService,
-                _blockedKeywordService
+                _blockedKeywordService,
+                _userKeywordService
             );
+           
         }
 
         public async Task Show()
