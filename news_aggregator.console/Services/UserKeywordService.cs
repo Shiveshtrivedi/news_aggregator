@@ -25,7 +25,7 @@ namespace news_aggregator.console.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("api/user/keywords");
+                var response = await _httpClient.GetAsync("api/user/keywords/getKeywords");
 
                 if (!response.IsSuccessStatusCode)
                     throw new UserKeywordServiceException($"Failed to fetch keywords. Status: {response.StatusCode}");
@@ -46,7 +46,7 @@ namespace news_aggregator.console.Services
             try
             {
                 var content = BuildJsonContent(dto);
-                var response = await _httpClient.PostAsync($"api/user/keywords?userId={userId}", content);
+                var response = await _httpClient.PostAsync($"api/user/keywords/setKeywords?userId={userId}", content);
 
                 if (!response.IsSuccessStatusCode)
                     throw new UserKeywordServiceException($"Failed to set keywords for user {userId}. Status: {response.StatusCode}");

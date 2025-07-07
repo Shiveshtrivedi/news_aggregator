@@ -16,7 +16,7 @@ namespace news_aggregator.Controllers
             _userKeywordService = userKeywordService;
         }
 
-        [HttpGet]
+        [HttpGet("getKeywords")]
         public async Task<IActionResult> GetKeywords()
         {
             try
@@ -31,7 +31,7 @@ namespace news_aggregator.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("setKeywords")]
         public async Task<IActionResult> SetKeywords([FromBody] List<string> keywords)
         {
             try

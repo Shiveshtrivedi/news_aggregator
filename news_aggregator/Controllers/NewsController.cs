@@ -34,7 +34,7 @@ namespace news_aggregator.Controllers
             _recommendationService = recommendationService;
         }
 
-        //[Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin")]
 
         [HttpGet("getNewsByExternalApi")]
         public async Task<IActionResult> GetFromExternal()

@@ -91,27 +91,22 @@ namespace news_aggregator.application.News
 
             foreach (var article in articleDtos)
             {
-                // Category check
                 var articleCategory = await _categoryRepository.GetCategoryByNameAsync(article.Category);
                 if (articleCategory?.IsHidden == true)
                     continue;
 
-                // Blocked keyword check
                 if (await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Title) ||
                     await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Content))
                     continue;
 
-                // Report count / Hidden check
                 var reportCount = await _reportArticleRepository.GetReportCountAsync(article.NewsArticleId);
                 if (reportCount > 3 || article.IsHidden)
                     continue;
 
-                // User interaction
                 var interaction = await _userArticleInteractionRepository.GetInteractionAsync(userId, article.NewsArticleId);
                 bool isLiked = interaction?.IsLiked ?? false;
                 bool isDisliked = interaction?.IsDisliked ?? false;
 
-                // Personalized score
                 int score = 0;
                 if (savedIds.Contains(article.NewsArticleId)) score += 50;
                 else if (likedIds.Contains(article.NewsArticleId)) score += 30;
@@ -144,7 +139,6 @@ namespace news_aggregator.application.News
                 personalizedList.Add((dto, score));
             }
 
-            // Sort by descending score
             return personalizedList
                 .OrderByDescending(x => x.Score)
                 .Select(x => x.Article)
