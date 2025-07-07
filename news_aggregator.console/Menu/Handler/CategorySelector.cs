@@ -1,8 +1,5 @@
 ﻿using news_aggregator.console.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.Handler
@@ -18,29 +15,39 @@ namespace news_aggregator.console.Menu.Handler
 
         public async Task<string?> SelectCategoryAsync()
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
-
-            if (categories == null || categories.Count == 0)
+            try
             {
-                Console.WriteLine("No categories found.");
+                var categories = await _categoryService.GetAllCategoriesAsync();
+
+                if (categories == null || categories.Count == 0)
+                {
+                    Console.WriteLine("No categories found.");
+                    Console.ReadKey();
+                    return null;
+                }
+
+                for (int i = 0; i < categories.Count; i++)
+                {
+                    Console.WriteLine($"{i + 1}. {categories[i].Name}");
+                }
+
+                Console.Write("Enter category number: ");
+                if (!int.TryParse(Console.ReadLine(), out int selectedIndex) ||
+                    selectedIndex < 1 || selectedIndex > categories.Count)
+                {
+                    Console.WriteLine("Invalid category selection.");
+                    Console.ReadKey();
+                    return null;
+                }
+
+                return categories[selectedIndex - 1].Name;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
                 Console.ReadKey();
                 return null;
             }
-
-            for (int i = 0; i < categories.Count; i++)
-            {
-                Console.WriteLine($"{i + 1}. {categories[i].Name}");
-            }
-
-            Console.Write("Enter category number: ");
-            if (!int.TryParse(Console.ReadLine(), out int selectedIndex) || selectedIndex < 1 || selectedIndex > categories.Count)
-            {
-                Console.WriteLine("Invalid category selection.");
-                Console.ReadKey();
-                return null;
-            }
-
-            return categories[selectedIndex - 1].Name;
         }
     }
 }

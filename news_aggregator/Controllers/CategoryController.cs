@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.CategoryException;
+using System;
+using System.Threading.Tasks;
 
 namespace news_aggregator.Controllers
 {
@@ -23,12 +25,15 @@ namespace news_aggregator.Controllers
         {
             try
             {
-            return Ok(await _categoryService.GetAllAsync());
-
+                return Ok(await _categoryService.GetAllAsync());
             }
-            catch(Exception)
+            catch (CategoryOperationException ex)
             {
-                return StatusCode(500, "An error occurred while retrieving categories.");
+                return StatusCode(500, new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving categories." });
             }
         }
 
@@ -37,27 +42,42 @@ namespace news_aggregator.Controllers
         {
             try
             {
-               return Ok(await _categoryService.CreateAsync(dto));
+                return Ok(await _categoryService.CreateAsync(dto));
             }
             catch (InvalidCategoryException ex)
             {
-                return BadRequest(new { Message = ex.Message });
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (CategoryOperationException ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
             }
             catch (Exception)
             {
-                return StatusCode(500, new { Message = "An unexpected error occurred." });
+                return StatusCode(500, new { message = "An unexpected error occurred." });
             }
         }
+
         [Authorize(Roles = "Admin")]
         [HttpPatch("{categoryId}/categoryVisibilityToggle")]
         public async Task<IActionResult> ToggleVisibility(int categoryId)
         {
-            var success = await _categoryService.ToggleCategoryVisibilityAsync(categoryId);
-            if (!success)
-                return NotFound("Category not found.");
+            try
+            {
+                var success = await _categoryService.ToggleCategoryVisibilityAsync(categoryId);
+                if (!success)
+                    return NotFound(new { message = "Category not found." });
 
-            return Ok(new { message = "Visibility toggled successfully." });
+                return Ok(new { message = "Visibility toggled successfully." });
+            }
+            catch (CategoryOperationException ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "An unexpected error occurred." });
+            }
         }
-
     }
 }

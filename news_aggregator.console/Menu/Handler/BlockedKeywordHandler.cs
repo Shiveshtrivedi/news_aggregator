@@ -1,8 +1,6 @@
 ﻿using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.Handler
@@ -33,28 +31,15 @@ namespace news_aggregator.console.Menu.Handler
                 switch (choice)
                 {
                     case "1":
-                        var keywords = await _blockedKeywordService.GetAllBlockedKeywordsAsync();
-                        if (keywords.Count == 0)
-                            Console.WriteLine("No keywords found.");
-                        else
-                        {
-                            Console.WriteLine("Blocked Keywords:");
-                            keywords.ForEach(k => Console.WriteLine($"- {k}"));
-                        }
+                        await ViewBlockedKeywordsAsync();
                         break;
 
                     case "2":
-                        Console.Write("Enter keyword to block: ");
-                        var newKeyword = Console.ReadLine();
-                        await _blockedKeywordService.AddBlockedKeywordAsync(newKeyword);
-                        Console.WriteLine("Keyword blocked successfully.");
+                        await AddBlockedKeywordAsync();
                         break;
 
                     case "3":
-                        Console.Write("Enter keyword to unblock: ");
-                        var keywordToRemove = Console.ReadLine();
-                        await _blockedKeywordService.RemoveBlockedKeywordAsync(keywordToRemove);
-                        Console.WriteLine("Keyword removed successfully.");
+                        await RemoveBlockedKeywordAsync();
                         break;
 
                     case "4":
@@ -67,6 +52,70 @@ namespace news_aggregator.console.Menu.Handler
 
                 Console.WriteLine("Press any key to continue...");
                 Console.ReadKey();
+            }
+        }
+
+        private async Task ViewBlockedKeywordsAsync()
+        {
+            try
+            {
+                var keywords = await _blockedKeywordService.GetAllBlockedKeywordsAsync();
+
+                if (keywords.Count == 0)
+                    Console.WriteLine("No keywords found.");
+                else
+                {
+                    Console.WriteLine("Blocked Keywords:");
+                    keywords.ForEach(k => Console.WriteLine($"- {k}"));
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching blocked keywords: {ex.Message}");
+            }
+        }
+
+        private async Task AddBlockedKeywordAsync()
+        {
+            Console.Write("Enter keyword to block: ");
+            var newKeyword = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(newKeyword))
+            {
+                Console.WriteLine("Keyword cannot be empty.");
+                return;
+            }
+
+            try
+            {
+                await _blockedKeywordService.AddBlockedKeywordAsync(newKeyword);
+                Console.WriteLine("Keyword blocked successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to add keyword: {ex.Message}");
+            }
+        }
+
+        private async Task RemoveBlockedKeywordAsync()
+        {
+            Console.Write("Enter keyword to unblock: ");
+            var keywordToRemove = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(keywordToRemove))
+            {
+                Console.WriteLine("Keyword cannot be empty.");
+                return;
+            }
+
+            try
+            {
+                await _blockedKeywordService.RemoveBlockedKeywordAsync(keywordToRemove);
+                Console.WriteLine("Keyword removed successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to remove keyword: {ex.Message}");
             }
         }
     }

@@ -1,11 +1,11 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Services
@@ -21,6 +21,26 @@ namespace news_aggregator.console.Services
 
         public async Task<List<NewsArticleDto>> SearchArticlesAsync(string query, DateTime? startDate, DateTime? endDate)
         {
+            try
+            {
+                var url = BuildSearchUrl(query, startDate, endDate);
+                var response = await _httpClient.GetAsync(url);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new SearchArticleException($"Search request failed with status code {response.StatusCode}");
+                }
+
+                return await DeserializeArticles(response) ?? new List<NewsArticleDto>();
+            }
+            catch (Exception ex)
+            {
+                throw new SearchArticleException("An error occurred while searching for articles.", ex);
+            }
+        }
+
+        private static string BuildSearchUrl(string query, DateTime? startDate, DateTime? endDate)
+        {
             var url = $"api/News/searchNews?title={Uri.EscapeDataString(query)}";
 
             if (startDate.HasValue)
@@ -29,15 +49,13 @@ namespace news_aggregator.console.Services
             if (endDate.HasValue)
                 url += $"&endDate={endDate.Value:yyyy-MM-dd}";
 
-            var response = await _httpClient.GetAsync(url);
+            return url;
+        }
 
-            if (response.IsSuccessStatusCode)
-            {
-                var articles = await response.Content.ReadFromJsonAsync<List<NewsArticleDto>>();
-                return articles ?? new List<NewsArticleDto>();
-            }
-
-            return new List<NewsArticleDto>();
+        private static async Task<List<NewsArticleDto>?> DeserializeArticles(HttpResponseMessage response)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<List<NewsArticleDto>>(json);
         }
     }
 }

@@ -1,7 +1,9 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace news_aggregator.console.Services
 {
@@ -14,30 +16,41 @@ namespace news_aggregator.console.Services
             _httpClient = httpClientFactoryWrapper.GetClient();
         }
 
-
         public async Task DeleteArticleAsync(int articleId, int userId)
         {
-            var response = await _httpClient.DeleteAsync($"/api/SavedArticle/{userId}/{articleId}/unsaveArticle");
-
-            if(!response.IsSuccessStatusCode)
+            var url = $"/api/SavedArticle/{userId}/{articleId}/unsaveArticle";
+            try
             {
-                return;
+                var response = await _httpClient.DeleteAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new SavedArticleException($"Failed to delete article {articleId} for user {userId}. Status: {response.StatusCode}");
+                }
             }
-
-            return;
+            catch (Exception ex)
+            {
+                throw new SavedArticleException("Error occurred while deleting saved article.", ex);
+            }
         }
 
         public async Task<List<NewsArticleDto>> GetSavedArticlesAsync(int userId)
         {
-            var response = await _httpClient.GetAsync($"api/SavedArticle/{userId}/getArticleFromUserId");
-
-            if (!response.IsSuccessStatusCode)
+            var url = $"api/SavedArticle/{userId}/getArticleFromUserId";
+            try
             {
-                return new List<NewsArticleDto>();
-            }
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new SavedArticleException($"Failed to retrieve saved articles for user {userId}. Status: {response.StatusCode}");
+                }
 
-            var articles = await response.Content.ReadFromJsonAsync<List<NewsArticleDto>>();
-            return articles ?? new List<NewsArticleDto>();
+                var json = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<List<NewsArticleDto>>(json) ?? new List<NewsArticleDto>();
+            }
+            catch (Exception ex)
+            {
+                throw new SavedArticleException("Error occurred while fetching saved articles.", ex);
+            }
         }
 
         public async Task<bool> SaveArticleAsync(int userId, int articleId)
@@ -48,10 +61,24 @@ namespace news_aggregator.console.Services
                 ArticleId = articleId
             };
 
-            var response = await _httpClient.PostAsJsonAsync($"api/SavedArticle/{userId}/{articleId}/saveArticle", dto);
+            var url = $"api/SavedArticle/{userId}/{articleId}/saveArticle";
 
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync(url, dto);
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new SavedArticleException($"Failed to save article {articleId} for user {userId}. Status: {response.StatusCode}");
+                }
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new SavedArticleException("Error occurred while saving article.", ex);
+            }
         }
-
     }
+
+    
 }

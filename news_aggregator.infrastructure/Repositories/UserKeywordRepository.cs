@@ -5,7 +5,6 @@ using news_application.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.infrastructure.Repositories
@@ -19,22 +18,61 @@ namespace news_aggregator.infrastructure.Repositories
             _context = newsDataContext;
         }
 
-        public async Task<IEnumerable<UserKeyword>> GetByUserAsync(int userId)
+        public async Task<IEnumerable<string>> GetExistingKeywordsAsync(int userId)
         {
-           return  await _context.UserKeywords.Where(user => user.UserId == userId).ToListAsync();
-        }
-        public async Task AddKeywordsAsync(int userId, IEnumerable<string> keywords)
-        {
-            var list = keywords.Select(k => new UserKeyword { UserId = userId, Keyword = k });
-            await _context.UserKeywords.AddRangeAsync(list);
-            await _context.SaveChangesAsync();
-        }
-        public async Task RemoveAllKeywordsAsync(int userId)
-        {
-            var existing = _context.UserKeywords.Where(user => user.UserId == userId);
-            _context.UserKeywords.RemoveRange(existing);
-            await _context.SaveChangesAsync();
+            try
+            {
+                return await _context.UserKeywords
+                    .Where(u => u.UserId == userId)
+                    .Select(k => k.Keyword)
+                    .ToListAsync();
+            }
+            catch
+            {
+                throw;
+            }
         }
 
+        public async Task<IEnumerable<UserKeyword>> GetByUserAsync(int userId)
+        {
+            try
+            {
+                return await _context.UserKeywords
+                    .Where(user => user.UserId == userId)
+                    .ToListAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task AddKeywordsAsync(int userId, IEnumerable<string> keywords)
+        {
+            try
+            {
+                var list = keywords.Select(k => new UserKeyword { UserId = userId, Keyword = k });
+                await _context.UserKeywords.AddRangeAsync(list);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task RemoveAllKeywordsAsync(int userId)
+        {
+            try
+            {
+                var existing = _context.UserKeywords.Where(user => user.UserId == userId);
+                _context.UserKeywords.RemoveRange(existing);
+                await _context.SaveChangesAsync();
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

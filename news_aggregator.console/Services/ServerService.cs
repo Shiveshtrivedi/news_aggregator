@@ -1,11 +1,11 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Json;
-using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Services
@@ -21,28 +21,63 @@ namespace news_aggregator.console.Services
 
         public async Task<ServerDetailsDto> GetServerDetailsAsync(int serverId)
         {
-            var response = await _httpClient.GetAsync($"api/ExternalSource/{serverId}/getExternalSoureById");
+            var url = $"api/ExternalSource/{serverId}/getExternalSoureById";
 
-            if (!response.IsSuccessStatusCode)
-                return null;
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                    throw new ServerServiceException($"Failed to get server details for serverId {serverId}. Status: {response.StatusCode}");
 
-            return await response.Content.ReadFromJsonAsync<ServerDetailsDto>();
+                var data = await response.Content.ReadFromJsonAsync<ServerDetailsDto>();
+                if (data == null)
+                    throw new ServerServiceException($"No server details returned for serverId {serverId}");
+
+                return data;
+            }
+            catch (Exception ex)
+            {
+                throw new ServerServiceException($"Error while getting server details for serverId {serverId}", ex);
+            }
         }
 
         public async Task<List<ServerStatusDto>> GetServerStatusesAsync()
         {
-            var response = await _httpClient.GetAsync("api/ExternalSource/getAllExternalSources");
-            if (!response.IsSuccessStatusCode)
-                throw new Exception("Failed to retrieve statuses");
+            var url = "api/ExternalSource/getAllExternalSources";
 
-            return await response.Content.ReadFromJsonAsync<List<ServerStatusDto>>() ?? new();
+            try
+            {
+                var response = await _httpClient.GetAsync(url);
+                if (!response.IsSuccessStatusCode)
+                    throw new ServerServiceException($"Failed to retrieve server statuses. Status: {response.StatusCode}");
 
+                var data = await response.Content.ReadFromJsonAsync<List<ServerStatusDto>>();
+                return data ?? new List<ServerStatusDto>();
+            }
+            catch (Exception ex)
+            {
+                throw new ServerServiceException("Error while retrieving server statuses.", ex);
+            }
         }
 
-        public async Task<bool> UpdateServerAsync(int serverId,ServerUpdateDto server)
+        public async Task<bool> UpdateServerAsync(int serverId, ServerUpdateDto server)
         {
-            var response = await _httpClient.PatchAsJsonAsync($"api/ExternalSource/{serverId}/updateExternalSource", server);
-            return response.IsSuccessStatusCode;
+            var url = $"api/ExternalSource/{serverId}/updateExternalSource";
+
+            try
+            {
+                var response = await _httpClient.PatchAsJsonAsync(url, server);
+                if (!response.IsSuccessStatusCode)
+                    throw new ServerServiceException($"Failed to update server with ID {serverId}. Status: {response.StatusCode}");
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new ServerServiceException($"Error while updating server with ID {serverId}.", ex);
+            }
         }
     }
+
+   
 }

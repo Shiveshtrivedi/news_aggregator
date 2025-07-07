@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_application.Models;
+using news_aggregator.shared.CustomException;
+using news_aggregator.shared.CustomException.CategoryException;
 
 namespace news_aggregator.Controllers
 {
@@ -28,9 +30,13 @@ namespace news_aggregator.Controllers
                 var config = await _notificationConfigService.GetOrCreateForUserAsync(userId);
                 return Ok(config);
             }
+            catch (NotificationRepositoryOperationException ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
             catch (Exception)
             {
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, new { Message = "An unexpected error occurred." });
             }
         }
 
@@ -42,12 +48,19 @@ namespace news_aggregator.Controllers
                 await _notificationConfigService.ToggleCategoryAsync(userId, category, enable);
                 return Ok("Category setting updated successfully.");
             }
-            catch (ArgumentException)
+            catch (CategoryNotFoundException ex)
             {
-                return StatusCode(500, "Internal server error");
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (NotificationRepositoryOperationException ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { Message = "An unexpected error occurred." });
             }
         }
-
 
         [HttpPost("keywords")]
         public async Task<IActionResult> SetKeywords(int userId, [FromBody] List<string> keywords)
@@ -57,11 +70,14 @@ namespace news_aggregator.Controllers
                 await _userKeywordService.SetKeywordsAsync(userId, keywords);
                 return Ok("Keywords updated.");
             }
+            catch (NotificationRepositoryOperationException ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
             catch (Exception)
             {
-                return StatusCode(500, "Internal server error");
+                return StatusCode(500, new { Message = "An unexpected error occurred." });
             }
         }
-
     }
 }

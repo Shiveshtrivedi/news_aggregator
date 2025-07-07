@@ -8,7 +8,6 @@ using news_application.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.application
@@ -26,37 +25,60 @@ namespace news_aggregator.application
 
         public async Task<IEnumerable<CategoryDto>> GetAllAsync()
         {
-            var categories = await _categoryRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            try
+            {
+                var categories = await _categoryRepository.GetAllAsync();
+                return _mapper.Map<IEnumerable<CategoryDto>>(categories);
+            }
+            catch (Exception ex)
+            {
+                throw new CategoryOperationException("Failed to retrieve all categories.", ex);
+            }
         }
 
         public async Task<CategoryDto> CreateAsync(CreateCategoryDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.CategoryName))
-                throw new InvalidCategoryException("Category name must not be empty.");
+            try
+            {
+                if (string.IsNullOrWhiteSpace(dto.CategoryName))
+                    throw new InvalidCategoryException("Category name must not be empty.");
 
-            bool exists = await _categoryRepository.CategoryExistsAsync(dto.CategoryName);
-            if (exists)
-                throw new InvalidCategoryException("Category already exists.");
+                bool exists = await _categoryRepository.CategoryExistsAsync(dto.CategoryName);
+                if (exists)
+                    throw new InvalidCategoryException("Category already exists.");
 
-            var category = new Category { CategoryName = dto.CategoryName };
-            if (string.IsNullOrEmpty(category.CategoryName))
-                throw new InvalidCategoryException("Category name cannot be blank.");
+                var category = new Category { CategoryName = dto.CategoryName };
+                if (string.IsNullOrEmpty(category.CategoryName))
+                    throw new InvalidCategoryException("Category name cannot be blank.");
 
-            await _categoryRepository.AddAsync(category);
-
-            return _mapper.Map<CategoryDto>(category);
+                await _categoryRepository.AddAsync(category);
+                return _mapper.Map<CategoryDto>(category);
+            }
+            catch (InvalidCategoryException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new CategoryOperationException("Error occurred while creating category.", ex);
+            }
         }
 
         public async Task<bool> ToggleCategoryVisibilityAsync(int categoryId)
         {
-            var category = await _categoryRepository.GetByIdAsync(categoryId);
-            if (category == null) return false;
+            try
+            {
+                var category = await _categoryRepository.GetByIdAsync(categoryId);
+                if (category == null) return false;
 
-            category.IsHidden = !category.IsHidden;
-            await _categoryRepository.UpdateAsync(category);
-            return true;
+                category.IsHidden = !category.IsHidden;
+                await _categoryRepository.UpdateAsync(category);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new CategoryOperationException($"Failed to toggle visibility for category ID {categoryId}.", ex);
+            }
         }
-
     }
 }

@@ -1,8 +1,10 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.DTOs;
+using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
@@ -21,18 +23,46 @@ namespace news_aggregator.console.Services
 
         public async Task<IEnumerable<string>> GetKeywordsAsync()
         {
-            var response = await _httpClient.GetAsync("api/user/keywords");
-            response.EnsureSuccessStatusCode();
-            return await response.Content.ReadFromJsonAsync<IEnumerable<string>>() ?? new List<string>();
+            try
+            {
+                var response = await _httpClient.GetAsync("api/user/keywords");
+
+                if (!response.IsSuccessStatusCode)
+                    throw new UserKeywordServiceException($"Failed to fetch keywords. Status: {response.StatusCode}");
+
+                var keywords = await response.Content.ReadFromJsonAsync<IEnumerable<string>>();
+                return keywords ?? new List<string>();
+            }
+            catch (Exception ex)
+            {
+                throw new UserKeywordServiceException("Error while fetching keywords.", ex);
+            }
         }
 
         public async Task SetKeywordsAsync(int userId, IEnumerable<string> keywords)
         {
-            var json = JsonSerializer.Serialize(keywords);
+            var dto = new UserKeywordsDto { Keywords = keywords };
 
-            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync($"api/user/keywords?userId={userId}", content);
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                var content = BuildJsonContent(dto);
+                var response = await _httpClient.PostAsync($"api/user/keywords?userId={userId}", content);
+
+                if (!response.IsSuccessStatusCode)
+                    throw new UserKeywordServiceException($"Failed to set keywords for user {userId}. Status: {response.StatusCode}");
+            }
+            catch (Exception ex)
+            {
+                throw new UserKeywordServiceException($"Error while setting keywords for user {userId}.", ex);
+            }
+        }
+
+        private static StringContent BuildJsonContent(object data)
+        {
+            var json = JsonSerializer.Serialize(data);
+            return new StringContent(json, Encoding.UTF8, "application/json");
         }
     }
+
+    
 }

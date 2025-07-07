@@ -2,12 +2,8 @@
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.domain.Models;
 using news_application.Context;
-using news_application.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using news_aggregator.shared.CustomException.NewsArticle;
+using news_aggregator.shared.CustomException;
 
 namespace news_aggregator.infrastructure.Repositories
 {
@@ -22,77 +18,124 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task<UserArticleInteraction?> GetInteractionAsync(int userId, int articleId)
         {
-            return await _context.UserArticleInteractions
-                .Include(newsArticle => newsArticle.NewsArticle)
-                .FirstOrDefaultAsync(newsArticle => newsArticle.UserId == userId && newsArticle.NewsArticleId == articleId);
+            try
+            {
+                return await _context.UserArticleInteractions
+                    .Include(x => x.NewsArticle)
+                    .FirstOrDefaultAsync(x => x.UserId == userId && x.NewsArticleId == articleId);
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to retrieve interaction.", ex);
+            }
         }
 
         public async Task AddOrUpdateInteractionAsync(UserArticleInteraction interaction)
         {
-            var existing = await GetInteractionAsync(interaction.UserId, interaction.NewsArticleId);
-
-            if (existing == null)
+            try
             {
-                _context.UserArticleInteractions.Add(interaction);
-            }
-            else
-            {
-                existing.IsLiked = interaction.IsLiked;
-                existing.IsDisliked = interaction.IsDisliked;
-                existing.Timestamp = DateTime.UtcNow;
-            }
+                var existing = await GetInteractionAsync(interaction.UserId, interaction.NewsArticleId);
 
-            await _context.SaveChangesAsync();
+                if (existing == null)
+                {
+                    _context.UserArticleInteractions.Add(interaction);
+                }
+                else
+                {
+                    existing.IsLiked = interaction.IsLiked;
+                    existing.IsDisliked = interaction.IsDisliked;
+                    existing.Timestamp = DateTime.UtcNow;
+                }
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to add or update interaction.", ex);
+            }
         }
 
         public async Task IncrementLikesAsync(int articleId)
         {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null)
+            try
             {
-                article.Likes++;
-                await _context.SaveChangesAsync();
+                var article = await _context.NewsArticles.FindAsync(articleId);
+                if (article != null)
+                {
+                    article.Likes++;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to increment likes.", ex);
             }
         }
 
         public async Task DecrementLikesAsync(int articleId)
         {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null && article.Likes > 0)
+            try
             {
-                article.Likes--;
-                await _context.SaveChangesAsync();
+                var article = await _context.NewsArticles.FindAsync(articleId);
+                if (article != null && article.Likes > 0)
+                {
+                    article.Likes--;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to decrement likes.", ex);
             }
         }
 
         public async Task IncrementDislikesAsync(int articleId)
         {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null)
+            try
             {
-                article.Dislikes++;
-                await _context.SaveChangesAsync();
+                var article = await _context.NewsArticles.FindAsync(articleId);
+                if (article != null)
+                {
+                    article.Dislikes++;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to increment dislikes.", ex);
             }
         }
 
         public async Task DecrementDislikesAsync(int articleId)
         {
-            var article = await _context.NewsArticles.FindAsync(articleId);
-            if (article != null && article.Dislikes > 0)
+            try
             {
-                article.Dislikes--;
-                await _context.SaveChangesAsync();
+                var article = await _context.NewsArticles.FindAsync(articleId);
+                if (article != null && article.Dislikes > 0)
+                {
+                    article.Dislikes--;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to decrement dislikes.", ex);
             }
         }
 
         public async Task<List<int>> GetLikedArticleIdsAsync(int userId)
         {
-            return await _context.UserArticleInteractions
-                .Where(i => i.UserId == userId && i.IsLiked)
-                .Select(i => i.NewsArticleId)
-                .ToListAsync();
+            try
+            {
+                return await _context.UserArticleInteractions
+                    .Where(i => i.UserId == userId && i.IsLiked)
+                    .Select(i => i.NewsArticleId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new UserArticleInteractionException("Failed to retrieve liked article IDs.", ex);
+            }
         }
-
     }
-
 }

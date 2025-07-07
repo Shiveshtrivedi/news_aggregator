@@ -10,7 +10,7 @@ namespace news_aggregator.application.Interfaces.Repositories
     public interface ICategoryRepository : IGenericRepository<Category>
     {
         Task<bool> CategoryExistsAsync(string categoryName);
-        Task<Category?> GetCategoryByNameAsync(string categoryName);
+        Task<Category> GetCategoryByNameAsync(string categoryName);
 
     }
 

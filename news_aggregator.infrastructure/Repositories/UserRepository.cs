@@ -9,10 +9,7 @@ namespace news_aggregator.application.Repositories
 {
     public class UserRepository : GenericRepository<User>, IUserRepository
     {
-        public UserRepository(NewsDataContext context) : base(context)
-        {
-
-        }
+        public UserRepository(NewsDataContext context) : base(context) {}
 
         public async Task<User?> GetByEmailAsync(string email) =>
             await _context.Users.FirstOrDefaultAsync(user => user.Email == email);

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using news_aggregator.application.Interfaces.Repositories;
+using news_aggregator.shared.CustomException;
 using news_application.Context;
 using news_application.Models;
 using System;
@@ -21,28 +22,48 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task AddNotificationAsync(Notification notification)
         {
-            await _context.Notifications.AddAsync(notification);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.Notifications.AddAsync(notification);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NotificationRepositoryOperationException("Failed to add notification.", ex);
+            }
         }
 
         public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
         {
-            return await _context.Notifications
-                .Where(notification => notification.UserId == userId)
-                .OrderByDescending(notification => notification.SentAt)
-                .ToListAsync();
+            try
+            {
+                return await _context.Notifications
+                    .Where(x => x.UserId == userId)
+                    .OrderByDescending(x => x.SentAt)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NotificationRepositoryOperationException("Failed to fetch user notifications.", ex);
+            }
         }
 
         public async Task MarkAsReadAsync(int notificationId)
         {
-            var notification = await _context.Notifications.FindAsync(notificationId);
-            if (notification != null)
+            try
             {
-                notification.IsRead = true;
-                await _context.SaveChangesAsync();
+                var notification = await _context.Notifications.FindAsync(notificationId);
+                if (notification != null)
+                {
+                    notification.IsRead = true;
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new NotificationRepositoryOperationException("Failed to mark notification as read.", ex);
             }
         }
-
-
     }
+
 }

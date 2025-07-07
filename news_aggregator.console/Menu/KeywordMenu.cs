@@ -1,10 +1,10 @@
-﻿using news_aggregator.console.Http;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu
@@ -45,25 +45,47 @@ namespace news_aggregator.console.Menu
                             .Where(k => !string.IsNullOrWhiteSpace(k))
                             .ToList();
 
-                        await _userKeywordService.SetKeywordsAsync(_userId, keywords);
-                        Console.WriteLine("✅ Keywords updated successfully.");
+                        try
+                        {
+                            await _userKeywordService.SetKeywordsAsync(_userId, keywords);
+                            Console.WriteLine("Keywords updated successfully.");
+                        }
+                        catch (UserKeywordServiceException ex)
+                        {
+                            Console.WriteLine($"Failed to set keywords: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Unexpected error: {ex.Message}");
+                        }
                         break;
 
                     case "2":
-                        var userKeywords = await _userKeywordService.GetKeywordsAsync();
-                        Console.WriteLine("\nYour current keywords:");
-                        if (!userKeywords.Any())
-                            Console.WriteLine("⚠️  No keywords set.");
-                        else
-                            foreach (var keyword in userKeywords)
-                                Console.WriteLine($"- {keyword}");
+                        try
+                        {
+                            var userKeywords = await _userKeywordService.GetKeywordsAsync();
+                            Console.WriteLine("\nYour current keywords:");
+                            if (!userKeywords.Any())
+                                Console.WriteLine(" No keywords set.");
+                            else
+                                foreach (var keyword in userKeywords)
+                                    Console.WriteLine($"- {keyword}");
+                        }
+                        catch (UserKeywordServiceException ex)
+                        {
+                            Console.WriteLine($"Failed to fetch keywords: {ex.Message}");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Unexpected error: {ex.Message}");
+                        }
                         break;
 
                     case "3":
                         return;
 
                     default:
-                        Console.WriteLine("❌ Invalid choice.");
+                        Console.WriteLine("Invalid choice.");
                         break;
                 }
 

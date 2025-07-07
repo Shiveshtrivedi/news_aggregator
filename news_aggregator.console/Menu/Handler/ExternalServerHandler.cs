@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Models;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -19,24 +20,48 @@ namespace news_aggregator.console.Menu.NewFolder
 
         public async Task ShowExternalServerStatuses()
         {
-            var statuses = await _serverService.GetServerStatusesAsync();
-            Console.WriteLine("\nList of external servers:");
-            foreach (var server in statuses)
+            try
             {
-                Console.WriteLine($"{server.ExternalSourceName} - {server.IsActive} - {server.LastAccessed:dd MMM yyyy}");
+                var statuses = await _serverService.GetServerStatusesAsync();
+                Console.WriteLine("\nList of external servers:");
+                foreach (var server in statuses)
+                {
+                    Console.WriteLine($"{server.ExternalSourceName} - {server.IsActive} - {server.LastAccessed:dd MMM yyyy}");
+                }
             }
+            catch (ServerServiceException ex)
+            {
+                Console.WriteLine($"Failed to fetch server statuses: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+            }
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
 
         public async Task ShowExternalServerDetails()
         {
-            var statuses = await _serverService.GetServerStatusesAsync();
-            Console.WriteLine("\nList of external servers:");
-            foreach (var server in statuses)
+            try
             {
-                Console.WriteLine($"{server.ExternalSourceName} - {server.ApiKey}");
+                var statuses = await _serverService.GetServerStatusesAsync();
+                Console.WriteLine("\nList of external servers:");
+                foreach (var server in statuses)
+                {
+                    Console.WriteLine($"{server.ExternalSourceName} - {server.ApiKey}");
+                }
             }
+            catch (ServerServiceException ex)
+            {
+                Console.WriteLine($"Failed to fetch server details: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
+            }
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }
@@ -75,13 +100,25 @@ namespace news_aggregator.console.Menu.NewFolder
                     IsActive = isActive
                 };
 
-                var result = await _serverService.UpdateServerAsync(serverId, updateDto);
-                Console.WriteLine(result ? "Server updated successfully." : "Failed to update.");
+                try
+                {
+                    var result = await _serverService.UpdateServerAsync(serverId, updateDto);
+                    Console.WriteLine(result ? "Server updated successfully." : "Failed to update.");
+                }
+                catch (ServerServiceException ex)
+                {
+                    Console.WriteLine($"Failed to update server: {ex.Message}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Unexpected error while updating: {ex.Message}");
+                }
             }
             else
             {
                 Console.WriteLine("Invalid input.");
             }
+
             Console.WriteLine("Press any key to continue...");
             Console.ReadKey();
         }

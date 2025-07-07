@@ -2,11 +2,7 @@
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.domain.Models;
 using news_application.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using news_aggregator.shared.CustomException;
 
 namespace news_aggregator.infrastructure.Repositories
 {
@@ -21,18 +17,40 @@ namespace news_aggregator.infrastructure.Repositories
 
         public async Task AddReportAsync(ReportArticle report)
         {
-            _newsDataContext.ReportArticles.Add(report);
-            await _newsDataContext.SaveChangesAsync();
+            try
+            {
+                _newsDataContext.ReportArticles.Add(report);
+                await _newsDataContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new ReportAddException("Error occurred while adding report.", ex);
+            }
         }
 
         public async Task<int> GetReportCountAsync(int articleId)
         {
-            return await _newsDataContext.ReportArticles.CountAsync(report=>report.NewsArticleId==articleId);
+            try
+            {
+                return await _newsDataContext.ReportArticles.CountAsync(report => report.NewsArticleId == articleId);
+            }
+            catch (Exception ex)
+            {
+                throw new ReportCountFetchException("Error occurred while fetching report count.", ex);
+            }
         }
 
-        public Task<bool> HasUserReportedAsync(int userId, int articleId)
+        public async Task<bool> HasUserReportedAsync(int userId, int articleId)
         {
-            return _newsDataContext.ReportArticles.AnyAsync(report => report.UserId == userId && report.NewsArticleId==articleId);
+            try
+            {
+                return await _newsDataContext.ReportArticles
+                    .AnyAsync(report => report.UserId == userId && report.NewsArticleId == articleId);
+            }
+            catch (Exception ex)
+            {
+                throw new UserReportCheckException("Error occurred while checking if user has reported.", ex);
+            }
         }
     }
 }

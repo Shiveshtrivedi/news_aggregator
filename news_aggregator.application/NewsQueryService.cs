@@ -21,6 +21,8 @@ namespace news_aggregator.application
         private readonly IReportArticleRepository _reportArticleRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly IBlockedKeywordService _blockedKeywordService;
+        private readonly  IUserKeywordService _userKeywordService;
+        private readonly  ISavedArticleRepository _savedArticleRepository;
         private readonly IMapper _mapper;
 
         public NewsQueryService(INewsArticleRepository newsArticleRepository,
@@ -28,7 +30,9 @@ namespace news_aggregator.application
                                 IMapper mapper,
                                 IReportArticleRepository reportArticleRepository,
                                 ICategoryRepository categoryRepository,
-                                IBlockedKeywordService blockedKeywordService)
+                                IBlockedKeywordService blockedKeywordService,
+                                IUserKeywordService userKeywordService,
+                                ISavedArticleRepository savedArticleRepository)
         {
             _newsArticleRepository = newsArticleRepository;
             _userArticleInteractionRepository = userArticleInteractionRepository;
@@ -36,6 +40,8 @@ namespace news_aggregator.application
             _reportArticleRepository = reportArticleRepository;
             _categoryRepository = categoryRepository;
             _blockedKeywordService = blockedKeywordService;
+            _userKeywordService = userKeywordService;
+            _savedArticleRepository = savedArticleRepository;
         }
 
         public async Task<IEnumerable<NewsArticleDto>> GetAllNewsAsync()
@@ -71,31 +77,56 @@ namespace news_aggregator.application
             return _mapper.Map<IEnumerable<NewsArticleDto>>(articles);
         }
 
-        public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(string category, DateTime? startDate, DateTime? endDate, int userId)
+        public async Task<List<NewsArticleWithUserInteractionDto>> GetNewsByCategoryAndDateRangeAsync(
+     string category, DateTime? startDate, DateTime? endDate, int userId)
         {
             var articleDtos = await _newsArticleRepository.GetNewsByCategoryAndDateRangeAsync(category, startDate, endDate);
+            var userKeywords = await _userKeywordService.GetKeywordsAsync(userId);
+            var likedArticleIds = await _userArticleInteractionRepository.GetLikedArticleIdsAsync(userId);
+            var savedArticles = await _savedArticleRepository.GetSavedArticlesByUserIdAsync(userId);
+            var savedIds = savedArticles.Select(x => x.NewsArticleId).ToHashSet();
+            var likedIds = likedArticleIds.ToHashSet();
 
-            var result = new List<NewsArticleWithUserInteractionDto>();
+            var personalizedList = new List<(NewsArticleWithUserInteractionDto Article, int Score)>();
 
             foreach (var article in articleDtos)
             {
+                // Category check
                 var articleCategory = await _categoryRepository.GetCategoryByNameAsync(article.Category);
-
                 if (articleCategory?.IsHidden == true)
                     continue;
 
-                if (await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Title) || await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Content))
-                {
+                // Blocked keyword check
+                if (await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Title) ||
+                    await _blockedKeywordService.ContainsBlockedKeywordAsync(article.Content))
                     continue;
-                }
 
+                // Report count / Hidden check
                 var reportCount = await _reportArticleRepository.GetReportCountAsync(article.NewsArticleId);
                 if (reportCount > 3 || article.IsHidden)
                     continue;
 
+                // User interaction
                 var interaction = await _userArticleInteractionRepository.GetInteractionAsync(userId, article.NewsArticleId);
+                bool isLiked = interaction?.IsLiked ?? false;
+                bool isDisliked = interaction?.IsDisliked ?? false;
 
-                result.Add(new NewsArticleWithUserInteractionDto
+                // Personalized score
+                int score = 0;
+                if (savedIds.Contains(article.NewsArticleId)) score += 50;
+                else if (likedIds.Contains(article.NewsArticleId)) score += 30;
+
+                foreach (var keyword in userKeywords)
+                {
+                    if (!string.IsNullOrWhiteSpace(keyword) &&
+                        (article.Title.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                         article.Content.Contains(keyword, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        score += 10;
+                    }
+                }
+
+                var dto = new NewsArticleWithUserInteractionDto
                 {
                     NewsArticleId = article.NewsArticleId,
                     Title = article.Title,
@@ -104,14 +135,21 @@ namespace news_aggregator.application
                     Source = article.Source,
                     Category = article.Category,
                     PublishedAt = article.PublishedAt,
-                    IsLikedByUser = interaction?.IsLiked ?? false,
-                    IsDislikedByUser = interaction?.IsDisliked ?? false,
+                    IsLikedByUser = isLiked,
+                    IsDislikedByUser = isDisliked,
                     Likes = article.Likes,
                     Dislikes = article.DisLikes
-                });
+                };
+
+                personalizedList.Add((dto, score));
             }
 
-            return result;
+            // Sort by descending score
+            return personalizedList
+                .OrderByDescending(x => x.Score)
+                .Select(x => x.Article)
+                .ToList();
         }
+
     }
 }

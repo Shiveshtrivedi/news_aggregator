@@ -2,6 +2,8 @@
 using news_aggregator.console.Http;
 using news_aggregator.console.Menu.Interfaces;
 using news_aggregator.console.Services.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu
 {
@@ -38,55 +40,79 @@ namespace news_aggregator.console.Menu
             string endDateInput = Console.ReadLine();
             DateTime? endDate = DateTime.TryParse(endDateInput, out DateTime tempEnd) ? tempEnd : null;
 
-            var articles = await _searchArticleService.SearchArticlesAsync(query, startDate, endDate);
-
-            Console.Clear();
-            Console.WriteLine($"Welcome to the News Application, {_userName}!");
-            Console.WriteLine($"Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
-            Console.WriteLine("S E A R C H\n");
-            Console.WriteLine($"Results for “{query}”\n");
-
-            DisplayMenu();
-
-            foreach (var article in articles)
+            try
             {
-                Console.WriteLine($"\nArticle Id: {article.NewsArticleId} {article.Title}");
-                Console.WriteLine(article.Content);
-                Console.WriteLine($"source : {article.Source}");
-                Console.WriteLine($"URL: {article.Url}");
-                Console.WriteLine($"Category: {article.Category}");
-            }
+                var articles = await _searchArticleService.SearchArticlesAsync(query, startDate, endDate);
 
-            while (true)
-            {
-                Console.Write("\nChoose an option: ");
-                var input = Console.ReadLine();
+                Console.Clear();
+                Console.WriteLine($"Welcome to the News Application, {_userName}!");
+                Console.WriteLine($"Date: {DateTime.Today:dd-MMM-yyyy} Time: {DateTime.Now:hh:mmtt}");
+                Console.WriteLine("S E A R C H\n");
+                Console.WriteLine($"Results for “{query}”\n");
 
-                switch (input)
+                DisplayMenu();
+
+                foreach (var article in articles)
                 {
-                    case "1":
-                        return;
-                    case "2":
-                        Session.Logout();
-                        throw new LogoutException();
-                    case "3":
-                        Console.Write("Enter Article Id to save: ");
-                        if (int.TryParse(Console.ReadLine(), out int articleId))
-                        {
-                            await _savedArticleService.SaveArticleAsync(articleId, Session.UserId);
-                            Console.WriteLine("Article saved successfully.");
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid Article Id.");
-                        }
-                        Console.WriteLine("\nPress any key to continue...");
-                        Console.ReadKey();
-                        break;
-                    default:
-                        Console.WriteLine("Invalid option. Try again.");
-                        break;
+                    Console.WriteLine($"\nArticle Id: {article.NewsArticleId} {article.Title}");
+                    Console.WriteLine(article.Content);
+                    Console.WriteLine($"source : {article.Source}");
+                    Console.WriteLine($"URL: {article.Url}");
+                    Console.WriteLine($"Category: {article.Category}");
                 }
+
+                while (true)
+                {
+                    Console.Write("\nChoose an option: ");
+                    var input = Console.ReadLine();
+
+                    try
+                    {
+                        switch (input)
+                        {
+                            case "1":
+                                return;
+                            case "2":
+                                Session.Logout();
+                                throw new LogoutException();
+                            case "3":
+                                Console.Write("Enter Article Id to save: ");
+                                if (int.TryParse(Console.ReadLine(), out int articleId))
+                                {
+                                    await _savedArticleService.SaveArticleAsync(articleId, Session.UserId);
+                                    Console.WriteLine("Article saved successfully.");
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Invalid Article Id.");
+                                }
+                                Console.WriteLine("\nPress any key to continue...");
+                                Console.ReadKey();
+                                break;
+                            default:
+                                Console.WriteLine("Invalid option. Try again.");
+                                break;
+                        }
+                    }
+                    catch (SavedArticleException ex)
+                    {
+                        Console.WriteLine($"Failed to save article: {ex.Message}");
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadKey();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Unexpected error occurred: {ex.Message}");
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadKey();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error while searching: {ex.Message}");
+                Console.WriteLine("Press any key to return...");
+                Console.ReadKey();
             }
         }
 
@@ -96,7 +122,5 @@ namespace news_aggregator.console.Menu
             Console.WriteLine("2. Logout");
             Console.WriteLine("3. Save Article");
         }
-
-
     }
 }

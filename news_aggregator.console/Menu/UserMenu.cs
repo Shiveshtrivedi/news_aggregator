@@ -66,7 +66,6 @@ namespace news_aggregator.console.Menu
                             await new NotificationMenu(_notificationService, _userName).Show();
                             break;
                         case "5":
-                            //await new ManageKeywordAsync();
                             await new KeywordMenu(_userKeywordService, _userName,Session.UserId).Show();
 
                             break;

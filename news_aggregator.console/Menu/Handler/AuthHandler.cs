@@ -1,4 +1,5 @@
-﻿using news_aggregator.console.Models;
+﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -49,22 +50,37 @@ namespace news_aggregator.console.Menu.Handler
             Console.Write("Password: ");
             string password = ReadPassword()!;
 
-            var user = await _authService.LoginAsync(email, password);
-            if (user == null)
+            try
             {
-                Console.WriteLine("Login failed.");
-                return;
-            }
+                var user = await _authService.LoginAsync(email, password);
+                if (user == null)
+                {
+                    Console.WriteLine("Login failed.");
+                    return;
+                }
 
-            if (user.Role == 1)
-            {
-                var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService,_blockedKeywordService);
-                await adminMenu.Show();
+                if (user.Role == 1)
+                {
+                    var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService, _blockedKeywordService);
+                    await adminMenu.Show();
+                }
+                else
+                {
+                    var userMenu = new UserMenu(user.UserName, _newsService, _categoryService, _savedArticleService, _searchArticleService, _notificationService, _userKeywordService);
+                    await userMenu.Show();
+                }
             }
-            else
+            catch(AuthServiceException ex)
             {
-                var userMenu = new UserMenu(user.UserName, _newsService, _categoryService, _savedArticleService, _searchArticleService, _notificationService,_userKeywordService);
-                await userMenu.Show();
+                Console.WriteLine($"Login failed: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"Invalid login state: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error during login: {ex.Message}");
             }
         }
 
@@ -83,15 +99,28 @@ namespace news_aggregator.console.Menu.Handler
                 Email = email,
                 Password = password
             };
-            var success = await _authService.SignUpAsync(userDto);
-            Console.WriteLine(success ? "Sign-up successful." : "Sign-up failed.");
 
-            if (success)
+            try
             {
-                Console.WriteLine("Redirecting to login...\n");
-                Console.Clear();
-                await HandleLoginAsync();
+                var success = await _authService.SignUpAsync(userDto);
+                Console.WriteLine(success ? "Sign-up successful." : "Sign-up failed.");
+
+                if (success)
+                {
+                    Console.WriteLine("Redirecting to login...\n");
+                    Console.Clear();
+                    await HandleLoginAsync();
+                }
             }
+            catch (AuthServiceException ex)
+            {
+                Console.WriteLine($"Sign-up error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error during sign-up: {ex.Message}");
+            }
+
         }
 
         private static string ReadPassword()

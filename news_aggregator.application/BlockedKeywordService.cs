@@ -1,9 +1,9 @@
 ﻿using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.shared.CustomException;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.application
@@ -17,25 +17,47 @@ namespace news_aggregator.application
             _blockedKeywordRepository = blockedKeywordRepository;
         }
 
-        public Task AddKeywordAsync(string keyword)
+        public async Task AddKeywordAsync(string keyword)
         {
-           return _blockedKeywordRepository.AddKeywordAsync(keyword);
+            try
+            {
+                await _blockedKeywordRepository.AddKeywordAsync(keyword);
+            }
+            catch (BlockedKeywordOperationException ex)
+            {
+                throw new ApplicationException($"Unable to add keyword '{keyword}'.", ex);
+            }
         }
 
-        public Task<List<string>> GetAllKeywordsAsync()
+        public async Task<List<string>> GetAllKeywordsAsync()
         {
-            return _blockedKeywordRepository.GetAllKeywordsAsync();
+            try
+            {
+                return await _blockedKeywordRepository.GetAllKeywordsAsync();
+            }
+            catch (BlockedKeywordOperationException ex)
+            {
+                throw new ApplicationException("Failed to load blocked keywords.", ex);
+            }
         }
-        public Task RemoveKeywordAsync(string keyword)
+
+        public async Task RemoveKeywordAsync(string keyword)
         {
-            return _blockedKeywordRepository.RemoveKeywordAsync(keyword);
+            try
+            {
+                await _blockedKeywordRepository.RemoveKeywordAsync(keyword);
+            }
+            catch (BlockedKeywordOperationException ex)
+            {
+                throw new ApplicationException($"Unable to remove keyword '{keyword}'.", ex);
+            }
         }
 
         public async Task<bool> ContainsBlockedKeywordAsync(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return false;
 
-            var keywords = await _blockedKeywordRepository.GetAllKeywordsAsync();
+            var keywords = await GetAllKeywordsAsync();    
             return keywords.Any(keyword => text.Contains(keyword, StringComparison.OrdinalIgnoreCase));
         }
     }
