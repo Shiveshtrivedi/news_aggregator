@@ -13,6 +13,7 @@ using news_aggregator.application.Interfaces.Services;
 using news_aggregator.tests.Helpers;
 using news_application.Models;
 using news_application.Enum;
+using System.Linq;
 
 namespace news_aggregator.tests.Services
 {
@@ -23,6 +24,8 @@ namespace news_aggregator.tests.Services
         private readonly Mock<IReportArticleRepository> _reportRepoMock;
         private readonly Mock<ICategoryRepository> _categoryRepoMock;
         private readonly Mock<IBlockedKeywordService> _blockedKeywordServiceMock;
+        private readonly Mock<IUserKeywordService> _userKeywordServiceMock;
+        private readonly Mock<ISavedArticleRepository> _savedArticleRepoMock;
         private readonly Mock<IMapper> _mapperMock;
 
         private readonly NewsQueryService _service;
@@ -34,6 +37,8 @@ namespace news_aggregator.tests.Services
             _reportRepoMock = new Mock<IReportArticleRepository>();
             _categoryRepoMock = new Mock<ICategoryRepository>();
             _blockedKeywordServiceMock = new Mock<IBlockedKeywordService>();
+            _userKeywordServiceMock = new Mock<IUserKeywordService>();
+            _savedArticleRepoMock = new Mock<ISavedArticleRepository>();
             _mapperMock = new Mock<IMapper>();
 
             _service = new NewsQueryService(
@@ -42,8 +47,20 @@ namespace news_aggregator.tests.Services
                 _mapperMock.Object,
                 _reportRepoMock.Object,
                 _categoryRepoMock.Object,
-                _blockedKeywordServiceMock.Object
+                _blockedKeywordServiceMock.Object,
+                _userKeywordServiceMock.Object,
+                _savedArticleRepoMock.Object
             );
+
+            _userKeywordServiceMock
+     .Setup(s => s.GetKeywordsAsync(It.IsAny<int>()))
+     .ReturnsAsync(new List<string>());
+
+
+            _savedArticleRepoMock
+     .Setup(s => s.GetSavedArticlesByUserIdAsync(It.IsAny<int>()))
+     .ReturnsAsync(new List<NewsArticle>());
+
         }
 
         [Fact]
@@ -135,11 +152,13 @@ namespace news_aggregator.tests.Services
             _articleRepoMock.Setup(r => r.GetNewsByCategoryAndDateRangeAsync("technology", null, null)).ReturnsAsync(newsList);
             _categoryRepoMock.Setup(r => r.GetCategoryByNameAsync(It.IsAny<string>())).ReturnsAsync(new Category { IsHidden = false });
             _blockedKeywordServiceMock.Setup(r => r.ContainsBlockedKeywordAsync("Blocked title")).ReturnsAsync(true);
+            _userKeywordServiceMock.Setup(s => s.GetKeywordsAsync(It.IsAny<int>())).ReturnsAsync(new List<string>());
 
             var result = await _service.GetNewsByCategoryAndDateRangeAsync("technology", null, null, userId: 1);
 
             Assert.Empty(result);
         }
+
 
         [Fact]
         public async Task GetNewsByCategoryAndDateRangeAsync_ShouldExcludeHiddenArticlesOrTooManyReports()
@@ -151,11 +170,13 @@ namespace news_aggregator.tests.Services
             _categoryRepoMock.Setup(r => r.GetCategoryByNameAsync(It.IsAny<string>())).ReturnsAsync(new Category { IsHidden = false });
             _blockedKeywordServiceMock.Setup(r => r.ContainsBlockedKeywordAsync(It.IsAny<string>())).ReturnsAsync(false);
             _reportRepoMock.Setup(r => r.GetReportCountAsync(It.IsAny<int>())).ReturnsAsync(4);
+            _userKeywordServiceMock.Setup(s => s.GetKeywordsAsync(It.IsAny<int>())).ReturnsAsync(new List<string>());
 
             var result = await _service.GetNewsByCategoryAndDateRangeAsync("technology", null, null, userId: 2);
 
             Assert.Empty(result);
         }
+
 
         [Fact]
         public async Task GetNewsByCategoryAndDateRangeAsync_ShouldMapToUserInteractionDto()
@@ -172,6 +193,7 @@ namespace news_aggregator.tests.Services
                 IsLiked = true,
                 IsDisliked = false
             });
+            _userKeywordServiceMock.Setup(s => s.GetKeywordsAsync(It.IsAny<int>())).ReturnsAsync(new List<string>());
 
             var result = await _service.GetNewsByCategoryAndDateRangeAsync("technology", null, null, 1);
 
@@ -179,5 +201,6 @@ namespace news_aggregator.tests.Services
             Assert.True(dto.IsLikedByUser);
             Assert.False(dto.IsDislikedByUser);
         }
+
     }
 }
