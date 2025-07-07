@@ -21,7 +21,11 @@ namespace news_aggregator.Controllers
         private readonly IReportArticleService _reportArticleService;
         private readonly IRecommendationService _recommendationService;
 
-        public NewsController(INewsService newsService, INewsQueryService newsQueryService, INewsInteractionService newsInteractionService, IReportArticleService reportArticleService, IRecommendationService recommendationService)
+        public NewsController(INewsService newsService,
+                              INewsQueryService newsQueryService,
+                              INewsInteractionService newsInteractionService,
+                              IReportArticleService reportArticleService,
+                              IRecommendationService recommendationService)
         {
             _newsService = newsService;
             _newsQueryService = newsQueryService;

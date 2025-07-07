@@ -1,10 +1,11 @@
-﻿using news_aggregator.console.Services.Interfaces;
+﻿using news_aggregator.console.Menu.Handler.Interface;
+using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.NewFolder
 {
-    public class CategoryHandler
+    public class CategoryHandler : ICategoryHandler
     {
         private readonly ICategoryService _categoryService;
 

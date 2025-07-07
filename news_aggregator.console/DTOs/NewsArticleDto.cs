@@ -25,11 +25,10 @@ namespace news_aggregator.console.Models
 
     public enum CategoryType
     {
-        Business = 0,
-        Entertainment = 1,
-        Sports = 2,
-        Technology = 3,
-        Uncategorized = 4,
+        business = 0,
+        entertainment = 1,
+        sports = 2,
+        uncategorized = 4,
         technology = 5,
         general = 6,
         health = 7

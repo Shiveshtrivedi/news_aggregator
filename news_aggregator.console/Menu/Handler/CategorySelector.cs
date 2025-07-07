@@ -1,10 +1,11 @@
-﻿using news_aggregator.console.Services.Interfaces;
+﻿using news_aggregator.console.Menu.Handler.Interface;
+using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.Handler
 {
-    public class CategorySelector
+    public class CategorySelector : ICategorySelector
     {
         private readonly ICategoryService _categoryService;
 

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Services
@@ -54,6 +55,23 @@ namespace news_aggregator.console.Services
             return await SendPostRequestAsync($"api/News/{articleId}/report", requestBody, $"report article {articleId}");
         }
 
+        //private async Task<List<NewsArticleDto>> GetArticlesAsync(string url, string context)
+        //{
+        //    try
+        //    {
+        //        var response = await _httpClient.GetAsync(url);
+        //        if (!response.IsSuccessStatusCode)
+        //            throw new NewsServiceException($"Failed to {context}. Status code: {response.StatusCode}");
+
+        //        var json = await response.Content.ReadAsStringAsync();
+        //        return JsonSerializer.Deserialize<List<NewsArticleDto>>(json) ?? new List<NewsArticleDto>();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw new NewsServiceException($"Error while attempting to {context}.", ex);
+        //    }
+        //}
+
         private async Task<List<NewsArticleDto>> GetArticlesAsync(string url, string context)
         {
             try
@@ -63,7 +81,14 @@ namespace news_aggregator.console.Services
                     throw new NewsServiceException($"Failed to {context}. Status code: {response.StatusCode}");
 
                 var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<NewsArticleDto>>(json) ?? new List<NewsArticleDto>();
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                };
+
+                return JsonSerializer.Deserialize<List<NewsArticleDto>>(json, options) ?? new List<NewsArticleDto>();
             }
             catch (Exception ex)
             {

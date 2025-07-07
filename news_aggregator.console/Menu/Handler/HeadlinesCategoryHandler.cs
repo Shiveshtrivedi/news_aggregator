@@ -1,14 +1,16 @@
-﻿using news_aggregator.console.Models;
+﻿using news_aggregator.console.Menu.Handler.Interface;
+using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using news_aggregator.console.Menu.Handler.Interface;
 
 namespace news_aggregator.console.Menu.Handler
 {
-    public class HeadlinesCategoryHandler
+    public class HeadlinesCategoryHandler : IHeadlinesCategoryHandler
     {
         private readonly ICategoryService _categoryService;
         private readonly INewsArticleService _newsService;

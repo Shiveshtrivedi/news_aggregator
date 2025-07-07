@@ -1,11 +1,12 @@
-﻿using news_aggregator.console.Services.Interfaces;
+﻿using news_aggregator.console.Menu.Handler.Interface;
+using news_aggregator.console.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.Handler
 {
-    public class BlockedKeywordHandler
+    public class BlockedKeywordHandler : IBlockedKeywordHandler
     {
         private readonly IBlockedKeywordService _blockedKeywordService;
 

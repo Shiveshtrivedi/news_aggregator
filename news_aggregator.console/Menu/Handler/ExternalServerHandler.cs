@@ -1,4 +1,5 @@
 ﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Menu.Handler.Interface;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.NewFolder
 {
-    public class ExternalServerHandler
+    public class ExternalServerHandler : IExternalServerHandler
     {
         private readonly IServerService _serverService;
 

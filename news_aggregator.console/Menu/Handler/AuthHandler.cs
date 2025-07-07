@@ -1,15 +1,13 @@
 ﻿using news_aggregator.console.Exceptions;
+using news_aggregator.console.Menu.Handler.Interface;
 using news_aggregator.console.Models;
 using news_aggregator.console.Services.Interfaces;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace news_aggregator.console.Menu.Handler
 {
-    public class AuthHandler
+    public class AuthHandler : IAuthHandler
     {
         private readonly IAuthService _authService;
         private readonly IServerService _serverService;
@@ -45,10 +43,7 @@ namespace news_aggregator.console.Menu.Handler
 
         public async Task HandleLoginAsync()
         {
-            Console.Write("Email: ");
-            string email = Console.ReadLine()!;
-            Console.Write("Password: ");
-            string password = ReadPassword()!;
+            var (email, password) = AuthInputHelper.ReadLoginCredentials();
 
             try
             {
@@ -59,18 +54,9 @@ namespace news_aggregator.console.Menu.Handler
                     return;
                 }
 
-                if (user.Role == 1)
-                {
-                    var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService, _blockedKeywordService);
-                    await adminMenu.Show();
-                }
-                else
-                {
-                    var userMenu = new UserMenu(user.UserName, _newsService, _categoryService, _savedArticleService, _searchArticleService, _notificationService, _userKeywordService);
-                    await userMenu.Show();
-                }
+                await NavigateToRoleBasedMenuAsync(user);
             }
-            catch(AuthServiceException ex)
+            catch (AuthServiceException ex)
             {
                 Console.WriteLine($"Login failed: {ex.Message}");
             }
@@ -86,19 +72,7 @@ namespace news_aggregator.console.Menu.Handler
 
         public async Task HandleSignUpAsync()
         {
-            Console.Write("Name: ");
-            string name = Console.ReadLine()!;
-            Console.Write("Email: ");
-            string email = Console.ReadLine()!;
-            Console.Write("Password: ");
-            string password = Console.ReadLine()!;
-
-            var userDto = new UserDto
-            {
-                UserName = name,
-                Email = email,
-                Password = password
-            };
+            var userDto = AuthInputHelper.ReadSignupDetails();
 
             try
             {
@@ -120,34 +94,27 @@ namespace news_aggregator.console.Menu.Handler
             {
                 Console.WriteLine($"Unexpected error during sign-up: {ex.Message}");
             }
-
         }
 
-        private static string ReadPassword()
+        private async Task NavigateToRoleBasedMenuAsync(UserDto user)
         {
-            StringBuilder passwordBuilder = new StringBuilder();
-            ConsoleKeyInfo keyInfo;
-
-            do
+            if (user.Role == 1)
             {
-                keyInfo = Console.ReadKey(intercept: true);
-
-                if (keyInfo.Key == ConsoleKey.Backspace && passwordBuilder.Length > 0)
-                {
-                    Console.Write("\b \b");     
-                    passwordBuilder.Remove(passwordBuilder.Length - 1, 1);
-                }
-                else if (!char.IsControl(keyInfo.KeyChar))
-                {
-                    passwordBuilder.Append(keyInfo.KeyChar);
-                    Console.Write("*");       
-                }
+                var adminMenu = new AdminMenu(user.UserName, _serverService, _categoryService, _blockedKeywordService);
+                await adminMenu.Show();
             }
-            while (keyInfo.Key != ConsoleKey.Enter);
-
-            Console.WriteLine();       
-            return passwordBuilder.ToString();
+            else
+            {
+                var userMenu = new UserMenu(
+                    user.UserName,
+                    _newsService,
+                    _categoryService,
+                    _savedArticleService,
+                    _searchArticleService,
+                    _notificationService,
+                    _userKeywordService);
+                await userMenu.Show();
+            }
         }
-
     }
 }

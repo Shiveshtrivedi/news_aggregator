@@ -3,10 +3,12 @@ using news_aggregator.console.Services.Interfaces;
 using news_aggregator.console.Exceptions;
 using System;
 using System.Threading.Tasks;
+using news_aggregator.console.Menu.Handler.Interface;
+using news_aggregator.console.Models;
 
 namespace news_aggregator.console.Menu.Handler
 {
-    public class NotificationHandler
+    public class NotificationHandler : INotificationHandler
     {
         private readonly INotificationService _notificationService;
         private readonly string _userName;
@@ -19,31 +21,11 @@ namespace news_aggregator.console.Menu.Handler
 
         public async Task ShowNotificationsAsync()
         {
-            try
-            {
-                var config = await _notificationService.GetConfigAsync(Session.UserId);
-                Console.Clear();
-                Console.WriteLine("Your Notifications:\n");
-                foreach (var setting in config.CategorySettings)
-                {
-                    Console.WriteLine($"- {setting.CategoryName}: {(setting.IsEnabled ? "Enabled" : "Disabled")}");
-                }
-                Console.WriteLine($"- Keywords: {(config.KeywordsEnabled ? "Enabled" : "Disabled")}");
-            }
-            catch (NotificationServiceException ex)
-            {
-                Console.WriteLine($"Error while loading notifications: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Unexpected error: {ex.Message}");
-            }
-
+            await NotificationHandlerHelper.DisplayUserNotificationsAsync(_notificationService);
             Console.WriteLine("\n1. Back");
             Console.Write("Choose an option: ");
-            var notifInput = Console.ReadLine();
-
-            if (notifInput != "1")
+            var input = Console.ReadLine();
+            if (input != "1")
             {
                 Console.WriteLine("Invalid option. Press any key to try again...");
                 Console.ReadKey();
@@ -54,87 +36,29 @@ namespace news_aggregator.console.Menu.Handler
         {
             while (true)
             {
-                try
+                var config = await NotificationHandlerHelper.FetchConfigAsync(_notificationService);
+                if (config == null) continue;
+
+                NotificationHandlerHelper.DisplayConfiguration(config, _userName);
+                var input = Console.ReadLine();
+
+                if (!int.TryParse(input, out int option))
                 {
-                    var config = await _notificationService.GetConfigAsync(Session.UserId);
-                    Console.Clear();
-                    Console.WriteLine($"Welcome to News Application, {_userName}! Date: {DateTime.Today:dd-MMM-yyyy} \nTime:{DateTime.Now:hh:mmtt}");
-                    Console.WriteLine("C O N F I G U R E - N O T I F I C A T I O N S");
-
-                    var categories = config.CategorySettings;
-
-                    for (int i = 0; i < categories.Count; i++)
-                    {
-                        Console.WriteLine($"{i + 1}. {categories[i].CategoryName} - {(categories[i].IsEnabled ? "Enabled" : "Disabled")}");
-                    }
-
-                    Console.WriteLine($"{categories.Count + 1}. Back");
-                    Console.WriteLine($"{categories.Count + 2}. Logout");
-                    Console.Write("Enter your option: ");
-                    var input = Console.ReadLine();
-
-                    if (int.TryParse(input, out int option))
-                    {
-                        if (option >= 1 && option <= categories.Count)
-                        {
-                            var selectedCategory = categories[option - 1].CategoryName;
-
-                            try
-                            {
-                                if (selectedCategory.Equals("Keywords", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    Console.Write("Enter keywords separated by commas: ");
-                                    var keywordInput = Console.ReadLine();
-                                    await _notificationService.SubmitKeywordsAsync(Session.UserId, keywordInput ?? "");
-                                    Console.WriteLine("Keywords updated. Press any key to continue...");
-                                }
-                                else
-                                {
-                                    bool currentStatus = categories[option - 1].IsEnabled;
-                                    bool newStatus = !currentStatus;
-                                    await _notificationService.ToggleCategoryAsync(Session.UserId, selectedCategory, newStatus);
-                                    Console.WriteLine($"{selectedCategory} notifications {(newStatus ? "enabled" : "disabled")}. Press any key to continue...");
-                                }
-                            }
-                            catch (NotificationServiceException ex)
-                            {
-                                Console.WriteLine($"Failed to update: {ex.Message}");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.WriteLine($"Unexpected error: {ex.Message}");
-                            }
-
-                            Console.ReadKey();
-                        }
-                        else if (option == categories.Count + 1)
-                        {
-                            return;
-                        }
-                        else if (option == categories.Count + 2)
-                        {
-                            Environment.Exit(0);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Invalid option. Press any key to try again...");
-                            Console.ReadKey();
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("Invalid input. Press any key to try again...");
-                        Console.ReadKey();
-                    }
-                }
-                catch (NotificationServiceException ex)
-                {
-                    Console.WriteLine($"Failed to load configuration: {ex.Message}");
+                    Console.WriteLine("Invalid input. Press any key to try again...");
                     Console.ReadKey();
+                    continue;
                 }
-                catch (Exception ex)
+
+                if (NotificationHandlerHelper.HandleMenuNavigation(option, config.CategorySettings.Count)) return;
+
+                if (option >= 1 && option <= config.CategorySettings.Count)
                 {
-                    Console.WriteLine($"Unexpected error: {ex.Message}");
+                    var selectedCategory = config.CategorySettings[option - 1];
+                    await NotificationHandlerHelper.HandleCategoryToggleAsync(_notificationService, selectedCategory);
+                }
+                else
+                {
+                    Console.WriteLine("Invalid option. Press any key to try again...");
                     Console.ReadKey();
                 }
             }
