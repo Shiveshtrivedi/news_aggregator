@@ -1,0 +1,89 @@
+﻿using news_aggregator.application.Interfaces.Repositories;
+using news_aggregator.application.Interfaces.Services;
+using news_aggregator.domain.Models.DTOs;
+using news_aggregator.shared.CustomException.ExternalSource;
+using news_application.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace news_aggregator.application.News
+{
+    public class NewsService : INewsService
+    {
+        private readonly IExternalNewsClient _externalNewsClient;
+        private readonly INewsArticleRepository _newsArticleRepository;
+        private readonly IExternalSourceService _externalSourceService;
+        private readonly INewsProviderFactory _newsProviderFactory;
+
+        public NewsService(
+            IExternalNewsClient externalNewsClient,
+            INewsArticleRepository newsArticleRepository,
+            IExternalSourceService externalSourceService,
+            INewsProviderFactory newsProviderFactory)
+        {
+            _externalNewsClient = externalNewsClient;
+            _newsArticleRepository = newsArticleRepository;
+            _newsProviderFactory = newsProviderFactory;
+            _externalSourceService = externalSourceService;
+        }
+
+        public async Task<IEnumerable<NewsArticle>> FetchAndSaveExternalNewsAsync()
+        {
+            var allArticles = new List<NewsArticle>();
+            var sources = await _externalSourceService.GetAllSourcesAsync();
+            var activeSources = sources.Where(s => s.IsActive).ToList();
+
+            foreach (var source in activeSources)
+            {
+                try
+                {
+                    var articles = await FetchArticlesAsync(source);
+                    await SaveArticlesAsync(source, articles);
+                    allArticles.AddRange(articles);
+                }
+                catch (Exception)
+                {
+                    throw new ExternalSourceNotFoundException(source.ExternalSourceName);
+                }
+            }
+
+            return allArticles;
+        }
+
+        private async Task<List<NewsArticle>> FetchArticlesAsync(ExternalSourceDto source)
+        {
+            var provider = _newsProviderFactory.GetProvider(source.ExternalSourceName);
+            var articles = (await _externalNewsClient.GetLatestArticlesAsync(source)).ToList();
+
+            foreach (var article in articles)
+            {
+                if (string.IsNullOrWhiteSpace(article.Content))
+                {
+                    article.Content = "No content available.";
+                }
+
+                article.ExternalSourceId = source.ExternalSourceId;
+            }
+
+            return articles;
+        }
+
+        private async Task SaveArticlesAsync(ExternalSourceDto source, List<NewsArticle> articles)
+        {
+            foreach (var article in articles)
+            {
+                bool exists = await _newsArticleRepository.ExistsAsync(article.Title, article.Url);
+
+                if (!exists)
+                {
+                    await _newsArticleRepository.AddAsync(article);
+                }
+            }
+
+            source.LastAccessed = DateTime.UtcNow;
+            await _externalSourceService.UpdateExternalSourceAsync(source.ExternalSourceId, source);
+        }
+    }
+}

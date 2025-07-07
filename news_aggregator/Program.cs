@@ -1,0 +1,181 @@
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using news_aggregator.application.Interfaces.Repositories;
+using news_aggregator.application.Interfaces.Services;
+using news_aggregator.application.Repositories;
+using news_aggregator.domain.Models;
+using news_aggregator.infrastructure.Repositories;
+using news_application.Context;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using news_aggregator.infrastructure.Jobs;
+using news_aggregator.shared.Validation;
+using FluentValidation;
+using Microsoft.AspNetCore.Identity;
+using news_aggregator.shared.Authentication;
+using System.Text.Json.Serialization;
+using news_aggregator.shared.Validation.Interface;
+using news_aggregator.application.Mapping;
+using news_aggregator.application.Auth;
+using news_aggregator.application.News;
+using news_aggregator.application.Notification;
+using news_aggregator.application.Keyword;
+using news_aggregator.application.Article;
+using news_aggregator.application.Category;
+using news_aggregator.infrastructure.Adapter.Parsers;
+using news_aggregator.infrastructure.Adapter.Builders;
+using news_aggregator.infrastructure.Adapter.ExternalNews;
+using news_aggregator.infrastructure.Adapter.ExternalNews.Interface;
+using news_aggregator.application;
+using news_aggregator.application.Users;
+
+
+namespace news_aggregator
+{
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddControllers();
+
+            builder.Services.AddEndpointsApiExplorer();
+
+            builder.Services.AddSwaggerGen(options =>
+            {
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer {token}'",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] { }
+                    }
+                });
+            });
+
+
+            var jwtSettings = builder.Configuration.GetSection("Jwt");
+            var secretKey = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = jwtSettings["Issuer"],
+                        ValidAudience = jwtSettings["Audience"],
+                        IssuerSigningKey = new SymmetricSecurityKey(secretKey),
+                        ClockSkew = TimeSpan.Zero
+                    };
+                });
+
+            builder.Services.AddAuthorization();
+
+            builder.Services.AddDbContext<NewsDataContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddControllers()
+    .AddJsonOptions(x =>
+    {
+        x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
+
+
+            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IExternalSourceRepository, ExternalSourceRepository>();
+
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IExternalSourceService, ExternalSourceService>();
+            builder.Services.AddScoped<INewsService, NewsService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddScoped<INewsArticleRepository, NewsArticleRepository>();
+
+            builder.Services.AddHttpClient<IExternalNewsClient, ExternalNewsClient>();
+
+            builder.Services.AddScoped<INewsQueryService, NewsQueryService>();
+
+            builder.Services.AddScoped<ISavedArticleRepository, SavedArticleRepository>();
+            builder.Services.AddScoped<ISavedArticleService, SavedArticleService>();
+
+            builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<INotificationService, NotificationService>();
+
+            builder.Services.AddScoped<INotificationConfigRepository, NotificationConfigRepository>();
+            builder.Services.AddScoped<INotificationConfigService, NotificationConfigService>();
+
+            builder.Services.AddScoped<IUserKeywordRepository, UserKeywordRepository>();
+            builder.Services.AddScoped<IUserKeywordService, UserKeywordService>();  
+
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
+
+            builder.Services.AddHttpClient<NewsApiProvider>();
+            builder.Services.AddHttpClient<TheNewsApiProvider>();
+            builder.Services.AddScoped<INewsProviderFactory, NewsProviderFactory>();
+            builder.Services.AddHostedService<NewsFetcherJob>();
+
+            builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+            builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+
+            builder.Services.AddHttpClient<IExternalNewsClient, ExternalNewsClient>();
+            builder.Services.AddScoped<INewsRequestBuilder, NewsRequestBuilder>();
+            builder.Services.AddScoped<INewsApiResponseParser, NewsApiResponseParser>();
+            builder.Services.AddScoped<INotificationHtmlBuilder,NotificationHtmlBuilder >();
+            builder.Services.AddScoped<INewsInteractionService, NewsInteractionService>();
+            builder.Services.AddScoped<IUserArticleInteractionRepository, UserArticleInteractionRepository>();
+            builder.Services.AddScoped<IReportArticleRepository, ReportArticleRepository>();
+            builder.Services.AddScoped<IReportArticleService, ReportArticleService>();
+            builder.Services.AddScoped<IBlockedKeywordRepository, BlockedKeywordRepository>();
+            builder.Services.AddScoped<IBlockedKeywordService, BlockedKeywordService>();
+            builder.Services.AddScoped<IRecommendationService, RecommendationService>();
+
+            builder.Services.AddAutoMapper(typeof(MappingProfile).Assembly);
+
+
+
+
+            var app = builder.Build();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
+
+            app.UseHttpsRedirection();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
+            app.MapControllers();
+
+            app.Run();
+        }
+    }
+}
