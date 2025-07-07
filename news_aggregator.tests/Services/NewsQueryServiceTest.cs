@@ -4,7 +4,6 @@ using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using news_aggregator.application;
 using news_aggregator.domain.Models;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.NewsArticle;
@@ -14,6 +13,7 @@ using news_aggregator.tests.Helpers;
 using news_application.Models;
 using news_application.Enum;
 using System.Linq;
+using news_aggregator.application.News;
 
 namespace news_aggregator.tests.Services
 {

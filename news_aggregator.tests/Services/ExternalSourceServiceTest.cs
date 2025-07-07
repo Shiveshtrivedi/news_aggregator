@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Moq;
 using news_aggregator.application.Interfaces.Repositories;
-using news_aggregator.application;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using news_aggregator.domain.Models.DTOs;
@@ -9,6 +8,7 @@ using news_application.Models;
 using news_aggregator.shared.CustomException.ExternalSource;
 using news_aggregator.tests.Helpers;
 using Xunit;
+using news_aggregator.application.News;
 
 namespace news_aggregator.tests.Services
 {

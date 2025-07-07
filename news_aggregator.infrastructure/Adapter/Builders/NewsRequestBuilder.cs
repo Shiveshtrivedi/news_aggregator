@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using news_aggregator.infrastructure.ExternalNews.Interface;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.infrastructure.Adapter.ExternalNews.Interface;
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.Builders
 {
     public class NewsRequestBuilder : INewsRequestBuilder
     {

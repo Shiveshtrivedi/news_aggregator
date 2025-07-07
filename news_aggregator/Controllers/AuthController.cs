@@ -1,12 +1,11 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using news_aggregator.application;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.UserException;
 using news_aggregator.shared.Validation;
-using static news_aggregator.application.AuthService;
+using static news_aggregator.application.Auth.AuthService;
 
 namespace news_aggregator.Controllers
 {

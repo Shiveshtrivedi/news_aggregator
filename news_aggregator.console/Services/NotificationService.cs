@@ -24,27 +24,56 @@ namespace news_aggregator.console.Services
 
         public async Task<List<string>> GetNotificationsAsync(int userId)
         {
-            var url = $"api/NotificationConfig/{userId}";
-            return await GetFromApiAsync<List<string>>(url, $"fetch notifications for user {userId}") ?? new List<string>();
+            try
+            {
+                var url = $"api/NotificationConfig/{userId}";
+                return await GetFromApiAsync<List<string>>(url, $"fetch notifications for user {userId}") ?? new List<string>();
+            }
+            catch(Exception)
+            {
+                throw new Exception();
+            }
         }
 
         public async Task<NotificationConfigDto> GetConfigAsync(int userId)
         {
-            var url = $"api/NotificationConfig/{userId}";
-            return await GetFromApiAsync<NotificationConfigDto>(url, $"fetch notification config for user {userId}") ?? new NotificationConfigDto();
+            try
+            {
+                var url = $"api/NotificationConfig/{userId}";
+                return await GetFromApiAsync<NotificationConfigDto>(url, $"fetch notification config for user {userId}") ?? new NotificationConfigDto();
+            }
+            catch(Exception)
+            {
+                throw new Exception();
+            }            
         }
 
         public async Task ToggleCategoryAsync(int userId, string category, bool enable)
         {
-            var url = $"api/NotificationConfig/toggle?userId={userId}&category={category}&enable={enable}";
-            await PostToApiAsync(url, null, $"toggle category '{category}' for user {userId}");
+            try
+            {
+                var url = $"api/NotificationConfig/toggle?userId={userId}&category={category}&enable={enable}";
+                await PostToApiAsync(url, null, $"toggle category '{category}' for user {userId}");
+            }
+            catch(Exception)
+            {
+                throw new Exception();
+            }            
         }
 
         public async Task SubmitKeywordsAsync(int userId, string keywords)
         {
-            var keywordDto = new UserKeywordDto { Keywords = keywords };
-            var url = $"api/NotificationConfig/keywords?userId={userId}";
-            await PostToApiAsync(url, keywordDto, $"submit keywords for user {userId}");
+            try
+            {
+                var keywordDto = new UserKeywordDto { Keywords = keywords };
+                var url = $"api/NotificationConfig/keywords?userId={userId}";
+                await PostToApiAsync(url, keywordDto, $"submit keywords for user {userId}");
+            }
+            catch(Exception)
+            {
+                throw new Exception();
+            }
+            
         }
 
         private async Task<T?> GetFromApiAsync<T>(string url, string context)

@@ -1,6 +1,6 @@
 ﻿using Moq;
-using news_aggregator.application;
 using news_aggregator.application.Interfaces.Repositories;
+using news_aggregator.application.Keyword;
 using news_aggregator.tests.Helpers;
 using System;
 using System.Collections.Generic;

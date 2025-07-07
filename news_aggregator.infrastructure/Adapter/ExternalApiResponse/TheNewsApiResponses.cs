@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.ExternalApi
+namespace news_aggregator.infrastructure.Adapter.ExternalApiResponse
 {
     public class TheNewsApiResponse
     {

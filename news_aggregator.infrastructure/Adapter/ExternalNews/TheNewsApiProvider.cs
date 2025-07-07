@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using news_aggregator.infrastructure.ExternalApi;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.infrastructure.Adapter.ExternalApiResponse;
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.ExternalNews
 {
     public class TheNewsApiProvider : INewsProvider
     {

@@ -11,7 +11,7 @@ namespace news_aggregator.application.Interfaces.Services
     {
         Task SendEmailAsync(string toEmail, string subject, string body);
         Task CreateNotificationAsync(int userId, string message);
-        Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
+        Task<IEnumerable<news_application.Models.Notification>> GetUserNotificationsAsync(int userId);
         Task NotifyUserAsync(int userId, string message);
         Task NotifyAdminAsync(string messageHtml);
     }

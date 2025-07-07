@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Moq;
-using news_aggregator.application;
+using news_aggregator.application.Category;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException.CategoryException;

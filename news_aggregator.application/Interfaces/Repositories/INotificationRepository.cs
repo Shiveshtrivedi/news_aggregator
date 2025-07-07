@@ -9,8 +9,8 @@ namespace news_aggregator.application.Interfaces.Repositories
 {
     public interface INotificationRepository
     {
-        Task AddNotificationAsync(Notification notification);
-        Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId);
+        Task AddNotificationAsync(news_application.Models.Notification notification);
+        Task<IEnumerable<news_application.Models.Notification>> GetUserNotificationsAsync(int userId);
         Task MarkAsReadAsync(int notificationId);
     }
 }

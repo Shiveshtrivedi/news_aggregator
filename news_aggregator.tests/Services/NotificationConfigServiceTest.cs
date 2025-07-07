@@ -1,7 +1,6 @@
 ﻿using Moq;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
-using news_aggregator.application;
 using news_aggregator.shared.CustomException.CategoryException;
 using news_aggregator.tests.Helpers;
 using System;
@@ -11,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using news_application.Models;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.application.Notification;
 
 namespace news_aggregator.tests.Services
 {

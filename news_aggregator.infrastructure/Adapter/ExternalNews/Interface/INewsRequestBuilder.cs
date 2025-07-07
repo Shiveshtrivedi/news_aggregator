@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.ExternalNews.Interface
+namespace news_aggregator.infrastructure.Adapter.ExternalNews.Interface
 {
     public interface INewsRequestBuilder
     {

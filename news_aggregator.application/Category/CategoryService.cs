@@ -47,7 +47,7 @@ namespace news_aggregator.application.Category
                 if (exists)
                     throw new InvalidCategoryException("Category already exists.");
 
-                var category = new Category { CategoryName = dto.CategoryName };
+                var category = new news_application.Models.Category { CategoryName = dto.CategoryName };
                 if (string.IsNullOrEmpty(category.CategoryName))
                     throw new InvalidCategoryException("Category name cannot be blank.");
 

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Moq;
 using news_aggregator.application.Interfaces.Repositories;
-using news_aggregator.application;
 using news_aggregator.tests.Helpers;
 using news_application.Models;
 using System;
@@ -10,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.domain.Models.DTOs;
+using news_aggregator.application.Users;
 
 namespace news_aggregator.tests.Services
 {

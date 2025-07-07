@@ -22,41 +22,25 @@ namespace news_aggregator.console.Menu
         private readonly INotificationService _notificationService;
         private readonly IBlockedKeywordService _blockedKeywordService;
         private readonly AuthHandler _authHandler;
-        private readonly IUserKeywordService _userKeywordService;
+        private readonly AppServices _services;
 
-        public MainMenu(
-            IAuthService authService,
-            IServerService serverService,
-            ICategoryService categoryService,
-            INewsService newsService,
-            ISavedArticleService savedArticleService,
-            ISearchArticleService searchArticleService,
-            INotificationService notificationService,
-            IBlockedKeywordService blockedKeywordService,
-            IUserKeywordService userKeywordService)
+
+        public MainMenu(AppServices services)
         {
-            _authService = authService;
-            _serverService = serverService;
-            _categoryService = categoryService;
-            _newsService = newsService;
-            _savedArticleService = savedArticleService;
-            _searchArticleService = searchArticleService;
-            _notificationService = notificationService;
-            _blockedKeywordService = blockedKeywordService;
-            _userKeywordService = userKeywordService;
+            _services = services;
 
             _authHandler = new AuthHandler(
-                _authService,
-                _serverService,
-                _categoryService,
-                _newsService,
-                _savedArticleService,
-                _searchArticleService,
-                _notificationService,
-                _blockedKeywordService,
-                _userKeywordService
-            );
-           
+              _services.AuthService,
+              _services.ServerService,
+              _services.CategoryService,
+              _services.NewsService,
+              _services.SavedArticleService,
+              _services.SearchArticleService,
+              _services.NotificationService,
+              _services.BlockedKeywordService,
+              _services.UserKeywordService
+              );
+
         }
 
         public async Task Show()

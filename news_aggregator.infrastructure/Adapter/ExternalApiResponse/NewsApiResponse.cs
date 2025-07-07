@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.domain.Models;
 
-namespace news_aggregator.infrastructure.ExternalApi
+namespace news_aggregator.infrastructure.Adapter.ExternalApiResponse
 {
     public class NewsApiResponse
     {

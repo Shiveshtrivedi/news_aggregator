@@ -6,7 +6,6 @@ using Microsoft.OpenApi.Models;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.application.Repositories;
-using news_aggregator.application;
 using news_aggregator.domain.Models;
 using news_aggregator.infrastructure.Repositories;
 using news_application.Context;
@@ -17,10 +16,20 @@ using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using news_aggregator.shared.Authentication;
 using System.Text.Json.Serialization;
-using news_aggregator.infrastructure.ExternalNews.Interface;
-using news_aggregator.infrastructure.ExternalNews;
 using news_aggregator.shared.Validation.Interface;
 using news_aggregator.application.Mapping;
+using news_aggregator.application.Auth;
+using news_aggregator.application.News;
+using news_aggregator.application.Notification;
+using news_aggregator.application.Keyword;
+using news_aggregator.application.Article;
+using news_aggregator.application.Category;
+using news_aggregator.infrastructure.Adapter.Parsers;
+using news_aggregator.infrastructure.Adapter.Builders;
+using news_aggregator.infrastructure.Adapter.ExternalNews;
+using news_aggregator.infrastructure.Adapter.ExternalNews.Interface;
+using news_aggregator.application;
+using news_aggregator.application.Users;
 
 
 namespace news_aggregator

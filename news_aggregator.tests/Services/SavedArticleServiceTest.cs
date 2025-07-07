@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Moq;
-using news_aggregator.application;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.shared.CustomException;
+using news_aggregator.application.Article;
 
 namespace news_aggregator.tests.Services
 {

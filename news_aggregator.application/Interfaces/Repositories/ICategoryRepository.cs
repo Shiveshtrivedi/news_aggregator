@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace news_aggregator.application.Interfaces.Repositories
 {
-    public interface ICategoryRepository : IGenericRepository<Category>
+    public interface ICategoryRepository : IGenericRepository<news_application.Models.Category>
     {
         Task<bool> CategoryExistsAsync(string categoryName);
-        Task<Category> GetCategoryByNameAsync(string categoryName);
+        Task<news_application.Models.Category> GetCategoryByNameAsync(string categoryName);
 
     }
 

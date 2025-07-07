@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.ExternalNews
 {
     public class NewsProviderFactory : INewsProviderFactory
     {

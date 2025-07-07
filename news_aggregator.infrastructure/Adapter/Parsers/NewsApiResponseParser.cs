@@ -1,5 +1,5 @@
-﻿using news_aggregator.infrastructure.ExternalApi;
-using news_aggregator.infrastructure.ExternalNews.Interface;
+﻿using news_aggregator.infrastructure.Adapter.ExternalApiResponse;
+using news_aggregator.infrastructure.Adapter.ExternalNews.Interface;
 using news_application.Enum;
 using news_application.Models;
 using System;
@@ -10,7 +10,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.Parsers
 {
     public class NewsApiResponseParser : INewsApiResponseParser
     {

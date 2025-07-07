@@ -13,7 +13,7 @@ namespace news_aggregator.application.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Category, CategoryDto>()
+            CreateMap<news_application.Models.Category, CategoryDto>()
                 .ForMember(destination => destination.Name, option => option.MapFrom(source => source.CategoryName));
 
             CreateMap<User, UserDTO>();

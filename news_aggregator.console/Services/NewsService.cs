@@ -55,22 +55,7 @@ namespace news_aggregator.console.Services
             return await SendPostRequestAsync($"api/News/{articleId}/report", requestBody, $"report article {articleId}");
         }
 
-        //private async Task<List<NewsArticleDto>> GetArticlesAsync(string url, string context)
-        //{
-        //    try
-        //    {
-        //        var response = await _httpClient.GetAsync(url);
-        //        if (!response.IsSuccessStatusCode)
-        //            throw new NewsServiceException($"Failed to {context}. Status code: {response.StatusCode}");
-
-        //        var json = await response.Content.ReadAsStringAsync();
-        //        return JsonSerializer.Deserialize<List<NewsArticleDto>>(json) ?? new List<NewsArticleDto>();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        throw new NewsServiceException($"Error while attempting to {context}.", ex);
-        //    }
-        //}
+        
 
         private async Task<List<NewsArticleDto>> GetArticlesAsync(string url, string context)
         {

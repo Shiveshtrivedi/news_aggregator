@@ -20,17 +20,21 @@ namespace news_aggregator.console
 
             IHttpClientFactoryWrapper clientFactory = new HttpClientFactory(configuration);
 
-            IAuthService authService = new AuthService(clientFactory);
-            IServerService serverService = new ServerService(clientFactory);
-            ICategoryService categoryService= new CategoryService(clientFactory);
-            INewsService newsService = new NewsService(clientFactory);
-            ISavedArticleService savedArticleService = new SavedArticleService(clientFactory);
-            ISearchArticleService searchArticleService = new SearchArticleService(clientFactory);
-            INotificationService notificationService= new NotificationService(clientFactory);
-            IBlockedKeywordService blockedKeywordService = new BlockedKeywordService(clientFactory);
-            IUserKeywordService userKeywordService = new UserKeywordService(clientFactory);
+            var services = new AppServices
+            {
+                AuthService = new AuthService(clientFactory),
+                ServerService = new ServerService(clientFactory),
+                CategoryService = new CategoryService(clientFactory),
+                NewsService = new NewsService(clientFactory),
+                SavedArticleService = new SavedArticleService(clientFactory),
+                SearchArticleService = new SearchArticleService(clientFactory),
+                NotificationService = new NotificationService(clientFactory),
+                BlockedKeywordService = new BlockedKeywordService(clientFactory),
+                UserKeywordService = new UserKeywordService(clientFactory)
+            };
 
-            IMenu menu = new MainMenu(authService,serverService,categoryService,newsService,savedArticleService,searchArticleService,notificationService,blockedKeywordService,userKeywordService);
+
+            IMenu menu = new MainMenu(services);
             await menu.Show();
 
 

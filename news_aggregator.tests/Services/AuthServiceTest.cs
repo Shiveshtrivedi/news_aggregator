@@ -5,7 +5,6 @@ using System;
 using System.Threading.Tasks;
 using System.Security.Claims;
 using System.Collections.Generic;
-using news_aggregator.application;
 using news_aggregator.application.Interfaces.Repositories;
 using news_aggregator.shared.Validation.Interface;
 using news_aggregator.shared.Authentication;
@@ -15,6 +14,7 @@ using news_application.Enum;
 using news_aggregator.shared.CustomException.UserException;
 using news_aggregator.shared.CustomException;
 using news_aggregator.tests.Helpers;
+using news_aggregator.application.Auth;
 
 namespace news_aggregator.tests.Services
 {

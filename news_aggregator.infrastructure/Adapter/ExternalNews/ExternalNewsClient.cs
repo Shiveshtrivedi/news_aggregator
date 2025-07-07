@@ -2,8 +2,7 @@
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models;
 using news_aggregator.domain.Models.DTOs;
-using news_aggregator.infrastructure.ExternalApi;
-using news_aggregator.infrastructure.ExternalNews.Interface;
+using news_aggregator.infrastructure.Adapter.ExternalNews.Interface;
 using news_application.Context;
 using news_application.Enum;
 using news_application.Models;
@@ -16,7 +15,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.ExternalNews
 {
     public class ExternalNewsClient : IExternalNewsClient
     {
@@ -39,8 +38,8 @@ namespace news_aggregator.infrastructure.ExternalNews
 
                 if (source.ExternalSourceName == "NewsAPI" && string.IsNullOrWhiteSpace(category))
                 {
-                    var categories = new[] { "technology" };
-                    //"sports", "general", "health", "science", "technology""business", "entertainment"};
+                    var categories = new[] { "technology", "sports", "general", "health", "science", "technology","business", "entertainment" };
+
 
                     var allArticles = new List<NewsArticle>();
 

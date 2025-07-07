@@ -1,5 +1,5 @@
 ﻿using news_aggregator.application.Interfaces.Services;
-using news_aggregator.infrastructure.ExternalApi;
+using news_aggregator.infrastructure.Adapter.ExternalApiResponse;
 using news_application.Models;
 using Newtonsoft.Json;
 using System;
@@ -9,7 +9,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.infrastructure.ExternalNews
+namespace news_aggregator.infrastructure.Adapter.ExternalNews
 {
     public class NewsApiProvider : INewsProvider
     {

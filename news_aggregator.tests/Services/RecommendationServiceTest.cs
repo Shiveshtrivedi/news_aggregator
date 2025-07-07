@@ -1,6 +1,5 @@
 ﻿using Moq;
 using news_aggregator.application.Interfaces.Repositories;
-using news_aggregator.application;
 using news_aggregator.tests.Helpers;
 using news_application.Models;
 using System;
@@ -9,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using news_aggregator.application.Interfaces.Services;
+using news_aggregator.application.Article;
 
 namespace news_aggregator.tests.Services
 {

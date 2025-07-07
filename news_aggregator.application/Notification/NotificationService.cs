@@ -25,7 +25,7 @@ namespace news_aggregator.application.Notification
 
         public async Task CreateNotificationAsync(int userId, string message)
         {
-            var notification = new Notification
+            var notification = new news_application.Models.Notification
             {
                 UserId = userId,
                 Message = message,
@@ -34,7 +34,7 @@ namespace news_aggregator.application.Notification
             await _notificationRepository.AddNotificationAsync(notification);
         }
 
-        public async Task<IEnumerable<Notification>> GetUserNotificationsAsync(int userId)
+        public async Task<IEnumerable<news_application.Models.Notification>> GetUserNotificationsAsync(int userId)
         {
             return await _notificationRepository.GetUserNotificationsAsync(userId);
         }
@@ -63,7 +63,7 @@ namespace news_aggregator.application.Notification
             if (user == null)
                 throw new Exception("User not found");
 
-            var notification = new Notification
+            var notification = new news_application.Models.Notification
             {
                 UserId = userId,
                 Message = message,
@@ -80,7 +80,7 @@ namespace news_aggregator.application.Notification
 
             var adminEmail = _configuration["Admin:Email"];
 
-            var notification = new Notification
+            var notification = new news_application.Models.Notification
             {
                 UserId = adminUserId,
                 Message = "A new article has been reported. Please review.",
