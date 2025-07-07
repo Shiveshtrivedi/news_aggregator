@@ -4,7 +4,7 @@ using news_aggregator.domain.Models;
 using news_aggregator.domain.Models.DTOs;
 using news_aggregator.shared.CustomException;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Article
 {
     public class ReportArticleService : IReportArticleService
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Keyword
 {
     public class UserKeywordService : IUserKeywordService
     {

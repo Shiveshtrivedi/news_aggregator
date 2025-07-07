@@ -5,7 +5,7 @@ using news_aggregator.domain.Models.DTOs;
 using news_application.Models;
 using news_aggregator.shared.CustomException;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Article
 {
     public class SavedArticleService : ISavedArticleService
     {

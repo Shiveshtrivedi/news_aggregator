@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using news_aggregator.shared.CustomException;
 using news_aggregator.shared.CustomException.CategoryException;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Notification
 {
     public class NotificationConfigService : INotificationConfigService
     {

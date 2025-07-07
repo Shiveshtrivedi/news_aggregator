@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Notification
 {
     public class NotificationHtmlBuilder : INotificationHtmlBuilder
     {

@@ -2,7 +2,7 @@
 using news_aggregator.application.Interfaces.Services;
 using news_aggregator.domain.Models.DTOs;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Article
 {
     public class RecommendationService : IRecommendationService
     {

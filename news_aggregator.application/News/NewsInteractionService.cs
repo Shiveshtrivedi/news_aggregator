@@ -4,7 +4,7 @@ using news_aggregator.domain.Models;
 using news_aggregator.shared.CustomException;
 using news_aggregator.shared.CustomException.NewsArticle;
 
-namespace news_aggregator.application
+namespace news_aggregator.application.News
 {
     public class NewsInteractionService : INewsInteractionService
     {

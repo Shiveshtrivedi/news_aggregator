@@ -16,7 +16,7 @@ using news_aggregator.shared.CustomException.UserException;
 using AutoMapper;
 
 
-namespace news_aggregator.application
+namespace news_aggregator.application.Auth
 {
     public class AuthService : IAuthService
     {
